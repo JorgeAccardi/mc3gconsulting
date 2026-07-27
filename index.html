@@ -1,0 +1,463 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MC&3G — Panel Consultivo en Seguridad y Auscultación de Presas</title>
+<meta name="description" content="MC&3G — práctica consultiva independiente: segundas opiniones, revisión de diseño de instrumentación, análisis forense y auditorías de auscultación de presas.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=IBM+Plex+Serif:ital,wght@0,400;0,500;0,600;1,400&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --paper:#F1F4EF;
+    --surface:#FFFFFF;
+    --ink:#16231C;
+    --ink-soft:#57685C;
+    --line:#D6DDD1;
+    --safe:#2E7D52;
+    --watch:#C17A2A;
+    --action:#9C3B2B;
+    --data:#29586A;
+    --judgment:#6E5A78;
+    --display:'Space Grotesk',sans-serif;
+    --body:'IBM Plex Serif',serif;
+    --ui:'Inter',sans-serif;
+    --mono:'JetBrains Mono',monospace;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;}
+  html{scroll-behavior:smooth;}
+  @media (prefers-reduced-motion: reduce){
+    html{scroll-behavior:auto;}
+    *{animation-duration:0.01ms !important;animation-iteration-count:1 !important;}
+  }
+  body{
+    background:var(--paper);
+    color:var(--ink);
+    font-family:var(--body);
+    font-size:17px;
+    line-height:1.6;
+    -webkit-font-smoothing:antialiased;
+  }
+  a{color:inherit;}
+  a:focus-visible, button:focus-visible{
+    outline:2px solid var(--data);
+    outline-offset:3px;
+  }
+  img,svg{display:block;max-width:100%;}
+  .wrap{max-width:1120px;margin:0 auto;padding:0 28px;}
+  .eyebrow{
+    font-family:var(--mono);
+    font-size:12.5px;
+    letter-spacing:.14em;
+    text-transform:uppercase;
+    color:var(--ink-soft);
+  }
+
+  /* ---------- header ---------- */
+  header{
+    border-bottom:1px solid var(--line);
+    position:sticky;top:0;
+    background:rgba(241,244,239,.92);
+    backdrop-filter:blur(6px);
+    z-index:20;
+  }
+  header .wrap{
+    display:flex;align-items:center;justify-content:space-between;
+    padding-top:18px;padding-bottom:18px;
+    gap:20px;flex-wrap:wrap;
+  }
+  .wordmark{
+    font-family:var(--display);
+    font-weight:700;
+    font-size:22px;
+    letter-spacing:.01em;
+  }
+  .wordmark span{color:var(--data);}
+  nav{display:flex;gap:26px;flex-wrap:wrap;}
+  nav a{
+    font-family:var(--ui);
+    font-size:14.5px;
+    font-weight:500;
+    color:var(--ink-soft);
+    text-decoration:none;
+    border-bottom:1px solid transparent;
+    padding-bottom:2px;
+    transition:color .15s, border-color .15s;
+  }
+  nav a:hover{color:var(--ink);border-color:var(--data);}
+
+  /* ---------- hero ---------- */
+  .hero{padding:76px 0 40px;}
+  .hero h1{
+    font-family:var(--display);
+    font-weight:600;
+    font-size:clamp(30px, 4.6vw, 50px);
+    line-height:1.14;
+    letter-spacing:-.01em;
+    max-width:15ch;
+    margin:22px 0 26px;
+  }
+  .hero .sub{
+    font-family:var(--body);
+    font-size:18.5px;
+    color:var(--ink-soft);
+    max-width:56ch;
+    margin-bottom:34px;
+  }
+  .cta-row{display:flex;gap:22px;align-items:center;flex-wrap:wrap;margin-bottom:56px;}
+  .btn-primary{
+    font-family:var(--ui);font-weight:600;font-size:15px;
+    background:var(--ink);color:var(--paper);
+    padding:13px 24px;border-radius:2px;
+    text-decoration:none;
+    border:1px solid var(--ink);
+    transition:background .15s, color .15s;
+  }
+  .btn-primary:hover{background:var(--data);border-color:var(--data);}
+  .btn-ghost{
+    font-family:var(--ui);font-weight:500;font-size:15px;
+    text-decoration:none;color:var(--ink);
+    border-bottom:1px solid var(--ink);
+    padding-bottom:2px;
+  }
+  .btn-ghost:hover{color:var(--data);border-color:var(--data);}
+
+  /* ---------- signature trace ---------- */
+  .trace-block{border:1px solid var(--line);background:var(--surface);padding:22px 22px 16px;}
+  .trace-cap{
+    font-family:var(--mono);font-size:12px;color:var(--ink-soft);
+    margin-top:10px;letter-spacing:.02em;
+  }
+  .trace-line{
+    fill:none;stroke:var(--data);stroke-width:2.4;
+    stroke-dasharray:900;stroke-dashoffset:900;
+    animation:draw 2.2s ease-out .2s forwards;
+  }
+  @keyframes draw{to{stroke-dashoffset:0;}}
+  .band-safe{fill:var(--safe);opacity:.14;}
+  .band-watch{fill:var(--watch);opacity:.14;}
+  .band-action{fill:var(--action);opacity:.12;}
+  .axis-label{font-family:var(--mono);font-size:11px;fill:var(--ink-soft);}
+  .centerline{stroke:var(--ink-soft);stroke-width:1;stroke-dasharray:3 4;opacity:.5;}
+
+  /* ---------- section shell ---------- */
+  section{padding:64px 0;border-top:1px solid var(--line);}
+  .section-head{max-width:60ch;margin-bottom:36px;}
+  .section-head h2{
+    font-family:var(--display);font-weight:600;
+    font-size:clamp(24px,3vw,32px);
+    margin-top:10px;letter-spacing:-.01em;
+  }
+  .section-head p{color:var(--ink-soft);margin-top:12px;font-size:16.5px;}
+
+  /* ---------- enfoque / principios ---------- */
+  .principles{
+    display:grid;grid-template-columns:repeat(2,1fr);gap:1px;
+    background:var(--line);border:1px solid var(--line);
+  }
+  .principle{background:var(--surface);padding:26px 26px 28px;}
+  .principle .glyph{
+    font-family:var(--mono);color:var(--data);font-size:14px;margin-bottom:12px;display:block;
+  }
+  .principle p{font-family:var(--body);font-size:16px;line-height:1.55;}
+
+  /* ---------- trazabilidad ---------- */
+  .tags{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:var(--line);border:1px solid var(--line);margin-bottom:18px;}
+  .tag{background:var(--surface);padding:22px 20px;}
+  .tag .lab{
+    font-family:var(--mono);font-weight:600;font-size:13px;
+    display:inline-block;padding:3px 9px;border-radius:2px;margin-bottom:12px;
+  }
+  .tag.d .lab{background:rgba(41,88,106,.12);color:var(--data);}
+  .tag.c .lab{background:rgba(46,125,82,.12);color:var(--safe);}
+  .tag.p .lab{background:rgba(193,122,42,.14);color:var(--watch);}
+  .tag.j .lab{background:rgba(110,90,120,.14);color:var(--judgment);}
+  .tag h3{font-family:var(--ui);font-size:14.5px;font-weight:600;margin-bottom:8px;}
+  .tag p{font-size:14.5px;color:var(--ink-soft);line-height:1.5;}
+  .tags-note{font-family:var(--mono);font-size:13px;color:var(--ink-soft);}
+
+  /* ---------- servicios ---------- */
+  .services{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--line);border:1px solid var(--line);}
+  .service{background:var(--surface);padding:28px 24px;display:flex;flex-direction:column;gap:12px;}
+  .service h3{font-family:var(--ui);font-weight:600;font-size:16.5px;}
+  .service p{font-size:15px;color:var(--ink-soft);flex-grow:1;}
+  .service .deliv{
+    font-family:var(--mono);font-size:12px;color:var(--data);
+    letter-spacing:.03em;text-transform:uppercase;
+    border-top:1px solid var(--line);padding-top:10px;
+  }
+
+  /* ---------- metodologia ---------- */
+  .steps{display:flex;flex-direction:column;}
+  .step{
+    display:grid;grid-template-columns:64px 1fr;gap:18px;
+    padding:22px 0;border-top:1px solid var(--line);
+  }
+  .step:last-child{border-bottom:1px solid var(--line);}
+  .step .n{font-family:var(--mono);color:var(--ink-soft);font-size:14px;padding-top:2px;}
+  .step h3{font-family:var(--ui);font-weight:600;font-size:16.5px;margin-bottom:6px;}
+  .step p{color:var(--ink-soft);font-size:15px;max-width:64ch;}
+
+  /* ---------- marcos ---------- */
+  .frameworks{font-family:var(--mono);font-size:13.5px;color:var(--ink-soft);line-height:2;}
+  .frameworks .note{font-family:var(--ui);font-size:13.5px;margin-top:14px;color:var(--ink-soft);}
+
+  /* ---------- contacto ---------- */
+  .contact-grid{display:grid;grid-template-columns:1.1fr .9fr;gap:48px;align-items:start;}
+  .contact-grid p{color:var(--ink-soft);font-size:16px;margin-bottom:10px;max-width:52ch;}
+  .signature-block{border:1px solid var(--line);background:var(--surface);padding:26px 28px;}
+  .signature-block .sig-name{font-family:var(--display);font-weight:600;font-size:19px;}
+  .signature-block .sig-tag{font-family:var(--mono);font-size:12.5px;color:var(--ink-soft);margin-top:6px;}
+  .signature-block .sig-mail{
+    display:inline-block;margin-top:18px;font-family:var(--ui);font-weight:600;font-size:15px;
+    color:var(--data);text-decoration:none;border-bottom:1px solid var(--data);
+  }
+
+  footer{border-top:1px solid var(--line);padding:28px 0;}
+  footer .wrap{display:flex;justify-content:space-between;flex-wrap:wrap;gap:10px;}
+  footer p{font-family:var(--mono);font-size:12px;color:var(--ink-soft);}
+
+  @media (max-width:820px){
+    .principles, .services{grid-template-columns:1fr;}
+    .tags{grid-template-columns:repeat(2,1fr);}
+    .contact-grid{grid-template-columns:1fr;}
+    .step{grid-template-columns:40px 1fr;}
+  }
+  @media (max-width:520px){
+    .tags{grid-template-columns:1fr;}
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="wrap">
+    <div class="wordmark">MC<span>&</span>3G</div>
+    <nav>
+      <a href="#servicios">Servicios</a>
+      <a href="#metodologia">Metodología</a>
+      <a href="#principios">Principios</a>
+      <a href="#contacto">Contacto</a>
+    </nav>
+  </div>
+</header>
+
+<main>
+  <section class="hero" style="border-top:none;padding-top:76px;">
+    <div class="wrap">
+      <span class="eyebrow">Panel consultivo · Seguridad y auscultación de presas</span>
+      <h1>Un panel no se distingue por afirmar más, sino por saber qué no puede afirmarse con los datos disponibles.</h1>
+      <p class="sub">MC&3G es una práctica consultiva independiente en seguridad y auscultación de presas: segundas opiniones, revisión de diseño de instrumentación, análisis forense y auditorías de sistemas existentes — con trazabilidad completa entre cada dato y cada conclusión.</p>
+      <div class="cta-row">
+        <a class="btn-primary" href="mailto:contacto@mc3g.com">Escribir a Ing. Jorge Accardi</a>
+        <a class="btn-ghost" href="#servicios">Ver servicios</a>
+      </div>
+
+      <div class="trace-block">
+        <svg viewBox="0 0 1000 220" width="100%" height="220" role="img" aria-label="Gráfico esquemático de una serie monitoreada dentro de una banda de control">
+          <rect class="band-action" x="0" y="0" width="1000" height="30"/>
+          <rect class="band-watch" x="0" y="30" width="1000" height="30"/>
+          <rect class="band-safe" x="0" y="60" width="1000" height="100"/>
+          <rect class="band-watch" x="0" y="160" width="1000" height="30"/>
+          <rect class="band-action" x="0" y="190" width="1000" height="30"/>
+          <line class="centerline" x1="0" y1="110" x2="1000" y2="110"/>
+          <text class="axis-label" x="8" y="14">+2σ</text>
+          <text class="axis-label" x="8" y="114">0</text>
+          <text class="axis-label" x="8" y="206">−2σ</text>
+          <polyline class="trace-line" points="0,150 60,120 120,168 180,100 240,140 300,90 360,130 420,80 480,118 540,95 600,112 660,88 720,120 780,105 840,118 900,108 1000,111"/>
+        </svg>
+        <div class="trace-cap">Ilustración esquemática de una serie dentro de banda de control — no corresponde a datos de ningún encargo real.</div>
+      </div>
+    </div>
+  </section>
+
+  <section id="principios">
+    <div class="wrap">
+      <div class="section-head">
+        <span class="eyebrow">Enfoque</span>
+        <h2>Lo que distingue a este panel</h2>
+        <p>No vendemos certeza donde no la hay. Cuatro reglas gobiernan cada encargo, desde el encuadre hasta la firma.</p>
+      </div>
+      <div class="principles">
+        <div class="principle">
+          <span class="glyph">→</span>
+          <p>Declaramos el límite de la evidencia antes de llenar el vacío con criterio general.</p>
+        </div>
+        <div class="principle">
+          <span class="glyph">→</span>
+          <p>Pedimos el dato que falta — no lo estimamos.</p>
+        </div>
+        <div class="principle">
+          <span class="glyph">→</span>
+          <p>Separamos, siempre por separado: lo que el dato muestra, lo que la práctica sugiere y lo que es criterio del panel.</p>
+        </div>
+        <div class="principle">
+          <span class="glyph">→</span>
+          <p>Nunca invocamos autoridad por adjetivo. La autoridad la da la trazabilidad del razonamiento, no la afirmación de experiencia.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="trazabilidad">
+    <div class="wrap">
+      <div class="section-head">
+        <span class="eyebrow">Trazabilidad</span>
+        <h2>Cada afirmación declara su origen</h2>
+        <p>Ninguna conclusión entra a un dictamen sin etiqueta de procedencia.</p>
+      </div>
+      <div class="tags">
+        <div class="tag d">
+          <span class="lab">[D]</span>
+          <h3>Dato medido</h3>
+          <p>Con instrumento, período y fuente identificados.</p>
+        </div>
+        <div class="tag c">
+          <span class="lab">[C]</span>
+          <h3>Cálculo propio</h3>
+          <p>Con fórmula y constantes explícitas, verificables.</p>
+        </div>
+        <div class="tag p">
+          <span class="lab">[P]</span>
+          <h3>Práctica de referencia</h3>
+          <p>Con fuente verificada, o declarada como pendiente de verificar.</p>
+        </div>
+        <div class="tag j">
+          <span class="lab">[J]</span>
+          <h3>Juicio del panel</h3>
+          <p>Opinión técnica fundada, presentada explícitamente como tal.</p>
+        </div>
+      </div>
+      <p class="tags-note">Un dictamen sano tiene mayoría [D]/[C]. Si es mayoritariamente [J], lo decimos en el título: es una opinión.</p>
+    </div>
+  </section>
+
+  <section id="servicios">
+    <div class="wrap">
+      <div class="section-head">
+        <span class="eyebrow">Servicios</span>
+        <h2>Tipos de encargo</h2>
+        <p>Cada encargo sigue el protocolo técnico correspondiente y termina en un entregable con alcance y limitaciones declarados desde la primera página.</p>
+      </div>
+      <div class="services">
+        <div class="service">
+          <h3>Segunda opinión técnica</h3>
+          <p>Revisión independiente de una anomalía ya reportada por el equipo de auscultación habitual.</p>
+          <div class="deliv">Nota técnica</div>
+        </div>
+        <div class="service">
+          <h3>Revisión de diseño de instrumentación</h3>
+          <p>Evaluación de un proyecto de instrumentación antes o durante su implementación.</p>
+          <div class="deliv">Informe con observaciones priorizadas</div>
+        </div>
+        <div class="service">
+          <h3>Análisis forense post-evento</h3>
+          <p>Reconstrucción técnica de un evento ya ocurrido, con cadena de evidencia explícita.</p>
+          <div class="deliv">Informe forense</div>
+        </div>
+        <div class="service">
+          <h3>Auditoría de sistema de auscultación</h3>
+          <p>Revisión integral de un sistema existente: cobertura instrumental, calidad de dato y criterios de alarma.</p>
+          <div class="deliv">Informe de auditoría + plan de mejora</div>
+        </div>
+        <div class="service">
+          <h3>Apoyo a revisión periódica</h3>
+          <p>Respaldo técnico al ingeniero responsable en la revisión de seguridad exigida por normativa.</p>
+          <div class="deliv">Informe de apoyo</div>
+        </div>
+        <div class="service">
+          <h3>Peritaje / opinión para terceros</h3>
+          <p>Dictamen con declaración explícita de alcance y limitaciones, para uso ante un tercero.</p>
+          <div class="deliv">Dictamen firmado</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="metodologia">
+    <div class="wrap">
+      <div class="section-head">
+        <span class="eyebrow">Metodología</span>
+        <h2>Cómo se construye un dictamen</h2>
+        <p>Cuatro etapas, siempre en este orden. Saltar el encuadre inicial suele terminar respondiendo la pregunta equivocada.</p>
+      </div>
+      <div class="steps">
+        <div class="step">
+          <div class="n">01</div>
+          <div>
+            <h3>Encuadre</h3>
+            <p>Antes de analizar nada: qué se pregunta realmente, qué protocolo corresponde, qué información falta y qué no va a poder concluirse aunque se tenga todo lo demás.</p>
+          </div>
+        </div>
+        <div class="step">
+          <div class="n">02</div>
+          <div>
+            <h3>Análisis técnico</h3>
+            <p>Control de calidad del dato, validación cruzada entre instrumentos independientes, cálculos con fórmula y constantes explícitas.</p>
+          </div>
+        </div>
+        <div class="step">
+          <div class="n">03</div>
+          <div>
+            <h3>Dictamen</h3>
+            <p>Alcance y limitaciones primero, no al final. Hallazgos trazables. Recomendaciones con acción, prioridad y decisor identificado.</p>
+          </div>
+        </div>
+        <div class="step">
+          <div class="n">04</div>
+          <div>
+            <h3>Revisión adversarial</h3>
+            <p>El propio panel critica el dictamen antes de entregarlo, como lo haría un auditor hostil o la contraparte.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="marcos">
+    <div class="wrap">
+      <div class="section-head">
+        <span class="eyebrow">Referencias</span>
+        <h2>Marcos consultados</h2>
+        <p>Toda cita normativa en un dictamen se verifica contra el documento original antes de publicarse — nunca se afirma un número de artículo o umbral sin esa verificación.</p>
+      </div>
+      <div class="frameworks">
+        SPANCOLD — Guía Técnica de Seguridad de Presas nº 7<br>
+        RD 264/2021 (España) — Seguridad de presas y embalses<br>
+        ICOLD / CDA — marcos internacionales de buenas prácticas<br>
+        Dunnicliff, J. — Geotechnical Instrumentation for Monitoring Field Performance<br>
+        USACE EM 1110-2-1908 — Instrumentation of Embankment Dams and Levees<br>
+        FERC Engineering Guidelines, Chapter 9
+      </div>
+    </div>
+  </section>
+
+  <section id="contacto">
+    <div class="wrap">
+      <div class="contact-grid">
+        <div>
+          <span class="eyebrow">Contacto</span>
+          <h2 style="font-family:var(--display);font-weight:600;font-size:clamp(22px,3vw,28px);margin:10px 0 18px;">Empecemos con el encuadre del encargo</h2>
+          <p>Los datos de cualquier encargo se tratan como confidenciales. Este sitio no publica casos, nombres de proyecto, empresas ni terceros identificables.</p>
+          <p>Antes de cualquier análisis se define por escrito qué se pregunta, qué información falta y si existe algún conflicto de interés a declarar.</p>
+        </div>
+        <div class="signature-block">
+          <div class="sig-name">Ing. Jorge Accardi</div>
+          <div class="sig-tag">MC&3G — Criterio, datos y norma. Un solo diagnóstico.</div>
+          <a class="sig-mail" href="mailto:contacto@mc3g.com">contacto@mc3g.com</a>
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="wrap">
+    <p>© 2026 MC&3G — Práctica profesional independiente.</p>
+    <p>Sin afiliación institucional declarada.</p>
+  </div>
+</footer>
+
+</body>
+</html>
