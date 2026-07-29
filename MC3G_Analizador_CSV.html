@@ -1,0 +1,470 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Analizador de CSV — MC3G Consulting</title>
+<meta name="description" content="Subí cualquier CSV y obtené estadística descriptiva y un gráfico al instante. Todo el análisis ocurre en tu navegador, sin subir el archivo a ningún servidor.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@600;700&family=IBM+Plex+Sans+Condensed:wght@500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --paper:#F7F8F5;
+    --grid:#DCE4E9;
+    --ink:#16233B;
+    --ink-soft:#5B6B80;
+    --line:#D7E0E6;
+    --card:#FFFFFF;
+    --band:rgba(123,148,169,.14);
+    --centerline:#8CA0B3;
+    --alert:#C0392B;
+    --alert-deep:#9B2E22;
+    --ok:#2F6F5E;
+    --font-display:'IBM Plex Sans Condensed',sans-serif;
+    --font-body:'Inter',sans-serif;
+    --font-mono:'JetBrains Mono',monospace;
+    --font-word:'Space Grotesk',sans-serif;
+    --nav-h:60px;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;}
+  html{scroll-behavior:smooth;}
+  body{
+    font-family:var(--font-body);color:var(--ink);line-height:1.6;-webkit-font-smoothing:antialiased;
+    background:var(--paper);
+    background-image:
+      repeating-linear-gradient(0deg, var(--grid) 0 1px, transparent 1px 28px),
+      repeating-linear-gradient(90deg, var(--grid) 0 1px, transparent 1px 28px);
+  }
+  h1,h2,h3,h4{font-family:var(--font-display);}
+  .mono{font-family:var(--font-mono);}
+  a{color:inherit;text-decoration:none;}
+  .visually-hidden{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;}
+  :focus-visible{outline:2px solid var(--alert);outline-offset:3px;}
+  .skip-link{position:absolute;left:-9999px;top:0;background:var(--alert);color:#fff;padding:10px 16px;z-index:200;font-family:var(--font-mono);font-size:.85rem;}
+  .skip-link:focus{left:12px;top:12px;}
+
+  .wrap{max-width:1000px;margin:0 auto;padding:0 24px;}
+  nav{position:sticky;top:0;z-index:50;height:var(--nav-h);background:rgba(247,248,245,.92);backdrop-filter:blur(6px);border-bottom:1.5px dashed var(--ink-soft);}
+  nav .wrap{height:100%;display:flex;align-items:center;justify-content:space-between;}
+  .back{font-family:var(--font-mono);font-size:.76rem;letter-spacing:.06em;color:var(--ink-soft);text-decoration:none;}
+  .back:hover{color:var(--ink);}
+  .wordmark{font-family:var(--font-word);font-weight:700;font-size:.95rem;display:flex;align-items:center;gap:6px;}
+  .wordmark small{font-family:var(--font-mono);font-weight:400;font-size:.56rem;letter-spacing:.1em;color:var(--ink-soft);}
+
+  header.tool-hero{padding:56px 0 40px;}
+  .eyebrow{font-family:var(--font-mono);font-size:.76rem;letter-spacing:.12em;text-transform:uppercase;color:var(--alert-deep);margin-bottom:14px;}
+  h1{font-size:clamp(1.6rem,3.6vw,2.3rem);font-weight:700;letter-spacing:-.015em;line-height:1.2;margin-bottom:16px;max-width:640px;}
+  .lede{color:var(--ink-soft);max-width:600px;margin-bottom:8px;}
+  .privacy-note{font-family:var(--font-mono);font-size:.78rem;color:var(--ok);margin-bottom:32px;display:flex;align-items:center;gap:8px;}
+  .privacy-note::before{content:"●";font-size:.6rem;}
+
+  .dropzone{
+    border:1.5px dashed var(--ink-soft);border-radius:6px;background:var(--card);
+    padding:40px 24px;text-align:center;cursor:pointer;transition:border-color .2s,background .2s;
+  }
+  .dropzone.drag{border-color:var(--alert);background:#FBF0EE;}
+  .dropzone .dz-title{font-family:var(--font-display);font-weight:600;font-size:1.05rem;margin-bottom:6px;}
+  .dropzone .dz-sub{font-family:var(--font-mono);font-size:.76rem;color:var(--ink-soft);}
+  .dz-actions{display:flex;justify-content:center;gap:14px;margin-top:18px;flex-wrap:wrap;}
+  .btn{font-family:var(--font-display);font-size:.86rem;font-weight:600;padding:11px 20px;border-radius:2px;display:inline-flex;align-items:center;gap:8px;cursor:pointer;border:none;transition:background .2s,transform .15s;}
+  .btn:hover{transform:translateY(-1px);}
+  .btn-primary{background:var(--alert);color:#fff;}
+  .btn-primary:hover{background:var(--alert-deep);}
+  .btn-ghost{background:transparent;border:1.5px solid var(--ink);color:var(--ink);}
+  .btn-ghost:hover{background:var(--ink);color:var(--paper);}
+
+  .filebar{display:none;align-items:center;justify-content:space-between;gap:14px;margin-top:16px;font-family:var(--font-mono);font-size:.8rem;color:var(--ink-soft);flex-wrap:wrap;}
+  .filebar.show{display:flex;}
+  .filebar b{color:var(--ink);}
+  .errorbox{display:none;margin-top:18px;padding:14px 16px;border-left:3px solid var(--alert);background:#FBF0EE;font-family:var(--font-mono);font-size:.82rem;color:var(--alert-deep);}
+  .errorbox.show{display:block;}
+
+  #resultados{padding:12px 0 90px;}
+  #resultados[hidden]{display:none;}
+  .stats-row{display:flex;flex-wrap:wrap;gap:14px;margin:28px 0 40px;}
+  .stat-chip{background:var(--card);border:1px solid var(--line);border-radius:4px;padding:14px 18px;min-width:120px;}
+  .stat-chip b{display:block;font-family:var(--font-mono);font-size:1.5rem;color:var(--ink);}
+  .stat-chip span{font-family:var(--font-mono);font-size:.7rem;color:var(--ink-soft);letter-spacing:.03em;}
+
+  h2.section{font-size:1.15rem;margin:38px 0 16px;}
+  .table-wrap{overflow-x:auto;border:1px solid var(--line);border-radius:4px;background:var(--card);}
+  table{border-collapse:collapse;width:100%;font-size:.84rem;}
+  th,td{padding:10px 14px;text-align:left;white-space:nowrap;border-bottom:1px solid var(--line);}
+  th{font-family:var(--font-mono);font-size:.7rem;letter-spacing:.06em;text-transform:uppercase;color:var(--ink-soft);background:var(--paper);}
+  td{font-family:var(--font-mono);color:var(--ink);}
+  tr:last-child td{border-bottom:none;}
+  .badge-type{font-family:var(--font-mono);font-size:.68rem;padding:2px 8px;border-radius:2px;border:1px solid var(--line);}
+  .badge-num{color:var(--alert-deep);border-color:var(--alert-deep);}
+  .badge-txt{color:var(--ink-soft);}
+
+  .chart-card{background:var(--card);border:1px solid var(--line);border-radius:4px;padding:24px;}
+  .chart-head{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;margin-bottom:16px;}
+  select{font-family:var(--font-mono);font-size:.8rem;padding:8px 12px;border:1px solid var(--line);border-radius:2px;background:var(--paper);color:var(--ink);}
+  .chart-svg-wrap svg{width:100%;height:auto;display:block;}
+  .chart-meta{display:flex;gap:20px;flex-wrap:wrap;margin-top:14px;font-family:var(--font-mono);font-size:.76rem;color:var(--ink-soft);}
+  .chart-meta b{color:var(--ink);}
+  .empty-note{font-family:var(--font-mono);font-size:.82rem;color:var(--ink-soft);}
+
+  footer{background:var(--ink);border-top:1px solid rgba(247,248,245,.15);padding:26px 0;margin-top:60px;}
+  footer .wrap{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;}
+  footer a{color:#B9C3D0;font-family:var(--font-mono);font-size:.78rem;text-decoration:none;}
+  footer a:hover{color:var(--paper);}
+  footer .fmono{font-family:var(--font-mono);font-size:.74rem;color:#B9C3D0;}
+
+  @media (max-width:640px){
+    .stats-row{gap:10px;}
+    .stat-chip{min-width:100px;padding:12px 14px;}
+  }
+</style>
+</head>
+<body>
+<a href="#contenido" class="skip-link">Saltar al contenido</a>
+
+<nav>
+  <div class="wrap">
+    <a class="wordmark" href="./MC3G_Landing_v2_Lecturas.html">MC3G<small>CONSULTING</small></a>
+    <a class="back" href="./MC3G_Landing_v2_Lecturas.html">← Volver a la página principal</a>
+  </div>
+</nav>
+
+<main id="contenido">
+  <header class="tool-hero">
+    <div class="wrap">
+      <p class="eyebrow">Canal B · Laboratorio de datos</p>
+      <h1>Subí un CSV. Mirá qué encuentra en segundos.</h1>
+      <p class="lede">Un análisis descriptivo rápido de cualquier archivo CSV: filas, columnas, tipo de dato, estadística por columna y un gráfico automático. Detecta separador por coma o por punto y coma.</p>
+      <p class="privacy-note">Todo el análisis ocurre en tu navegador. El archivo nunca se sube a ningún servidor.</p>
+
+      <div class="dropzone" id="dropzone" tabindex="0" role="button" aria-label="Subir archivo CSV">
+        <p class="dz-title">Arrastrá tu CSV acá, o hacé clic para elegirlo</p>
+        <p class="dz-sub">.csv · separador coma o punto y coma · cualquier cantidad de columnas</p>
+        <label for="csvInput" class="visually-hidden">Elegir archivo CSV</label>
+        <input type="file" id="csvInput" accept=".csv,text/csv" class="visually-hidden">
+        <div class="dz-actions">
+          <button type="button" class="btn btn-ghost" id="sampleBtn">Probar con datos de ejemplo</button>
+        </div>
+      </div>
+
+      <div class="filebar" id="filebar">
+        <span>Archivo: <b id="fname">—</b></span>
+        <button type="button" class="btn btn-ghost" id="clearBtn" style="padding:7px 14px;font-size:.76rem;">Subir otro</button>
+      </div>
+      <div class="errorbox" id="errorbox"></div>
+    </div>
+  </header>
+
+  <section id="resultados" hidden>
+    <div class="wrap">
+      <div class="stats-row" id="statsRow"></div>
+
+      <h2 class="section">Estadística por columna</h2>
+      <div class="table-wrap">
+        <table id="colTable"><thead></thead><tbody></tbody></table>
+      </div>
+
+      <h2 class="section">Gráfico automático</h2>
+      <div class="chart-card">
+        <div class="chart-head">
+          <span class="mono" style="font-size:.78rem;color:var(--ink-soft);">Columna numérica a graficar</span>
+          <select id="colSelect"></select>
+        </div>
+        <div class="chart-svg-wrap" id="chartWrap"></div>
+        <div class="chart-meta" id="chartMeta"></div>
+      </div>
+
+      <h2 class="section">Vista previa (primeras 10 filas)</h2>
+      <div class="table-wrap">
+        <table id="previewTable"><thead></thead><tbody></tbody></table>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="wrap">
+    <span class="fmono">Criterio, datos y norma. Un solo diagnóstico. · MC3G Consulting</span>
+    <a href="./MC3G_Landing_v2_Lecturas.html">← Volver a la página principal</a>
+  </div>
+</footer>
+
+<script>
+(function(){
+  "use strict";
+
+  function detectDelimiter(sampleLine){
+    var commaCount = (sampleLine.match(/,/g)||[]).length;
+    var semiCount = (sampleLine.match(/;/g)||[]).length;
+    return semiCount > commaCount ? ';' : ',';
+  }
+
+  function parseCSV(text, delimiter){
+    var rows=[], row=[], field='', inQuotes=false;
+    for (var i=0;i<text.length;i++){
+      var c = text[i];
+      if (inQuotes){
+        if (c === '"'){
+          if (text[i+1] === '"'){ field += '"'; i++; }
+          else { inQuotes = false; }
+        } else { field += c; }
+      } else {
+        if (c === '"'){ inQuotes = true; }
+        else if (c === delimiter){ row.push(field); field=''; }
+        else if (c === '\n'){ row.push(field); rows.push(row); row=[]; field=''; }
+        else if (c === '\r'){ /* skip */ }
+        else { field += c; }
+      }
+    }
+    if (field.length>0 || row.length>0){ row.push(field); rows.push(row); }
+    return rows.filter(function(r){ return r.some(function(v){ return v.trim() !== ''; }); });
+  }
+
+  function isNumericString(val, delim){
+    var v = val.trim();
+    if (v === '') return false;
+    if (delim === ';') v = v.replace(',', '.');
+    return /^-?\d+(\.\d+)?$/.test(v);
+  }
+  function toNumber(val, delim){
+    if (val === undefined) return NaN;
+    if (!isNumericString(val, delim)) return NaN;
+    var v = val.trim();
+    if (delim === ';') v = v.replace(',', '.');
+    return parseFloat(v);
+  }
+
+  function mean(arr){ return arr.reduce(function(a,b){return a+b;},0) / arr.length; }
+  function stdev(arr, m){
+    if (arr.length < 2) return 0;
+    var variance = arr.reduce(function(s,v){ return s + Math.pow(v-m,2); },0) / (arr.length-1);
+    return Math.sqrt(variance);
+  }
+  function fmt(n){
+    if (!isFinite(n)) return '—';
+    if (Math.abs(n) >= 1000) return n.toFixed(0);
+    return n.toFixed(2);
+  }
+
+  function analyze(text){
+    var cleanText = text.replace(/^\uFEFF/, '');
+    var firstLine = cleanText.split('\n')[0] || '';
+    var delim = detectDelimiter(firstLine);
+    var rows = parseCSV(cleanText, delim);
+    if (rows.length < 2) throw new Error('El archivo no tiene filas de datos suficientes para analizar.');
+
+    var header = rows[0].map(function(h){ return h.trim() || '(sin nombre)'; });
+    var dataRows = rows.slice(1);
+    var nCols = header.length;
+
+    var columns = header.map(function(name, idx){
+      var raw = dataRows.map(function(r){ return r[idx] !== undefined ? r[idx] : ''; });
+      var nonEmpty = raw.filter(function(v){ return v.trim() !== ''; });
+      var nums = nonEmpty.map(function(v){ return toNumber(v, delim); }).filter(function(v){ return !isNaN(v); });
+      var isNumeric = nonEmpty.length > 0 && (nums.length / nonEmpty.length) >= 0.8;
+      var col = { name: name, index: idx, isNumeric: isNumeric, count: nonEmpty.length, missing: dataRows.length - nonEmpty.length };
+      if (isNumeric){
+        col.values = nums;
+        col.mean = mean(nums);
+        col.min = Math.min.apply(null, nums);
+        col.max = Math.max.apply(null, nums);
+        col.std = stdev(nums, col.mean);
+      } else {
+        col.unique = new Set(nonEmpty.map(function(v){ return v.trim(); })).size;
+      }
+      return col;
+    });
+
+    return { delim: delim, header: header, dataRows: dataRows, columns: columns, nRows: dataRows.length, nCols: nCols };
+  }
+
+  // ---------- rendering ----------
+  var dropzone = document.getElementById('dropzone');
+  var csvInput = document.getElementById('csvInput');
+  var sampleBtn = document.getElementById('sampleBtn');
+  var filebar = document.getElementById('filebar');
+  var fname = document.getElementById('fname');
+  var clearBtn = document.getElementById('clearBtn');
+  var errorbox = document.getElementById('errorbox');
+  var resultados = document.getElementById('resultados');
+  var statsRow = document.getElementById('statsRow');
+  var colTable = document.getElementById('colTable');
+  var colSelect = document.getElementById('colSelect');
+  var chartWrap = document.getElementById('chartWrap');
+  var chartMeta = document.getElementById('chartMeta');
+  var previewTable = document.getElementById('previewTable');
+
+  var currentResult = null;
+
+  function showError(msg){
+    errorbox.textContent = msg;
+    errorbox.classList.add('show');
+    resultados.hidden = true;
+  }
+  function clearError(){ errorbox.classList.remove('show'); errorbox.textContent=''; }
+
+  function renderStats(r){
+    var numericCols = r.columns.filter(function(c){ return c.isNumeric; }).length;
+    var textCols = r.nCols - numericCols;
+    var totalMissing = r.columns.reduce(function(s,c){ return s + c.missing; }, 0);
+    var chips = [
+      { v: r.nRows, l: 'FILAS' },
+      { v: r.nCols, l: 'COLUMNAS' },
+      { v: numericCols, l: 'NUMÉRICAS' },
+      { v: textCols, l: 'TEXTO' },
+      { v: totalMissing, l: 'FALTANTES' },
+      { v: r.delim === ';' ? '; (decimal ,)' : ',', l: 'SEPARADOR DETECTADO' }
+    ];
+    statsRow.innerHTML = chips.map(function(c){
+      return '<div class="stat-chip"><b>'+c.v+'</b><span>'+c.l+'</span></div>';
+    }).join('');
+  }
+
+  function renderColTable(r){
+    var thead = '<tr><th>Columna</th><th>Tipo</th><th>Valores</th><th>Faltantes</th><th>Media</th><th>Mín</th><th>Máx</th><th>Desvío / únicos</th></tr>';
+    var rowsHtml = r.columns.map(function(c){
+      if (c.isNumeric){
+        return '<tr><td>'+escapeHtml(c.name)+'</td><td><span class="badge-type badge-num">numérica</span></td><td>'+c.count+'</td><td>'+c.missing+'</td><td>'+fmt(c.mean)+'</td><td>'+fmt(c.min)+'</td><td>'+fmt(c.max)+'</td><td>'+fmt(c.std)+'</td></tr>';
+      }
+      return '<tr><td>'+escapeHtml(c.name)+'</td><td><span class="badge-type badge-txt">texto</span></td><td>'+c.count+'</td><td>'+c.missing+'</td><td>—</td><td>—</td><td>—</td><td>'+c.unique+' únicos</td></tr>';
+    }).join('');
+    colTable.querySelector('thead').innerHTML = thead;
+    colTable.querySelector('tbody').innerHTML = rowsHtml;
+  }
+
+  function renderPreview(r){
+    var thead = '<tr>' + r.header.map(function(h){ return '<th>'+escapeHtml(h)+'</th>'; }).join('') + '</tr>';
+    var body = r.dataRows.slice(0,10).map(function(row){
+      return '<tr>' + r.header.map(function(_,i){ return '<td>'+escapeHtml(row[i] !== undefined ? row[i] : '')+'</td>'; }).join('') + '</tr>';
+    }).join('');
+    previewTable.querySelector('thead').innerHTML = thead;
+    previewTable.querySelector('tbody').innerHTML = body;
+  }
+
+  function buildTrace(values){
+    var w=800, h=220, pad=22;
+    var min = Math.min.apply(null, values), max = Math.max.apply(null, values);
+    var range = (max-min) || 1;
+    var stepX = (w-2*pad) / ((values.length-1) || 1);
+    var pts = values.map(function(v,i){
+      var x = pad + i*stepX;
+      var y = pad + (h-2*pad) * (1 - (v-min)/range);
+      return [x,y];
+    });
+    var d = pts.map(function(p,i){ return (i===0?'M':'L') + p[0].toFixed(1) + ',' + p[1].toFixed(1); }).join(' ');
+    var area = d + ' L' + (w-pad).toFixed(1) + ',' + (h-pad).toFixed(1) + ' L' + pad.toFixed(1) + ',' + (h-pad).toFixed(1) + ' Z';
+    return { d: d, area: area, w: w, h: h, pad: pad, min: min, max: max };
+  }
+
+  function renderChart(col){
+    var values = col.values;
+    var sampled = values;
+    if (values.length > 400){
+      var step = Math.ceil(values.length/400);
+      sampled = values.filter(function(_,i){ return i % step === 0; });
+    }
+    var t = buildTrace(sampled);
+    var meanY = t.pad + (t.h-2*t.pad) * (1 - (col.mean - t.min)/((t.max-t.min)||1));
+    var svg = '<svg viewBox="0 0 '+t.w+' '+t.h+'" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none" role="img" aria-label="Gráfico de '+escapeHtml(col.name)+'">'
+      + '<line x1="'+t.pad+'" y1="'+meanY.toFixed(1)+'" x2="'+(t.w-t.pad)+'" y2="'+meanY.toFixed(1)+'" stroke="#8CA0B3" stroke-width="1" stroke-dasharray="2,5" opacity=".7"/>'
+      + '<path d="'+t.area+'" fill="rgba(123,148,169,.14)"/>'
+      + '<path d="'+t.d+'" fill="none" stroke="#16233B" stroke-width="2"/>'
+      + '</svg>';
+    chartWrap.innerHTML = svg;
+    chartMeta.innerHTML =
+      '<span>Media: <b>'+fmt(col.mean)+'</b></span>'
+      + '<span>Mín: <b>'+fmt(col.min)+'</b></span>'
+      + '<span>Máx: <b>'+fmt(col.max)+'</b></span>'
+      + '<span>Desvío: <b>'+fmt(col.std)+'</b></span>'
+      + (sampled.length < values.length ? '<span>Muestreado a '+sampled.length+' de '+values.length+' puntos para graficar</span>' : '');
+  }
+
+  function renderResults(r){
+    currentResult = r;
+    renderStats(r);
+    renderColTable(r);
+    renderPreview(r);
+
+    var numericCols = r.columns.filter(function(c){ return c.isNumeric; });
+    if (numericCols.length === 0){
+      chartWrap.innerHTML = '<p class="empty-note">No se detectaron columnas numéricas para graficar.</p>';
+      chartMeta.innerHTML = '';
+      colSelect.innerHTML = '';
+      colSelect.style.display = 'none';
+    } else {
+      colSelect.style.display = '';
+      colSelect.innerHTML = numericCols.map(function(c){ return '<option value="'+c.index+'">'+escapeHtml(c.name)+'</option>'; }).join('');
+      renderChart(numericCols[0]);
+      colSelect.onchange = function(){
+        var idx = parseInt(colSelect.value, 10);
+        var col = r.columns.filter(function(c){ return c.index === idx; })[0];
+        if (col) renderChart(col);
+      };
+    }
+    resultados.hidden = false;
+  }
+
+  function escapeHtml(s){
+    return String(s).replace(/[&<>"']/g, function(c){
+      return { '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;' }[c];
+    });
+  }
+
+  function handleFile(file){
+    clearError();
+    if (!file){ return; }
+    fname.textContent = file.name;
+    filebar.classList.add('show');
+    var reader = new FileReader();
+    reader.onload = function(e){
+      try {
+        var result = analyze(String(e.target.result));
+        renderResults(result);
+      } catch(err){
+        showError('No se pudo analizar el archivo: ' + err.message);
+      }
+    };
+    reader.onerror = function(){ showError('No se pudo leer el archivo.'); };
+    reader.readAsText(file, 'UTF-8');
+  }
+
+  dropzone.addEventListener('click', function(){ csvInput.click(); });
+  dropzone.addEventListener('keydown', function(e){
+    if (e.key === 'Enter' || e.key === ' '){ e.preventDefault(); csvInput.click(); }
+  });
+  dropzone.addEventListener('dragover', function(e){ e.preventDefault(); dropzone.classList.add('drag'); });
+  dropzone.addEventListener('dragleave', function(){ dropzone.classList.remove('drag'); });
+  dropzone.addEventListener('drop', function(e){
+    e.preventDefault(); dropzone.classList.remove('drag');
+    if (e.dataTransfer.files && e.dataTransfer.files[0]) handleFile(e.dataTransfer.files[0]);
+  });
+  csvInput.addEventListener('change', function(){ if (this.files[0]) handleFile(this.files[0]); });
+  sampleBtn.addEventListener('click', function(e){
+    e.stopPropagation();
+    clearError();
+    fname.textContent = 'ejemplo-sintetico.csv';
+    filebar.classList.add('show');
+    try { renderResults(analyze(generateSample())); }
+    catch(err){ showError(err.message); }
+  });
+  clearBtn.addEventListener('click', function(e){
+    e.stopPropagation();
+    filebar.classList.remove('show');
+    resultados.hidden = true;
+    clearError();
+    csvInput.value = '';
+  });
+
+  function generateSample(){
+    var rows = ['fecha,lectura,referencia,estado'];
+    var start = new Date('2024-01-01T00:00:00');
+    for (var i=0;i<60;i++){
+      var d = new Date(start.getTime() + i*86400000);
+      var val = 20 + 5*Math.sin(i/6) + (Math.random()-0.5)*1.5;
+      var estado = Math.abs(val-18) > 6 ? 'alerta' : 'normal';
+      rows.push(d.toISOString().slice(0,10) + ',' + val.toFixed(2) + ',18.00,' + estado);
+    }
+    return rows.join('\n');
+  }
+})();
+</script>
+</body>
+</html>
