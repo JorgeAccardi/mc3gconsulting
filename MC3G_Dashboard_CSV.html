@@ -1,0 +1,498 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dashboard de KPIs desde CSV — MC3G Consulting</title>
+<meta name="description" content="Subí cualquier CSV: el sistema sugiere columna de fecha y KPIs candidatos con el motivo de cada sugerencia, vos confirmás, y arma un dashboard con métricas y gráficos temporales. Todo en tu navegador.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@600;700&family=IBM+Plex+Sans+Condensed:wght@500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --paper:#F7F8F5;--grid:#DCE4E9;--ink:#16233B;--ink-soft:#5B6B80;--line:#D7E0E6;--card:#FFFFFF;
+    --band:rgba(123,148,169,.14);--centerline:#8CA0B3;--alert:#C0392B;--alert-deep:#9B2E22;--ok:#2F6F5E;
+    --font-display:'IBM Plex Sans Condensed',sans-serif;--font-body:'Inter',sans-serif;
+    --font-mono:'JetBrains Mono',monospace;--font-word:'Space Grotesk',sans-serif;--nav-h:60px;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;}
+  html{scroll-behavior:smooth;}
+  body{font-family:var(--font-body);color:var(--ink);line-height:1.6;-webkit-font-smoothing:antialiased;background:var(--paper);
+    background-image:repeating-linear-gradient(0deg, var(--grid) 0 1px, transparent 1px 28px),repeating-linear-gradient(90deg, var(--grid) 0 1px, transparent 1px 28px);}
+  h1,h2,h3,h4{font-family:var(--font-display);}
+  .mono{font-family:var(--font-mono);}
+  a{color:inherit;text-decoration:none;}
+  .visually-hidden{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;}
+  :focus-visible{outline:2px solid var(--alert);outline-offset:3px;}
+  .skip-link{position:absolute;left:-9999px;top:0;background:var(--alert);color:#fff;padding:10px 16px;z-index:200;font-family:var(--font-mono);font-size:.85rem;}
+  .skip-link:focus{left:12px;top:12px;}
+
+  .wrap{max-width:1080px;margin:0 auto;padding:0 24px;}
+  nav{position:sticky;top:0;z-index:50;height:var(--nav-h);background:rgba(247,248,245,.92);backdrop-filter:blur(6px);border-bottom:1.5px dashed var(--ink-soft);}
+  nav .wrap{height:100%;display:flex;align-items:center;justify-content:space-between;}
+  .back{font-family:var(--font-mono);font-size:.76rem;letter-spacing:.06em;color:var(--ink-soft);}
+  .back:hover{color:var(--ink);}
+  .wordmark{font-family:var(--font-word);font-weight:700;font-size:.95rem;display:flex;align-items:center;gap:6px;}
+  .wordmark small{font-family:var(--font-mono);font-weight:400;font-size:.56rem;letter-spacing:.1em;color:var(--ink-soft);}
+
+  header.tool-hero{padding:56px 0 32px;}
+  .eyebrow{font-family:var(--font-mono);font-size:.76rem;letter-spacing:.12em;text-transform:uppercase;color:var(--alert-deep);margin-bottom:14px;}
+  h1{font-size:clamp(1.6rem,3.6vw,2.3rem);font-weight:700;letter-spacing:-.015em;line-height:1.2;margin-bottom:16px;max-width:680px;}
+  .lede{color:var(--ink-soft);max-width:620px;margin-bottom:8px;}
+  .privacy-note{font-family:var(--font-mono);font-size:.78rem;color:var(--ok);margin-bottom:32px;display:flex;align-items:center;gap:8px;}
+  .privacy-note::before{content:"●";font-size:.6rem;}
+
+  .dropzone{border:1.5px dashed var(--ink-soft);border-radius:6px;background:var(--card);padding:40px 24px;text-align:center;cursor:pointer;transition:border-color .2s,background .2s;}
+  .dropzone.drag{border-color:var(--alert);background:#FBF0EE;}
+  .dz-title{font-family:var(--font-display);font-weight:600;font-size:1.05rem;margin-bottom:6px;}
+  .dz-sub{font-family:var(--font-mono);font-size:.76rem;color:var(--ink-soft);}
+  .dz-actions{display:flex;justify-content:center;gap:14px;margin-top:18px;flex-wrap:wrap;}
+  .btn{font-family:var(--font-display);font-size:.86rem;font-weight:600;padding:11px 20px;border-radius:2px;display:inline-flex;align-items:center;gap:8px;cursor:pointer;border:none;transition:background .2s,transform .15s;}
+  .btn:hover{transform:translateY(-1px);}
+  .btn-primary{background:var(--alert);color:#fff;}
+  .btn-primary:hover{background:var(--alert-deep);}
+  .btn-ghost{background:transparent;border:1.5px solid var(--ink);color:var(--ink);}
+  .btn-ghost:hover{background:var(--ink);color:var(--paper);}
+  .filebar{display:none;align-items:center;justify-content:space-between;gap:14px;margin-top:16px;font-family:var(--font-mono);font-size:.8rem;color:var(--ink-soft);flex-wrap:wrap;}
+  .filebar.show{display:flex;}
+  .filebar b{color:var(--ink);}
+  .errorbox{display:none;margin-top:18px;padding:14px 16px;border-left:3px solid var(--alert);background:#FBF0EE;font-family:var(--font-mono);font-size:.82rem;color:var(--alert-deep);}
+  .errorbox.show{display:block;}
+
+  /* config */
+  #config[hidden],#dashboard[hidden]{display:none;}
+  .config-card{background:var(--card);border:1px solid var(--line);border-radius:6px;padding:30px;margin-top:8px;}
+  .config-note{font-family:var(--font-mono);font-size:.76rem;color:var(--ink-soft);margin-bottom:24px;border-left:2px solid var(--alert);padding-left:12px;}
+  .field-label{font-family:var(--font-display);font-weight:600;font-size:.94rem;margin-bottom:10px;}
+  select{font-family:var(--font-mono);font-size:.82rem;padding:9px 12px;border:1px solid var(--line);border-radius:2px;background:var(--paper);color:var(--ink);width:100%;max-width:420px;}
+  .field{margin-bottom:26px;}
+  .kpi-list{border:1px solid var(--line);border-radius:4px;overflow:hidden;margin-bottom:8px;}
+  .kpi-row{display:flex;align-items:center;gap:12px;padding:11px 14px;border-bottom:1px solid var(--line);background:var(--card);}
+  .kpi-row:last-child{border-bottom:none;}
+  .kpi-row.excluded{background:var(--paper);}
+  .kpi-row input[type=checkbox]{width:16px;height:16px;accent-color:var(--alert);flex-shrink:0;}
+  .kpi-row .name{flex:1;font-size:.9rem;cursor:pointer;}
+  .kpi-row .reason{font-family:var(--font-mono);font-size:.68rem;color:var(--ink-soft);text-align:right;max-width:220px;}
+
+  h2.section{font-size:1.15rem;margin:34px 0 16px;}
+  .kpi-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:16px;margin-bottom:8px;}
+  .kpi-card{background:var(--card);border:1px solid var(--line);border-radius:4px;padding:20px;}
+  .kpi-card .kpi-name{font-family:var(--font-mono);font-size:.7rem;letter-spacing:.05em;text-transform:uppercase;color:var(--ink-soft);margin-bottom:8px;}
+  .kpi-card .kpi-value{font-size:1.8rem;font-weight:700;color:var(--ink);line-height:1;margin-bottom:6px;}
+  .kpi-card .kpi-delta{font-family:var(--font-mono);font-size:.76rem;color:var(--ink-soft);margin-bottom:12px;}
+  .kpi-card svg{width:100%;height:auto;display:block;}
+
+  .chart-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));gap:18px;}
+  .tchart-card{background:var(--card);border:1px solid var(--line);border-radius:4px;padding:20px;}
+  .tchart-card h4{font-size:.96rem;margin-bottom:4px;}
+  .tchart-card .range{font-family:var(--font-mono);font-size:.68rem;color:var(--ink-soft);margin-bottom:12px;}
+  .tchart-card svg{width:100%;height:auto;display:block;}
+
+  .table-wrap{overflow-x:auto;border:1px solid var(--line);border-radius:4px;background:var(--card);}
+  table{border-collapse:collapse;width:100%;font-size:.84rem;}
+  th,td{padding:10px 14px;text-align:left;white-space:nowrap;border-bottom:1px solid var(--line);}
+  th{font-family:var(--font-mono);font-size:.7rem;letter-spacing:.06em;text-transform:uppercase;color:var(--ink-soft);background:var(--paper);}
+  td{font-family:var(--font-mono);color:var(--ink);}
+  tr:last-child td{border-bottom:none;}
+  .badge-type{font-family:var(--font-mono);font-size:.68rem;padding:2px 8px;border-radius:2px;border:1px solid var(--line);}
+  .badge-num{color:var(--alert-deep);border-color:var(--alert-deep);}
+  .badge-date{color:var(--ok);border-color:var(--ok);}
+  .badge-txt{color:var(--ink-soft);}
+  .empty-note{font-family:var(--font-mono);font-size:.82rem;color:var(--ink-soft);}
+  #dashboard{padding-bottom:80px;}
+  .dash-actions{margin:36px 0 0;}
+
+  footer{background:var(--ink);border-top:1px solid rgba(247,248,245,.15);padding:26px 0;margin-top:60px;}
+  footer .wrap{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;}
+  footer a{color:#B9C3D0;font-family:var(--font-mono);font-size:.78rem;}
+  footer a:hover{color:var(--paper);}
+  footer .fmono{font-family:var(--font-mono);font-size:.74rem;color:#B9C3D0;}
+</style>
+</head>
+<body>
+<a href="#contenido" class="skip-link">Saltar al contenido</a>
+
+<nav>
+  <div class="wrap">
+    <a class="wordmark" href="./MC3G_Landing_v2_Lecturas.html">MC3G<small>CONSULTING</small></a>
+    <a class="back" href="./MC3G_Landing_v2_Lecturas.html">← Volver a la página principal</a>
+  </div>
+</nav>
+
+<main id="contenido">
+  <header class="tool-hero">
+    <div class="wrap">
+      <p class="eyebrow">Canal B · Dashboard de KPIs</p>
+      <h1>Subí un CSV. Armamos un dashboard con tus métricas.</h1>
+      <p class="lede">El sistema sugiere qué columna usar como fecha y qué columnas numéricas tienen forma de KPI — con el motivo de cada sugerencia a la vista. Vos confirmás o cambiás antes de generar el dashboard.</p>
+      <p class="privacy-note">Todo el análisis ocurre en tu navegador. El archivo nunca se sube a ningún servidor.</p>
+
+      <div class="dropzone" id="dropzone" tabindex="0" role="button" aria-label="Subir archivo CSV">
+        <p class="dz-title">Arrastrá tu CSV acá, o hacé clic para elegirlo</p>
+        <p class="dz-sub">.csv · separador coma o punto y coma · cualquier estructura de columnas</p>
+        <label for="csvInput" class="visually-hidden">Elegir archivo CSV</label>
+        <input type="file" id="csvInput" accept=".csv,text/csv" class="visually-hidden">
+        <div class="dz-actions">
+          <button type="button" class="btn btn-ghost" id="sampleBtn">Probar con datos de ejemplo</button>
+        </div>
+      </div>
+      <div class="filebar" id="filebar">
+        <span>Archivo: <b id="fname">—</b> · <span id="fmeta"></span></span>
+        <button type="button" class="btn btn-ghost" id="clearBtn" style="padding:7px 14px;font-size:.76rem;">Subir otro</button>
+      </div>
+      <div class="errorbox" id="errorbox"></div>
+    </div>
+  </header>
+
+  <section id="config" hidden>
+    <div class="wrap">
+      <div class="config-card">
+        <p class="config-note">Sugerencias automáticas — vos decidís cuáles usar. Ninguna se aplica sola.</p>
+
+        <div class="field">
+          <p class="field-label">Columna de fecha / tiempo</p>
+          <select id="dateSelect"></select>
+        </div>
+
+        <div class="field">
+          <p class="field-label">Columnas KPI a destacar</p>
+          <div class="kpi-list" id="kpiList"></div>
+        </div>
+
+        <button type="button" class="btn btn-primary" id="genBtn">Generar dashboard</button>
+      </div>
+    </div>
+  </section>
+
+  <section id="dashboard" hidden>
+    <div class="wrap">
+      <h2 class="section">KPIs</h2>
+      <div class="kpi-grid" id="kpiGrid"></div>
+
+      <h2 class="section">Evolución temporal</h2>
+      <div class="chart-grid" id="chartGrid"></div>
+
+      <h2 class="section">Todas las columnas</h2>
+      <div class="table-wrap">
+        <table id="colTable"><thead></thead><tbody></tbody></table>
+      </div>
+
+      <div class="dash-actions">
+        <button type="button" class="btn btn-ghost" id="reconfigBtn">← Cambiar fecha / KPIs</button>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="wrap">
+    <span class="fmono">Criterio, datos y norma. Un solo diagnóstico. · MC3G Consulting</span>
+    <a href="./MC3G_Landing_v2_Lecturas.html">← Volver a la página principal</a>
+  </div>
+</footer>
+
+<script>
+(function(){
+  "use strict";
+
+  // ---------- parsing ----------
+  function detectDelimiter(sampleLine){
+    var commaCount=(sampleLine.match(/,/g)||[]).length, semiCount=(sampleLine.match(/;/g)||[]).length;
+    return semiCount>commaCount ? ';' : ',';
+  }
+  function parseCSV(text, delimiter){
+    var rows=[], row=[], field='', inQuotes=false;
+    for (var i=0;i<text.length;i++){
+      var c=text[i];
+      if (inQuotes){
+        if (c==='"'){ if (text[i+1]==='"'){ field+='"'; i++; } else { inQuotes=false; } }
+        else field+=c;
+      } else {
+        if (c==='"') inQuotes=true;
+        else if (c===delimiter){ row.push(field); field=''; }
+        else if (c==='\n'){ row.push(field); rows.push(row); row=[]; field=''; }
+        else if (c==='\r'){ }
+        else field+=c;
+      }
+    }
+    if (field.length>0 || row.length>0){ row.push(field); rows.push(row); }
+    return rows.filter(function(r){ return r.some(function(v){ return v.trim()!==''; }); });
+  }
+  function isNumericString(val, delim){
+    var v=val.trim(); if (v==='') return false;
+    if (delim===';') v=v.replace(',', '.');
+    return /^-?\d+(\.\d+)?$/.test(v);
+  }
+  function toNumber(val, delim){
+    if (val===undefined || !isNumericString(val, delim)) return NaN;
+    var v=val.trim(); if (delim===';') v=v.replace(',', '.');
+    return parseFloat(v);
+  }
+  function looksLikeDateValue(v){
+    var s=v.trim();
+    return /^\d{4}-\d{1,2}-\d{1,2}$/.test(s) || /^\d{1,2}\/\d{1,2}\/\d{2,4}$/.test(s) || /^\d{1,2}-\d{1,2}-\d{4}$/.test(s) || /^\d{4}\/\d{1,2}\/\d{1,2}$/.test(s);
+  }
+  function parseDateValue(v){
+    var s=v.trim(), m;
+    if (m=s.match(/^(\d{4})-(\d{1,2})-(\d{1,2})$/)) return new Date(+m[1], +m[2]-1, +m[3]);
+    if (m=s.match(/^(\d{4})\/(\d{1,2})\/(\d{1,2})$/)) return new Date(+m[1], +m[2]-1, +m[3]);
+    if (m=s.match(/^(\d{1,2})\/(\d{1,2})\/(\d{2,4})$/)){
+      var d=+m[1], mo=+m[2], y=+m[3]; if (y<100) y+=2000;
+      if (mo>12 && d<=12){ var t=d; d=mo; mo=t; }
+      return new Date(y, mo-1, d);
+    }
+    if (m=s.match(/^(\d{1,2})-(\d{1,2})-(\d{4})$/)){
+      var d2=+m[1], mo2=+m[2], y2=+m[3];
+      if (mo2>12 && d2<=12){ var t2=d2; d2=mo2; mo2=t2; }
+      return new Date(y2, mo2-1, d2);
+    }
+    return null;
+  }
+  function isLikelyId(name, numericValues){
+    var n=name.toLowerCase();
+    var hints=['id','indice','índice','codigo','código','folio','n°','nro','item','idx'];
+    var nameFlag = hints.some(function(h){ return n.indexOf(h)!==-1; });
+    var uniqueCount = new Set(numericValues).size;
+    var allUnique = uniqueCount===numericValues.length;
+    var sorted = numericValues.slice().sort(function(a,b){return a-b;});
+    var sequential = true;
+    for (var i=1;i<sorted.length;i++){ if (sorted[i]-sorted[i-1]!==1){ sequential=false; break; } }
+    return nameFlag || (allUnique && sequential && numericValues.length>3);
+  }
+  function mean(a){ return a.reduce(function(x,y){return x+y;},0)/a.length; }
+  function stdev(a,m){ if (a.length<2) return 0; return Math.sqrt(a.reduce(function(s,v){return s+Math.pow(v-m,2);},0)/(a.length-1)); }
+  function fmt(n){ if (!isFinite(n)) return '—'; return Math.abs(n)>=1000 ? n.toFixed(0) : n.toFixed(2); }
+  function escapeHtml(s){
+    return String(s).replace(/[&<>"']/g, function(c){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]; });
+  }
+
+  function analyze(text){
+    var clean = text.replace(/^\uFEFF/, '');
+    var firstLine = clean.split('\n')[0] || '';
+    var delim = detectDelimiter(firstLine);
+    var rows = parseCSV(clean, delim);
+    if (rows.length<2) throw new Error('El archivo no tiene filas de datos suficientes para analizar.');
+    var header = rows[0].map(function(h){ return h.trim() || '(sin nombre)'; });
+    var dataRows = rows.slice(1);
+
+    var columns = header.map(function(name, idx){
+      var raw = dataRows.map(function(r){ return r[idx]!==undefined ? r[idx] : ''; });
+      var nonEmpty = raw.filter(function(v){ return v.trim()!==''; });
+      var dateScore = nonEmpty.length>0 ? nonEmpty.filter(looksLikeDateValue).length/nonEmpty.length : 0;
+      var nums = nonEmpty.map(function(v){ return toNumber(v, delim); }).filter(function(v){ return !isNaN(v); });
+      var isNumeric = nonEmpty.length>0 && (nums.length/nonEmpty.length)>=0.8 && dateScore<0.5;
+      var isDate = dateScore>=0.8;
+      var col = { name:name, index:idx, count:nonEmpty.length, missing:dataRows.length-nonEmpty.length, isNumeric:isNumeric, isDate:isDate, dateScore:dateScore, raw:raw };
+      if (isNumeric){
+        col.values = nums;
+        col.mean = mean(nums); col.min = Math.min.apply(null,nums); col.max = Math.max.apply(null,nums); col.std = stdev(nums, col.mean);
+        col.isLikelyId = isLikelyId(name, nums);
+        var cv = col.mean!==0 ? Math.abs(col.std/col.mean) : (col.std>0?1:0);
+        col.score = col.isLikelyId ? 0 : (col.count/dataRows.length) * Math.min(cv,3);
+      } else if (!isDate){
+        col.unique = new Set(nonEmpty.map(function(v){ return v.trim(); })).size;
+      }
+      return col;
+    });
+
+    return { delim:delim, header:header, dataRows:dataRows, columns:columns, nRows:dataRows.length, nCols:header.length };
+  }
+
+  // ---------- state ----------
+  var dropzone=document.getElementById('dropzone'), csvInput=document.getElementById('csvInput'), sampleBtn=document.getElementById('sampleBtn');
+  var filebar=document.getElementById('filebar'), fname=document.getElementById('fname'), fmeta=document.getElementById('fmeta'), clearBtn=document.getElementById('clearBtn');
+  var errorbox=document.getElementById('errorbox');
+  var configSection=document.getElementById('config'), dashboardSection=document.getElementById('dashboard');
+  var dateSelect=document.getElementById('dateSelect'), kpiList=document.getElementById('kpiList'), genBtn=document.getElementById('genBtn');
+  var kpiGrid=document.getElementById('kpiGrid'), chartGrid=document.getElementById('chartGrid'), colTable=document.getElementById('colTable');
+  var reconfigBtn=document.getElementById('reconfigBtn');
+  var current = null;
+
+  function showError(msg){ errorbox.textContent=msg; errorbox.classList.add('show'); configSection.hidden=true; dashboardSection.hidden=true; }
+  function clearError(){ errorbox.classList.remove('show'); errorbox.textContent=''; }
+
+  function setupConfig(r){
+    current = r;
+    var dateCols = r.columns.filter(function(c){ return c.isDate; }).sort(function(a,b){ return b.dateScore-a.dateScore; });
+    var otherCols = r.columns.filter(function(c){ return !c.isDate; });
+    var options = '<option value="">Sin eje temporal (ordenar por fila)</option>';
+    dateCols.concat(otherCols).forEach(function(c){
+      options += '<option value="'+c.index+'"'+(dateCols[0] && c.index===dateCols[0].index?' selected':'')+'>'+escapeHtml(c.name)+(c.isDate?' — detectada como fecha':'')+'</option>';
+    });
+    dateSelect.innerHTML = options;
+
+    var numericCols = r.columns.filter(function(c){ return c.isNumeric; });
+    var ranked = numericCols.slice().sort(function(a,b){ return b.score-a.score; });
+    var top4 = ranked.filter(function(c){ return !c.isLikelyId; }).slice(0,4).map(function(c){ return c.index; });
+
+    kpiList.innerHTML = numericCols.map(function(c){
+      var checked = top4.indexOf(c.index)!==-1;
+      var reason;
+      if (c.isLikelyId) reason = 'excluida: parece un ID secuencial';
+      else if (checked) reason = 'sugerida: variación alta, ' + c.missing + ' faltantes';
+      else reason = 'variación baja o muchos faltantes';
+      return '<div class="kpi-row'+(c.isLikelyId?' excluded':'')+'">'
+        + '<input type="checkbox" id="kpi_'+c.index+'" value="'+c.index+'" '+(checked?'checked':'')+'>'
+        + '<label class="name" for="kpi_'+c.index+'">'+escapeHtml(c.name)+'</label>'
+        + '<span class="reason">'+reason+'</span></div>';
+    }).join('') || '<div class="kpi-row"><span class="name">No se detectaron columnas numéricas en este archivo.</span></div>';
+
+    configSection.hidden = false;
+    dashboardSection.hidden = true;
+  }
+
+  function buildTrace(values, w, h, pad){
+    w=w||800; h=h||220; pad=pad||20;
+    var min=Math.min.apply(null,values), max=Math.max.apply(null,values);
+    var range=(max-min)||1;
+    var stepX=(w-2*pad)/((values.length-1)||1);
+    var pts=values.map(function(v,i){
+      var x=pad+i*stepX, y=pad+(h-2*pad)*(1-(v-min)/range);
+      return [x,y];
+    });
+    var d=pts.map(function(p,i){ return (i===0?'M':'L')+p[0].toFixed(1)+','+p[1].toFixed(1); }).join(' ');
+    var area=d+' L'+(w-pad).toFixed(1)+','+(h-pad).toFixed(1)+' L'+pad.toFixed(1)+','+(h-pad).toFixed(1)+' Z';
+    return {d:d, area:area, w:w, h:h};
+  }
+  function traceSvg(values, w, h, pad, showMean){
+    var t = buildTrace(values, w, h, pad);
+    var extra = '';
+    if (showMean){
+      var m = mean(values);
+      var min=Math.min.apply(null,values), max=Math.max.apply(null,values), range=(max-min)||1;
+      var my = (pad||20) + (t.h-2*(pad||20)) * (1-(m-min)/range);
+      extra = '<line x1="'+(pad||20)+'" y1="'+my.toFixed(1)+'" x2="'+(t.w-(pad||20))+'" y2="'+my.toFixed(1)+'" stroke="#8CA0B3" stroke-width="1" stroke-dasharray="2,5" opacity=".7"/>';
+    }
+    return '<svg viewBox="0 0 '+t.w+' '+t.h+'" preserveAspectRatio="none">'
+      + extra
+      + '<path d="'+t.area+'" fill="rgba(123,148,169,.14)"/>'
+      + '<path d="'+t.d+'" fill="none" stroke="#16233B" stroke-width="2"/>'
+      + '</svg>';
+  }
+
+  function fmtDate(d){ return String(d.getDate()).padStart(2,'0')+'/'+String(d.getMonth()+1).padStart(2,'0')+'/'+d.getFullYear(); }
+
+  function generateDashboard(){
+    var r = current;
+    var dateIdx = dateSelect.value === '' ? null : parseInt(dateSelect.value,10);
+    var checked = Array.prototype.slice.call(kpiList.querySelectorAll('input[type=checkbox]:checked')).map(function(cb){ return parseInt(cb.value,10); });
+
+    // build order: chronological if date chosen (only rows with a valid date), else row order
+    var order = r.dataRows.map(function(_,i){ return i; });
+    var xLabels = null;
+    if (dateIdx !== null){
+      var dateCol = r.columns[dateIdx];
+      var withDates = order.map(function(i){ return { i:i, d: parseDateValue(dateCol.raw[i] || '') }; }).filter(function(o){ return o.d && !isNaN(o.d.getTime()); });
+      withDates.sort(function(a,b){ return a.d - b.d; });
+      order = withDates.map(function(o){ return o.i; });
+      xLabels = withDates.map(function(o){ return fmtDate(o.d); });
+    }
+
+    // KPI cards
+    kpiGrid.innerHTML = checked.map(function(idx){
+      var col = r.columns.filter(function(c){ return c.index===idx; })[0];
+      var seriesRaw = order.map(function(i){ return col.raw[i]; });
+      var series = seriesRaw.map(function(v){ return toNumber(v, r.delim); }).filter(function(v){ return !isNaN(v); });
+      if (series.length===0) return '';
+      var headline, deltaLine;
+      if (dateIdx !== null && series.length>=2){
+        var last = series[series.length-1], first = series[0];
+        var delta = last-first;
+        var pct = first!==0 ? (delta/Math.abs(first))*100 : null;
+        headline = fmt(last);
+        deltaLine = (delta>=0?'↑ +':'↓ ')+fmt(Math.abs(delta))+(pct!==null?' ('+(delta>=0?'+':'-')+Math.abs(pct).toFixed(1)+'%)':'')+' desde el primer registro';
+      } else {
+        headline = fmt(mean(series));
+        deltaLine = 'media · mín '+fmt(Math.min.apply(null,series))+' · máx '+fmt(Math.max.apply(null,series));
+      }
+      var sampled = series.length>150 ? series.filter(function(_,i){ return i % Math.ceil(series.length/150) === 0; }) : series;
+      return '<div class="kpi-card"><p class="kpi-name">'+escapeHtml(col.name)+'</p><p class="kpi-value">'+headline+'</p><p class="kpi-delta">'+deltaLine+'</p>'
+        + traceSvg(sampled, 240, 60, 6, false) + '</div>';
+    }).join('') || '<p class="empty-note">No hay KPIs seleccionados.</p>';
+
+    // time-series charts
+    chartGrid.innerHTML = checked.map(function(idx){
+      var col = r.columns.filter(function(c){ return c.index===idx; })[0];
+      var pairs = order.map(function(i,pos){ return { v: toNumber(col.raw[i], r.delim), label: xLabels ? xLabels[pos] : ('fila '+(i+1)) }; }).filter(function(p){ return !isNaN(p.v); });
+      if (pairs.length===0) return '';
+      var values = pairs.map(function(p){ return p.v; });
+      var sampled = values, first = pairs[0].label, last = pairs[pairs.length-1].label;
+      if (values.length>300){
+        var step = Math.ceil(values.length/300);
+        sampled = values.filter(function(_,i){ return i%step===0; });
+      }
+      var rangeLabel = dateIdx!==null ? (first+' → '+last) : ('orden de fila — sin columna de fecha detectada');
+      return '<div class="tchart-card"><h4>'+escapeHtml(col.name)+'</h4><p class="range">'+rangeLabel+'</p>'
+        + traceSvg(sampled, 800, 200, 20, true) + '</div>';
+    }).join('') || '<p class="empty-note">No hay KPIs seleccionados para graficar.</p>';
+
+    // full column table
+    var thead = '<tr><th>Columna</th><th>Tipo</th><th>Valores</th><th>Faltantes</th><th>Media</th><th>Mín</th><th>Máx</th><th>Desvío / únicos</th></tr>';
+    var tbody = r.columns.map(function(c){
+      var typeBadge = c.isDate ? '<span class="badge-type badge-date">fecha</span>' : c.isNumeric ? '<span class="badge-type badge-num">numérica</span>' : '<span class="badge-type badge-txt">texto</span>';
+      if (c.isNumeric) return '<tr><td>'+escapeHtml(c.name)+'</td><td>'+typeBadge+'</td><td>'+c.count+'</td><td>'+c.missing+'</td><td>'+fmt(c.mean)+'</td><td>'+fmt(c.min)+'</td><td>'+fmt(c.max)+'</td><td>'+fmt(c.std)+'</td></tr>';
+      if (c.isDate) return '<tr><td>'+escapeHtml(c.name)+'</td><td>'+typeBadge+'</td><td>'+c.count+'</td><td>'+c.missing+'</td><td>—</td><td>—</td><td>—</td><td>—</td></tr>';
+      return '<tr><td>'+escapeHtml(c.name)+'</td><td>'+typeBadge+'</td><td>'+c.count+'</td><td>'+c.missing+'</td><td>—</td><td>—</td><td>—</td><td>'+c.unique+' únicos</td></tr>';
+    }).join('');
+    colTable.querySelector('thead') ? (colTable.innerHTML = '') : null;
+    colTable.innerHTML = '<thead>'+thead+'</thead><tbody>'+tbody+'</tbody>';
+
+    configSection.hidden = true;
+    dashboardSection.hidden = false;
+  }
+
+  function handleFile(file){
+    clearError();
+    if (!file) return;
+    fname.textContent = file.name;
+    filebar.classList.add('show');
+    var reader = new FileReader();
+    reader.onload = function(e){
+      try {
+        var r = analyze(String(e.target.result));
+        fmeta.textContent = r.nRows+' filas · '+r.nCols+' columnas';
+        setupConfig(r);
+      } catch(err){ showError('No se pudo analizar el archivo: '+err.message); }
+    };
+    reader.onerror = function(){ showError('No se pudo leer el archivo.'); };
+    reader.readAsText(file, 'UTF-8');
+  }
+
+  dropzone.addEventListener('click', function(){ csvInput.click(); });
+  dropzone.addEventListener('keydown', function(e){ if (e.key==='Enter'||e.key===' '){ e.preventDefault(); csvInput.click(); } });
+  dropzone.addEventListener('dragover', function(e){ e.preventDefault(); dropzone.classList.add('drag'); });
+  dropzone.addEventListener('dragleave', function(){ dropzone.classList.remove('drag'); });
+  dropzone.addEventListener('drop', function(e){ e.preventDefault(); dropzone.classList.remove('drag'); if (e.dataTransfer.files[0]) handleFile(e.dataTransfer.files[0]); });
+  csvInput.addEventListener('change', function(){ if (this.files[0]) handleFile(this.files[0]); });
+  genBtn.addEventListener('click', generateDashboard);
+  reconfigBtn.addEventListener('click', function(){ dashboardSection.hidden=true; configSection.hidden=false; window.scrollTo({top:configSection.offsetTop-80, behavior:'smooth'}); });
+  clearBtn.addEventListener('click', function(e){
+    e.stopPropagation(); filebar.classList.remove('show'); configSection.hidden=true; dashboardSection.hidden=true; clearError(); csvInput.value=''; current=null;
+  });
+  sampleBtn.addEventListener('click', function(e){
+    e.stopPropagation(); clearError();
+    fname.textContent = 'ejemplo-sintetico.csv'; filebar.classList.add('show');
+    try {
+      var text = generateSample();
+      var r = analyze(text);
+      fmeta.textContent = r.nRows+' filas · '+r.nCols+' columnas';
+      setupConfig(r);
+    } catch(err){ showError(err.message); }
+  });
+
+  function generateSample(){
+    var rows = ['fecha,id_registro,ventas,costos,satisfaccion'];
+    var start = new Date('2024-01-01T00:00:00');
+    for (var i=0;i<90;i++){
+      var d = new Date(start.getTime()+i*86400000);
+      var ds = String(d.getDate()).padStart(2,'0')+'/'+String(d.getMonth()+1).padStart(2,'0')+'/'+d.getFullYear();
+      var ventas = (1000 + i*6 + (Math.random()-0.5)*90).toFixed(2);
+      var costos = (600 + i*2 + (Math.random()-0.5)*45).toFixed(2);
+      var sat = (4.1 + Math.sin(i/9)*0.35).toFixed(2);
+      rows.push(ds+','+(i+1)+','+ventas+','+costos+','+sat);
+    }
+    return rows.join('\n');
+  }
+})();
+</script>
+</body>
+</html>
