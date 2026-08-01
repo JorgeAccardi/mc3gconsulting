@@ -132,6 +132,11 @@
   .chip{font-family:var(--font-mono);font-size:.74rem;padding:6px 12px;border-radius:2px;border:1px solid var(--line);color:var(--ink-soft);}
   .canal-cta{display:inline-block;margin-top:18px;font-family:var(--font-mono);font-size:.8rem;color:var(--alert-deep);border-top:1px dashed var(--line);padding-top:14px;width:100%;}
   .canal-cta:hover{color:var(--alert);}
+  .flagship-card{background:var(--card);border:1px solid var(--line);border-left:4px solid var(--alert);border-radius:4px;padding:40px;margin-top:6px;}
+  .flagship-features{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:13px;margin:26px 0 32px;}
+  .flagship-feature{font-family:var(--font-mono);font-size:.85rem;color:var(--ink-soft);padding-left:22px;position:relative;}
+  .flagship-feature::before{content:"✓";position:absolute;left:0;color:var(--alert);font-weight:700;}
+  .flagship-cta{font-size:1rem;padding:16px 30px;}
   .sector-label{font-family:var(--font-mono);font-size:.76rem;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-soft);margin:4px 0 16px;}
   .spec-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:18px;}
   .spec-card{background:var(--card);border:1px solid var(--line);border-radius:4px;padding:22px;border-top:3px solid var(--centerline);}
@@ -218,7 +223,7 @@
         <span class="brand-sub">Consulting</span>
       </div>
       <p class="hero-eyebrow">Ing. Jorge Gaspar Accardi · MC3G Consulting</p>
-      <h1>Criterio, datos y norma.<br><span class="accent">Un solo diagnóstico.</span></h1>
+      <h1>El puente entre la ingeniería y <span class="accent">la IA</span>.</h1>
       <div class="role-chips">
         <span class="role-chip">Canal A — Especialista en Auscultación e Instrumentación de Presas y Grandes Obras</span>
         <span class="role-chip">Canal B — Especialista en Inteligencia Artificial aplicada a la Ingeniería y el Monitoreo</span>
@@ -261,9 +266,8 @@
       <p class="campaign-tag">Campaña N.º 01 · Lectura base</p>
       <div class="perfil-grid">
         <div>
-          <h2>Un diagnóstico que cruza tres fuentes, no una sola</h2>
-          <p>MC3G Consulting es una consultora boutique de conocimiento intensivo. No vende horas de ingeniero: entrega un diagnóstico que integra el criterio del especialista, el análisis riguroso de los datos de auscultación y el marco normativo vigente — sin que ninguna de las tres falte.</p>
-          <p>Ing. Jorge Gaspar Accardi lidera cada trabajo personalmente. Especialista en auscultación e instrumentación de presas y grandes obras, y en inteligencia artificial aplicada a la ingeniería y el monitoreo — con trayectoria en grandes proyectos, paneles de expertos y trabajo institucional del sector.</p>
+          <h2>Primero el campo. Después, los datos.</h2>
+          <p>13 años auscultando presas y grandes obras vinieron antes que cualquier modelo de IA. Jorge Accardi integró la inteligencia artificial a su práctica cuando el volumen de datos lo pidió — no antes. MC3G Consulting es esa misma trayectoria, ahora con las dos herramientas trabajando juntas.</p>
         </div>
         <div class="stats">
           <div class="stat"><b>+13</b><span>años en grandes proyectos</span><div class="ruler"></div></div>
@@ -279,8 +283,8 @@
     <div class="wrap campaign">
       <div class="campaign-marker">02</div>
       <p class="campaign-tag">Campaña N.º 02 · Dos canales</p>
-      <h2>Dos especialidades núcleo. Cuatro sectores de aplicación.</h2>
-      <p class="lede">Auscultación e inteligencia artificial no son dos ofertas separadas: es la misma disciplina — leer instrumentación y decidir si lo que se ve es ruido, deriva o alerta — con y sin algoritmos, según lo que el caso necesite.</p>
+      <h2>Instrumentación de siempre. Análisis que todavía pocos ofrecen.</h2>
+      <p class="lede">Auscultación de presas y grandes obras, con el criterio de campo de siempre — un servicio. Análisis y ciencia de datos aplicados a esa misma instrumentación, algo que todavía pocas consultoras del sector ofrecen con este nivel de rigor — otro servicio, independiente. Se contratan por separado o juntos, según lo que necesites.</p>
 
       <div class="canal-grid">
         <div class="canal-card">
@@ -295,6 +299,7 @@
             <span class="chip">Revisión de umbrales normativos</span>
             <span class="chip">Capacitación in-company</span>
           </div>
+          <a href="./MC3G_Inclinometro_GKN.html" target="_blank" rel="noopener" class="canal-cta">→ Probar el analizador de inclinómetros GKN en vivo</a>
         </div>
 
         <div class="canal-card">
@@ -335,11 +340,32 @@
     </div>
   </section>
 
+  <!-- HERRAMIENTA INSIGNIA -->
+  <section id="insignia" style="background:var(--paper-card);border-top:1px dashed var(--line);border-bottom:1px dashed var(--line);">
+    <div class="wrap campaign">
+      <div class="campaign-marker">03</div>
+      <p class="campaign-tag">Campaña N.º 03 · Herramienta insignia</p>
+      <h2>El analizador de inclinómetros GKN — completo, en tu navegador</h2>
+      <p class="lede">No es una demo — es la misma metodología con la que trabajo: convención de ejes real, checksum de sonda, zona de sizalla con dos candidatos explícitos y las 3 tasas de siempre. Subís tus .gkn, nada se sube a ningún servidor.</p>
+      <div class="flagship-card">
+        <div class="flagship-features">
+          <span class="flagship-feature">Ingesta múltiple de archivos GKN, campaña por campaña</span>
+          <span class="flagship-feature">Perfiles Cum.A/Cum.B + checksum Chk.A/Chk.B</span>
+          <span class="flagship-feature">Sizalla: dos candidatos por eje, nunca un número escondido</span>
+          <span class="flagship-feature">Las 3 tasas — instantánea, mensual, general</span>
+          <span class="flagship-feature">Vector de movimiento con azimut real (Norte/Este)</span>
+          <span class="flagship-feature">Informe descargable en PDF</span>
+        </div>
+        <a class="btn btn-primary flagship-cta" href="./MC3G_Inclinometro_GKN.html" target="_blank" rel="noopener">Abrir el analizador de inclinómetros →</a>
+      </div>
+    </div>
+  </section>
+
   <!-- FORMACIÓN -->
   <section id="formacion">
     <div class="wrap campaign">
-      <div class="campaign-marker">03</div>
-      <p class="campaign-tag">Campaña N.º 03 · Formación</p>
+      <div class="campaign-marker">04</div>
+      <p class="campaign-tag">Campaña N.º 04 · Formación</p>
       <h2>Tres programas, un mismo hilo conductor</h2>
       <p class="lede">Cada curso enseña a leer instrumentación real antes de automatizar nada. Datos reales anonimizados, sin nombrar presa, proyecto ni empresa.</p>
 
@@ -372,8 +398,8 @@
   <!-- DIAGNÓSTICOS -->
   <section id="diagnosticos" style="background:var(--card);border-top:1px dashed var(--line);border-bottom:1px dashed var(--line);">
     <div class="wrap campaign">
-      <div class="campaign-marker">04</div>
-      <p class="campaign-tag">Campaña N.º 04 · Diagnósticos de campo</p>
+      <div class="campaign-marker">05</div>
+      <p class="campaign-tag">Campaña N.º 05 · Diagnósticos de campo</p>
       <h2>Registros de campaña, no casos de venta</h2>
       <p class="lede">Cuatro ejemplos reales de trabajo, anonimizados: sin nombre de presa, empresa ni cliente.</p>
 
@@ -417,8 +443,8 @@
   <!-- CONTACTO -->
   <section id="contacto" class="contacto">
     <div class="wrap campaign">
-      <div class="campaign-marker">05</div>
-      <p class="campaign-tag">Campaña N.º 05 · Próxima lectura</p>
+      <div class="campaign-marker">06</div>
+      <p class="campaign-tag">Campaña N.º 06 · Próxima lectura</p>
       <h2>Escribime para agendar un diagnóstico</h2>
       <p class="lede">Consultoría, auditoría forense de instrumentación, dictamen para panel de expertos o capacitación in-company.</p>
       <div class="contact-row">
