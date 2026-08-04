@@ -63,6 +63,10 @@
   .warnbox{margin-top:14px;padding:12px 14px;border-left:3px solid var(--alert-deep);background:#FFF7ED;font-family:var(--font-mono);font-size:.76rem;color:var(--alert-deep);}
 
   .table-wrap{overflow-x:auto;border:1px solid var(--line);border-radius:4px;background:var(--card);margin-top:16px;}
+  #fileListWrap{max-height:360px;overflow-y:auto;}
+  #fileListWrap th{position:sticky;top:0;z-index:1;}
+  .file-count{font-family:var(--font-mono);font-size:.76rem;color:var(--ink-soft);margin-top:14px;display:none;}
+  .file-count.show{display:block;}
   table{border-collapse:collapse;width:100%;font-size:.8rem;}
   th,td{padding:8px 12px;text-align:left;white-space:nowrap;border-bottom:1px solid var(--line);}
   th{font-family:var(--font-mono);font-size:.66rem;letter-spacing:.05em;text-transform:uppercase;color:var(--ink-soft);background:var(--paper);}
@@ -77,7 +81,7 @@
   .field-label{font-family:var(--font-display);font-weight:600;font-size:.92rem;margin-bottom:8px;}
   .field-hint{font-family:var(--font-mono);font-size:.7rem;color:var(--ink-soft);margin-bottom:8px;}
   select, input[type=number]{font-family:var(--font-mono);font-size:.82rem;padding:9px 12px;border:1px solid var(--line);border-radius:2px;background:var(--paper);color:var(--ink);width:100%;max-width:360px;}
-  .check-grid{display:flex;flex-wrap:wrap;gap:8px;}
+  .check-grid{display:flex;flex-wrap:wrap;gap:8px;max-height:240px;overflow-y:auto;padding-right:6px;}
   .check-chip{font-family:var(--font-mono);font-size:.76rem;padding:7px 12px;border:1px solid var(--line);border-radius:2px;cursor:pointer;display:flex;align-items:center;gap:6px;}
   .check-chip input{accent-color:var(--alert);}
 
@@ -96,6 +100,8 @@
   .legend-row{display:flex;flex-wrap:wrap;gap:12px;margin:12px 0 30px;font-family:var(--font-mono);font-size:.72rem;color:var(--ink-soft);}
   .legend-item{display:flex;align-items:center;gap:6px;}
   .legend-swatch{width:16px;height:2px;display:inline-block;}
+  .legend-scroll{max-height:170px;overflow-y:auto;display:flex;flex-direction:column;gap:5px;margin-top:14px;padding-right:6px;}
+  .vendor-note{font-family:var(--font-mono);font-size:.72rem;color:var(--ink-soft);margin-bottom:16px;}
 
   .rate-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:14px;margin-bottom:24px;}
   .rate-card{background:var(--card);border:1px solid var(--line);border-radius:4px;padding:18px;text-align:center;}
@@ -139,7 +145,11 @@
 <nav>
   <div class="wrap">
     <a class="wordmark" href="./MC3G_Landing_v2_Lecturas.html">MC3G<small>CONSULTING</small></a>
-    <a class="back" href="./MC3G_Landing_v2_Lecturas.html">← Página principal</a>
+    <span>
+      <a class="back" href="./MC3G_Inclinometro_GKN_EN.html">EN</a>
+      &nbsp;·&nbsp;
+      <a class="back" href="./MC3G_Landing_v2_Lecturas.html">← Página principal</a>
+    </span>
   </div>
 </nav>
 
@@ -165,6 +175,7 @@
       <div class="table-wrap" id="fileListWrap" style="display:none;">
         <table id="fileTable"><thead></thead><tbody></tbody></table>
       </div>
+      <p class="file-count" id="fileCount"></p>
       <div id="holeWarn"></div>
     </div>
   </header>
@@ -230,6 +241,11 @@
       <p class="section-sub">Cum.A/Cum.B son 2 de los 4 perfiles estándar de Sitemaster. Rot.A/Rot.B (los otros 2, propietarios de Sitemaster) no se reproducen acá — en su lugar, más abajo, Componente Norte/Este con la rotación estándar geotécnica. Profundidad en vertical (0 arriba) · gris = todas las campañas · punteado = referencia · rojo = campaña actual · línea roja horizontal = zona de sizalla candidata (solo en Cum.A/Cum.B).</p>
       <div class="panel-grid" id="cumPanels"></div>
       <div class="panel-grid" id="checksumPanels" style="margin-top:18px;"></div>
+
+      <h2 class="section">Vista con todas las campañas (estilo Sitemaster)</h2>
+      <p class="section-sub vendor-note" id="vendorNote">Mismo formato que el reporte del vendor: cada campaña en su propio color, con leyenda completa por fecha y archivo. Rotated A-A'/B-B' usa nuestra rotación estándar por azimut (Componente Norte/Este) — no reproduce la fórmula propietaria exacta de Sitemaster.</p>
+      <div class="panel-grid" id="vendorCumPanels"></div>
+      <div class="panel-grid" id="vendorRotPanels" style="margin-top:18px;"></div>
 
       <h2 class="section">Perfil incremental — eje A y eje B</h2>
       <p class="section-sub">No es parte del reporte estándar de Sitemaster — lo sumamos porque un pico agudo acá es la firma más clara de un quiebre localizado, cuando el acumulado por sí solo puede no mostrarlo con la misma claridad.</p>
@@ -549,6 +565,70 @@
     return { svg:'<svg viewBox="0 0 '+w+' '+h+'" style="width:100%;height:auto;" xmlns="http://www.w3.org/2000/svg" role="img">'+parts.join('')+'</svg>', legend: legend };
   }
 
+  function colorForCampaignIndex(i){
+    var hue = (i*47) % 360;
+    return 'hsl('+hue+',58%,42%)';
+  }
+
+  // Panel estilo software del vendor: TODAS las campañas, cada una con su propio color + leyenda completa.
+  function buildVendorPanel(campaigns, axisKey, depthLabelFn, w, h){
+    w=w||420; h=h||560;
+    depthLabelFn = depthLabelFn || function(d){ return d.toFixed(0)+'m'; };
+    var padL=42, padR=14, padT=12, padB=26;
+    var innerW=w-padL-padR, innerH=h-padT-padB;
+    var minDepth = Math.min.apply(null, campaigns.map(function(c){return c.minDepth;}));
+    var maxDepth = Math.max.apply(null, campaigns.map(function(c){return c.maxDepth;}));
+    var allVals=[];
+    campaigns.forEach(function(c){ Object.keys(c[axisKey]||{}).forEach(function(d){ allVals.push(c[axisKey][d]); }); });
+    if (allVals.length===0) return { svg:'<p class="empty-note">Sin datos para graficar.</p>', legend:'' };
+    var absVals = allVals.map(Math.abs).sort(function(a,b){return a-b;});
+    var trueMax = absVals[absVals.length-1];
+    var p98idx = Math.min(absVals.length-1, Math.floor(absVals.length*0.98));
+    var robustMax = Math.max(1, absVals[p98idx]);
+    var outlierNote = '';
+    if (trueMax > robustMax*1.3){
+      outlierNote = '<p class="empty-note" style="color:var(--alert-deep);">⚠ Se recortó la escala (percentil 98) porque al menos una campaña tiene un valor mucho más extremo ('+trueMax.toFixed(0)+'mm) que el resto — probable lectura mala o salto de sonda, no representativo. Esa línea puede salir del cuadro.</p>';
+    }
+    var maxAbs = robustMax;
+    var xRange = maxAbs*1.15;
+    function xOf(v){ return padL + innerW/2 + (v/xRange)*(innerW/2); }
+    function yOf(d){ return padT + ((d-minDepth)/((maxDepth-minDepth)||1))*innerH; }
+    function pathFor(c){
+      var depths = Object.keys(c[axisKey]||{}).map(Number).sort(function(a,b){return a-b;});
+      var pts = depths.map(function(d){ return [xOf(c[axisKey][d]), yOf(d)]; });
+      if (pts.length<2) return '';
+      return pts.map(function(p,i){ return (i===0?'M':'L')+p[0].toFixed(1)+','+p[1].toFixed(1); }).join(' ');
+    }
+    var parts=[];
+    var clipId = 'clip'+Math.random().toString(36).slice(2,9);
+    parts.push('<defs><clipPath id="'+clipId+'"><rect x="'+padL+'" y="'+padT+'" width="'+innerW+'" height="'+innerH+'"/></clipPath></defs>');
+    parts.push('<line x1="'+xOf(0).toFixed(1)+'" y1="'+padT+'" x2="'+xOf(0).toFixed(1)+'" y2="'+(h-padB)+'" stroke="#D7E0E6" stroke-width="1"/>');
+    var depthStep = niceStep(maxDepth-minDepth, 6);
+    for (var dg=Math.ceil(minDepth/depthStep)*depthStep; dg<=maxDepth+0.01; dg+=depthStep){
+      var y=yOf(dg);
+      parts.push('<line x1="'+padL+'" y1="'+y.toFixed(1)+'" x2="'+(w-padR)+'" y2="'+y.toFixed(1)+'" stroke="#EEF1F3" stroke-width="1"/>');
+      parts.push('<text x="'+(padL-6)+'" y="'+(y+3).toFixed(1)+'" text-anchor="end" font-family="JetBrains Mono, monospace" font-size="9" fill="#5B6B80">'+depthLabelFn(dg)+'</text>');
+    }
+    var legendItems = [];
+    parts.push('<g clip-path="url(#'+clipId+')">');
+    campaigns.forEach(function(c, idx){
+      var color = colorForCampaignIndex(idx);
+      var d = pathFor(c);
+      if (d) parts.push('<path d="'+d+'" fill="none" stroke="'+color+'" stroke-width="1.3" opacity=".85"/>');
+      legendItems.push('<span class="legend-item"><span class="legend-swatch" style="background:'+color+';"></span>'+fmtDate(c.fecha)+' · '+escapeHtml(c.fileName)+'</span>');
+    });
+    parts.push('</g>');
+    parts.push('<text x="'+padL+'" y="'+(h-8)+'" font-family="JetBrains Mono, monospace" font-size="9" fill="#5B6B80">'+(-xRange).toFixed(0)+'mm</text>');
+    parts.push('<text x="'+xOf(0).toFixed(1)+'" y="'+(h-8)+'" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="9" fill="#5B6B80">0</text>');
+    parts.push('<text x="'+(w-padR)+'" y="'+(h-8)+'" text-anchor="end" font-family="JetBrains Mono, monospace" font-size="9" fill="#5B6B80">+'+xRange.toFixed(0)+'mm</text>');
+    return {
+      svg: '<svg viewBox="0 0 '+w+' '+h+'" style="width:100%;height:auto;" xmlns="http://www.w3.org/2000/svg" role="img">'+parts.join('')+'</svg>',
+      legend: '<div class="legend-scroll">'+legendItems.join('')+'</div>',
+      outlierNote: outlierNote
+    };
+  }
+
+
   function buildRateTimeChart(series, windowDays, w, h){
     w=w||780; h=h||220;
     var padL=46, padR=16, padT=14, padB=26;
@@ -592,9 +672,24 @@
   function clearError(){ errorbox.classList.remove('show'); errorbox.textContent=''; }
 
   function addCampaigns(newOnes){
-    state.campaigns = state.campaigns.concat(newOnes);
+    var dupWarnings = [];
+    var accepted = [];
+    newOnes.forEach(function(nc){
+      var isDup = state.campaigns.some(function(existing){
+        return existing.fecha && nc.fecha && existing.fecha.getTime()===nc.fecha.getTime() && existing.hole===nc.hole;
+      }) || accepted.some(function(a){
+        return a.fecha && nc.fecha && a.fecha.getTime()===nc.fecha.getTime() && a.hole===nc.hole;
+      });
+      if (isDup){
+        dupWarnings.push(nc.fileName+' ('+fmtDate(nc.fecha)+') — ya había una campaña de '+nc.hole+' con esa fecha, se ignoró.');
+      } else {
+        accepted.push(nc);
+      }
+    });
+    state.campaigns = state.campaigns.concat(accepted);
     state.campaigns.sort(function(a,b){ return (a.fecha||0) - (b.fecha||0); });
     renderFileList();
+    if (dupWarnings.length) showError(dupWarnings.join('\n'));
     if (state.campaigns.length >= 1){ setupConfig(); }
   }
 
@@ -612,6 +707,14 @@
         + '<td><button type="button" class="btn btn-ghost btn-sm" data-remove="'+idx+'">Quitar</button></td></tr>';
     }).join('');
     fileTable.innerHTML = '<thead>'+thead+'</thead><tbody>'+tbody+'</tbody>';
+    var fc = document.getElementById('fileCount');
+    if (state.campaigns.length > 6){
+      var sorted = state.campaigns.slice().filter(function(c){return c.fecha;}).sort(function(a,b){return a.fecha-b.fecha;});
+      fc.textContent = state.campaigns.length + ' campañas cargadas' + (sorted.length? ' · '+fmtDate(sorted[0].fecha)+' → '+fmtDate(sorted[sorted.length-1].fecha) : '') + ' · desplazá la lista para ver todas';
+      fc.classList.add('show');
+    } else {
+      fc.classList.remove('show');
+    }
     Array.prototype.slice.call(fileTable.querySelectorAll('[data-remove]')).forEach(function(btn){
       btn.addEventListener('click', function(){
         var idx = parseInt(btn.getAttribute('data-remove'),10);
@@ -774,6 +877,8 @@
       document.getElementById('incPanels').innerHTML = '';
       document.getElementById('checksumPanels').innerHTML = '';
       document.getElementById('geoSection').innerHTML = '';
+      document.getElementById('vendorCumPanels').innerHTML = '';
+      document.getElementById('vendorRotPanels').innerHTML = '';
     } else {
       document.getElementById('cumPanels').innerHTML =
         '<div class="panel-card"><h4>Cum.A</h4><p class="panel-note">Deflexión acumulada desde el fondo (fijo) hasta cada profundidad.</p>'+buildDeflectionPanel(campaigns, refIdx, curIdx, highlightIdxs, 'profileA', criticalDepth, null, null, depthLabelFn)+'</div>'
@@ -788,11 +893,22 @@
         '<div class="panel-card"><h4>Chk.A</h4><p class="panel-note">A+ + A−. Debería mantenerse estable — valida la rotación de 180°, no mide movimiento. Coloreado por sonda.</p>'+csA.svg+'<div class="legend-row">'+csA.legend+'</div></div>'
         + '<div class="panel-card"><h4>Chk.B</h4><p class="panel-note">B+ + B−. Mismo criterio, eje B.</p>'+csB.svg+'<div class="legend-row">'+csB.legend+'</div></div>';
 
+      var vCumA = buildVendorPanel(campaigns, 'profileA', depthLabelFn);
+      var vCumB = buildVendorPanel(campaigns, 'profileB', depthLabelFn);
+      document.getElementById('vendorCumPanels').innerHTML =
+        '<div class="panel-card"><h4>Cumulative A-A\'</h4>'+vCumA.svg+(vCumA.outlierNote||'')+vCumA.legend+'</div>'
+        + '<div class="panel-card"><h4>Cumulative B-B\'</h4>'+vCumB.svg+(vCumB.outlierNote||'')+vCumB.legend+'</div>';
+
       if (hasAzimuth){
         campaigns.forEach(function(c){
           var ne = rotateToNorthEast(c.profileA, c.profileB, azimuthDeg);
           c.north = ne.north; c.east = ne.east;
         });
+        var vRotA = buildVendorPanel(campaigns, 'north', depthLabelFn);
+        var vRotB = buildVendorPanel(campaigns, 'east', depthLabelFn);
+        document.getElementById('vendorRotPanels').innerHTML =
+          '<div class="panel-card"><h4>Rotated A-A\'</h4>'+vRotA.svg+(vRotA.outlierNote||'')+vRotA.legend+'</div>'
+          + '<div class="panel-card"><h4>Rotated B-B\'</h4>'+vRotB.svg+(vRotB.outlierNote||'')+vRotB.legend+'</div>';
         var vectorHtml = vectorInfo ? '<div class="panel-card" style="max-width:260px;"><h4>Vector de movimiento</h4><p class="panel-note">Dirección real (compás) y magnitud en la profundidad crítica, primera vs. actual.</p>'
           + buildCompass(vectorInfo.magnitude, vectorInfo.azimuth) + '<p class="mono" style="text-align:center;font-size:.85rem;margin-top:8px;">'+vectorInfo.azimuth.toFixed(0)+'° · '+fmt(vectorInfo.magnitude,1)+'mm</p></div>' : '';
         document.getElementById('geoSection').innerHTML =
@@ -804,6 +920,7 @@
           + '</div>'
           + vectorHtml;
       } else {
+        document.getElementById('vendorRotPanels').innerHTML = '<p class="empty-note">Cargá el azimut de instalación en la configuración para ver Rotated A-A\'/B-B\'.</p>';
         document.getElementById('geoSection').innerHTML = '<p class="empty-note">Cargá el azimut de instalación en la configuración para ver componentes Norte/Este y el vector de movimiento real.</p>';
       }
     }
