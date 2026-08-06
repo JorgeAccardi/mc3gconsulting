@@ -1,10 +1,10 @@
 <!DOCTYPE html>
-<html lang="es">
+<html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Dashboard de KPIs desde CSV — MC3G Consulting</title>
-<meta name="description" content="Subí cualquier CSV: el sistema sugiere columna de fecha y KPIs candidatos con el motivo de cada sugerencia, vos confirmás, y arma un dashboard con métricas y gráficos temporales. Todo en tu navegador.">
+<title>KPI Dashboard from CSV — MC3G Consulting</title>
+<meta name="description" content="Upload any CSV: the system suggests a date column and candidate KPIs with the reason for each suggestion, you confirm, and it builds a dashboard with metrics and time-series charts. All in your browser.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@600;700&family=IBM+Plex+Sans+Condensed:wght@500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
@@ -109,17 +109,17 @@
 </style>
 </head>
 <body>
-<a href="#contenido" class="skip-link">Saltar al contenido</a>
+<a href="#contenido" class="skip-link">Skip to content</a>
 
 <nav>
   <div class="wrap">
-    <a class="wordmark" href="./MC3G_Landing_v2_Lecturas.html">MC3G<small>CONSULTING</small></a>
+    <a class="wordmark" href="./MC3G_Landing_v2_Lecturas_EN.html">MC3G<small>CONSULTING</small></a>
     <span>
-      <a class="back" href="./MC3G_Analizador_CSV.html">Analizador CSV</a>
+      <a class="back" href="./MC3G_Analizador_CSV_EN.html">CSV Analyzer</a>
       &nbsp;·&nbsp;
-      <a class="back" href="./MC3G_Dashboard_CSV_EN.html">EN</a>
+      <a class="back" href="./MC3G_Dashboard_CSV.html">ES</a>
       &nbsp;·&nbsp;
-      <a class="back" href="./MC3G_Landing_v2_Lecturas.html">← Volver a la página principal</a>
+      <a class="back" href="./MC3G_Landing_v2_Lecturas_EN.html">← Back to homepage</a>
     </span>
   </div>
 </nav>
@@ -127,23 +127,23 @@
 <main id="contenido">
   <header class="tool-hero">
     <div class="wrap">
-      <p class="eyebrow">Canal B · Dashboard de KPIs</p>
-      <h1>Subí un CSV. Armamos un dashboard con tus métricas.</h1>
-      <p class="lede">El sistema sugiere qué columna usar como fecha y qué columnas numéricas tienen forma de KPI — con el motivo de cada sugerencia a la vista. Vos confirmás o cambiás antes de generar el dashboard.</p>
-      <p class="privacy-note">Todo el análisis ocurre en tu navegador. El archivo nunca se sube a ningún servidor.</p>
+      <p class="eyebrow">Channel B · KPI Dashboard</p>
+      <h1>Upload a CSV. We build a dashboard from your metrics.</h1>
+      <p class="lede">The system suggests which column to use as the date and which numeric columns look like KPIs — with the reason for each suggestion shown up front. You confirm or change it before generating the dashboard.</p>
+      <p class="privacy-note">All analysis happens in your browser. The file is never uploaded to any server.</p>
 
-      <div class="dropzone" id="dropzone" tabindex="0" role="button" aria-label="Subir archivo CSV">
-        <p class="dz-title">Arrastrá tu CSV acá, o hacé clic para elegirlo</p>
-        <p class="dz-sub">.csv · separador coma o punto y coma · cualquier estructura de columnas</p>
-        <label for="csvInput" class="visually-hidden">Elegir archivo CSV</label>
+      <div class="dropzone" id="dropzone" tabindex="0" role="button" aria-label="Upload CSV file">
+        <p class="dz-title">Drag your CSV here, or click to choose it</p>
+        <p class="dz-sub">.csv · comma or semicolon separator · any column structure</p>
+        <label for="csvInput" class="visually-hidden">Choose CSV file</label>
         <input type="file" id="csvInput" accept=".csv,text/csv" class="visually-hidden">
         <div class="dz-actions">
-          <button type="button" class="btn btn-ghost" id="sampleBtn">Probar con datos de ejemplo</button>
+          <button type="button" class="btn btn-ghost" id="sampleBtn">Try with sample data</button>
         </div>
       </div>
       <div class="filebar" id="filebar">
-        <span>Archivo: <b id="fname">—</b> · <span id="fmeta"></span></span>
-        <button type="button" class="btn btn-ghost" id="clearBtn" style="padding:7px 14px;font-size:.76rem;">Subir otro</button>
+        <span>File: <b id="fname">—</b> · <span id="fmeta"></span></span>
+        <button type="button" class="btn btn-ghost" id="clearBtn" style="padding:7px 14px;font-size:.76rem;">Upload another</button>
       </div>
       <div class="errorbox" id="errorbox"></div>
     </div>
@@ -152,19 +152,19 @@
   <section id="config" hidden>
     <div class="wrap">
       <div class="config-card">
-        <p class="config-note">Sugerencias automáticas — vos decidís cuáles usar. Ninguna se aplica sola.</p>
+        <p class="config-note">Automatic suggestions — you decide which to use. None is applied on its own.</p>
 
         <div class="field">
-          <p class="field-label">Columna de fecha / tiempo</p>
+          <p class="field-label">Date / time column</p>
           <select id="dateSelect"></select>
         </div>
 
         <div class="field">
-          <p class="field-label">Columnas KPI a destacar</p>
+          <p class="field-label">KPI columns to feature</p>
           <div class="kpi-list" id="kpiList"></div>
         </div>
 
-        <button type="button" class="btn btn-primary" id="genBtn">Generar dashboard</button>
+        <button type="button" class="btn btn-primary" id="genBtn">Generate dashboard</button>
       </div>
     </div>
   </section>
@@ -174,16 +174,16 @@
       <h2 class="section">KPIs</h2>
       <div class="kpi-grid" id="kpiGrid"></div>
 
-      <h2 class="section">Evolución temporal</h2>
+      <h2 class="section">Trend Over Time</h2>
       <div class="chart-grid" id="chartGrid"></div>
 
-      <h2 class="section">Todas las columnas</h2>
+      <h2 class="section">All Columns</h2>
       <div class="table-wrap">
         <table id="colTable"><thead></thead><tbody></tbody></table>
       </div>
 
       <div class="dash-actions">
-        <button type="button" class="btn btn-ghost" id="reconfigBtn">← Cambiar fecha / KPIs</button>
+        <button type="button" class="btn btn-ghost" id="reconfigBtn">← Change date / KPIs</button>
       </div>
     </div>
   </section>
@@ -191,11 +191,11 @@
 
 <footer>
   <div class="wrap">
-    <span class="fmono">Criterio, datos y norma. Un solo diagnóstico. · MC3G Consulting</span>
+    <span class="fmono">Judgment, data, and standards. One diagnosis. · MC3G Consulting</span>
     <span>
-      <a href="./MC3G_Inclinometro_GKN.html">Inclinómetros GKN →</a>
+      <a href="./MC3G_Inclinometro_GKN_EN.html">GKN Inclinometers →</a>
       &nbsp;·&nbsp;
-      <a href="./MC3G_Landing_v2_Lecturas.html">← Volver a la página principal</a>
+      <a href="./MC3G_Landing_v2_Lecturas_EN.html">← Back to homepage</a>
     </span>
   </div>
 </footer>
@@ -280,8 +280,8 @@
     var firstLine = clean.split('\n')[0] || '';
     var delim = detectDelimiter(firstLine);
     var rows = parseCSV(clean, delim);
-    if (rows.length<2) throw new Error('El archivo no tiene filas de datos suficientes para analizar.');
-    var header = rows[0].map(function(h){ return h.trim() || '(sin nombre)'; });
+    if (rows.length<2) throw new Error('The file does not have enough data rows to analyze.');
+    var header = rows[0].map(function(h){ return h.trim() || '(unnamed)'; });
     var dataRows = rows.slice(1);
 
     var columns = header.map(function(name, idx){
@@ -324,9 +324,9 @@
     current = r;
     var dateCols = r.columns.filter(function(c){ return c.isDate; }).sort(function(a,b){ return b.dateScore-a.dateScore; });
     var otherCols = r.columns.filter(function(c){ return !c.isDate; });
-    var options = '<option value="">Sin eje temporal (ordenar por fila)</option>';
+    var options = '<option value="">No time axis (sort by row)</option>';
     dateCols.concat(otherCols).forEach(function(c){
-      options += '<option value="'+c.index+'"'+(dateCols[0] && c.index===dateCols[0].index?' selected':'')+'>'+escapeHtml(c.name)+(c.isDate?' — detectada como fecha':'')+'</option>';
+      options += '<option value="'+c.index+'"'+(dateCols[0] && c.index===dateCols[0].index?' selected':'')+'>'+escapeHtml(c.name)+(c.isDate?' — detected as date':'')+'</option>';
     });
     dateSelect.innerHTML = options;
 
@@ -337,14 +337,14 @@
     kpiList.innerHTML = numericCols.map(function(c){
       var checked = top4.indexOf(c.index)!==-1;
       var reason;
-      if (c.isLikelyId) reason = 'excluida: parece un ID secuencial';
-      else if (checked) reason = 'sugerida: variación alta, ' + c.missing + ' faltantes';
-      else reason = 'variación baja o muchos faltantes';
+      if (c.isLikelyId) reason = 'excluded: looks like a sequential ID';
+      else if (checked) reason = 'suggested: high variation, ' + c.missing + ' missing';
+      else reason = 'low variation or too many missing values';
       return '<div class="kpi-row'+(c.isLikelyId?' excluded':'')+'">'
         + '<input type="checkbox" id="kpi_'+c.index+'" value="'+c.index+'" '+(checked?'checked':'')+'>'
         + '<label class="name" for="kpi_'+c.index+'">'+escapeHtml(c.name)+'</label>'
         + '<span class="reason">'+reason+'</span></div>';
-    }).join('') || '<div class="kpi-row"><span class="name">No se detectaron columnas numéricas en este archivo.</span></div>';
+    }).join('') || '<div class="kpi-row"><span class="name">No numeric columns were detected in this file.</span></div>';
 
     configSection.hidden = false;
     dashboardSection.hidden = true;
@@ -409,20 +409,20 @@
         var delta = last-first;
         var pct = first!==0 ? (delta/Math.abs(first))*100 : null;
         headline = fmt(last);
-        deltaLine = (delta>=0?'↑ +':'↓ ')+fmt(Math.abs(delta))+(pct!==null?' ('+(delta>=0?'+':'-')+Math.abs(pct).toFixed(1)+'%)':'')+' desde el primer registro';
+        deltaLine = (delta>=0?'↑ +':'↓ ')+fmt(Math.abs(delta))+(pct!==null?' ('+(delta>=0?'+':'-')+Math.abs(pct).toFixed(1)+'%)':'')+' since first record';
       } else {
         headline = fmt(mean(series));
-        deltaLine = 'media · mín '+fmt(Math.min.apply(null,series))+' · máx '+fmt(Math.max.apply(null,series));
+        deltaLine = 'mean · min '+fmt(Math.min.apply(null,series))+' · max '+fmt(Math.max.apply(null,series));
       }
       var sampled = series.length>150 ? series.filter(function(_,i){ return i % Math.ceil(series.length/150) === 0; }) : series;
       return '<div class="kpi-card"><p class="kpi-name">'+escapeHtml(col.name)+'</p><p class="kpi-value">'+headline+'</p><p class="kpi-delta">'+deltaLine+'</p>'
         + traceSvg(sampled, 240, 60, 6, false) + '</div>';
-    }).join('') || '<p class="empty-note">No hay KPIs seleccionados.</p>';
+    }).join('') || '<p class="empty-note">No KPIs selected.</p>';
 
     // time-series charts
     chartGrid.innerHTML = checked.map(function(idx){
       var col = r.columns.filter(function(c){ return c.index===idx; })[0];
-      var pairs = order.map(function(i,pos){ return { v: toNumber(col.raw[i], r.delim), label: xLabels ? xLabels[pos] : ('fila '+(i+1)) }; }).filter(function(p){ return !isNaN(p.v); });
+      var pairs = order.map(function(i,pos){ return { v: toNumber(col.raw[i], r.delim), label: xLabels ? xLabels[pos] : ('row '+(i+1)) }; }).filter(function(p){ return !isNaN(p.v); });
       if (pairs.length===0) return '';
       var values = pairs.map(function(p){ return p.v; });
       var sampled = values, first = pairs[0].label, last = pairs[pairs.length-1].label;
@@ -430,18 +430,18 @@
         var step = Math.ceil(values.length/300);
         sampled = values.filter(function(_,i){ return i%step===0; });
       }
-      var rangeLabel = dateIdx!==null ? (first+' → '+last) : ('orden de fila — sin columna de fecha detectada');
+      var rangeLabel = dateIdx!==null ? (first+' → '+last) : ('row order — no date column detected');
       return '<div class="tchart-card"><h4>'+escapeHtml(col.name)+'</h4><p class="range">'+rangeLabel+'</p>'
         + traceSvg(sampled, 800, 200, 20, true) + '</div>';
-    }).join('') || '<p class="empty-note">No hay KPIs seleccionados para graficar.</p>';
+    }).join('') || '<p class="empty-note">No KPIs selected to chart.</p>';
 
     // full column table
-    var thead = '<tr><th>Columna</th><th>Tipo</th><th>Valores</th><th>Faltantes</th><th>Media</th><th>Mín</th><th>Máx</th><th>Desvío / únicos</th></tr>';
+    var thead = '<tr><th>Column</th><th>Type</th><th>Values</th><th>Missing</th><th>Mean</th><th>Min</th><th>Max</th><th>Std dev / unique</th></tr>';
     var tbody = r.columns.map(function(c){
-      var typeBadge = c.isDate ? '<span class="badge-type badge-date">fecha</span>' : c.isNumeric ? '<span class="badge-type badge-num">numérica</span>' : '<span class="badge-type badge-txt">texto</span>';
+      var typeBadge = c.isDate ? '<span class="badge-type badge-date">date</span>' : c.isNumeric ? '<span class="badge-type badge-num">numeric</span>' : '<span class="badge-type badge-txt">text</span>';
       if (c.isNumeric) return '<tr><td>'+escapeHtml(c.name)+'</td><td>'+typeBadge+'</td><td>'+c.count+'</td><td>'+c.missing+'</td><td>'+fmt(c.mean)+'</td><td>'+fmt(c.min)+'</td><td>'+fmt(c.max)+'</td><td>'+fmt(c.std)+'</td></tr>';
       if (c.isDate) return '<tr><td>'+escapeHtml(c.name)+'</td><td>'+typeBadge+'</td><td>'+c.count+'</td><td>'+c.missing+'</td><td>—</td><td>—</td><td>—</td><td>—</td></tr>';
-      return '<tr><td>'+escapeHtml(c.name)+'</td><td>'+typeBadge+'</td><td>'+c.count+'</td><td>'+c.missing+'</td><td>—</td><td>—</td><td>—</td><td>'+c.unique+' únicos</td></tr>';
+      return '<tr><td>'+escapeHtml(c.name)+'</td><td>'+typeBadge+'</td><td>'+c.count+'</td><td>'+c.missing+'</td><td>—</td><td>—</td><td>—</td><td>'+c.unique+' unique</td></tr>';
     }).join('');
     colTable.querySelector('thead') ? (colTable.innerHTML = '') : null;
     colTable.innerHTML = '<thead>'+thead+'</thead><tbody>'+tbody+'</tbody>';
@@ -459,11 +459,11 @@
     reader.onload = function(e){
       try {
         var r = analyze(String(e.target.result));
-        fmeta.textContent = r.nRows+' filas · '+r.nCols+' columnas';
+        fmeta.textContent = r.nRows+' rows · '+r.nCols+' columns';
         setupConfig(r);
-      } catch(err){ showError('No se pudo analizar el archivo: '+err.message); }
+      } catch(err){ showError('Could not analyze the file: '+err.message); }
     };
-    reader.onerror = function(){ showError('No se pudo leer el archivo.'); };
+    reader.onerror = function(){ showError('Could not read the file.'); };
     reader.readAsText(file, 'UTF-8');
   }
 
@@ -480,17 +480,17 @@
   });
   sampleBtn.addEventListener('click', function(e){
     e.stopPropagation(); clearError();
-    fname.textContent = 'ejemplo-sintetico.csv'; filebar.classList.add('show');
+    fname.textContent = 'synthetic-sample.csv'; filebar.classList.add('show');
     try {
       var text = generateSample();
       var r = analyze(text);
-      fmeta.textContent = r.nRows+' filas · '+r.nCols+' columnas';
+      fmeta.textContent = r.nRows+' rows · '+r.nCols+' columns';
       setupConfig(r);
     } catch(err){ showError(err.message); }
   });
 
   function generateSample(){
-    var rows = ['fecha,id_registro,ventas,costos,satisfaccion'];
+    var rows = ['date,record_id,sales,costs,satisfaction'];
     var start = new Date('2024-01-01T00:00:00');
     for (var i=0;i<90;i++){
       var d = new Date(start.getTime()+i*86400000);

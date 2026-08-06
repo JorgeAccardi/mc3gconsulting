@@ -1,10 +1,10 @@
 <!DOCTYPE html>
-<html lang="es">
+<html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Analizador de CSV — MC3G Consulting</title>
-<meta name="description" content="Subí cualquier CSV y obtené estadística descriptiva y un gráfico al instante. Todo el análisis ocurre en tu navegador, sin subir el archivo a ningún servidor.">
+<title>CSV Analyzer — MC3G Consulting</title>
+<meta name="description" content="Upload any CSV and get instant descriptive statistics and a chart. All analysis happens in your browser — the file is never uploaded to any server.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@600;700&family=IBM+Plex+Sans+Condensed:wght@500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
@@ -118,15 +118,15 @@
 </style>
 </head>
 <body>
-<a href="#contenido" class="skip-link">Saltar al contenido</a>
+<a href="#contenido" class="skip-link">Skip to content</a>
 
 <nav>
   <div class="wrap">
-    <a class="wordmark" href="./MC3G_Landing_v2_Lecturas.html">MC3G<small>CONSULTING</small></a>
+    <a class="wordmark" href="./MC3G_Landing_v2_Lecturas_EN.html">MC3G<small>CONSULTING</small></a>
     <span>
-      <a class="back" href="./MC3G_Analizador_CSV_EN.html">EN</a>
+      <a class="back" href="./MC3G_Analizador_CSV.html">ES</a>
       &nbsp;·&nbsp;
-      <a class="back" href="./MC3G_Landing_v2_Lecturas.html">← Volver a la página principal</a>
+      <a class="back" href="./MC3G_Landing_v2_Lecturas_EN.html">← Back to homepage</a>
     </span>
   </div>
 </nav>
@@ -134,24 +134,24 @@
 <main id="contenido">
   <header class="tool-hero">
     <div class="wrap">
-      <p class="eyebrow">Canal B · Laboratorio de datos</p>
-      <h1>Subí un CSV. Mirá qué encuentra en segundos.</h1>
-      <p class="lede">Un análisis descriptivo rápido de cualquier archivo CSV: filas, columnas, tipo de dato, estadística por columna y un gráfico automático. Detecta separador por coma o por punto y coma.</p>
-      <p class="privacy-note">Todo el análisis ocurre en tu navegador. El archivo nunca se sube a ningún servidor.</p>
+      <p class="eyebrow">Channel B · Data Lab</p>
+      <h1>Upload a CSV. See what it finds in seconds.</h1>
+      <p class="lede">A quick descriptive analysis of any CSV file: rows, columns, data type, per-column statistics, and an automatic chart. Detects comma or semicolon separators.</p>
+      <p class="privacy-note">All analysis happens in your browser. The file is never uploaded to any server.</p>
 
-      <div class="dropzone" id="dropzone" tabindex="0" role="button" aria-label="Subir archivo CSV">
-        <p class="dz-title">Arrastrá tu CSV acá, o hacé clic para elegirlo</p>
-        <p class="dz-sub">.csv · separador coma o punto y coma · cualquier cantidad de columnas</p>
-        <label for="csvInput" class="visually-hidden">Elegir archivo CSV</label>
+      <div class="dropzone" id="dropzone" tabindex="0" role="button" aria-label="Upload CSV file">
+        <p class="dz-title">Drag your CSV here, or click to choose it</p>
+        <p class="dz-sub">.csv · comma or semicolon separator · any number of columns</p>
+        <label for="csvInput" class="visually-hidden">Choose CSV file</label>
         <input type="file" id="csvInput" accept=".csv,text/csv" class="visually-hidden">
         <div class="dz-actions">
-          <button type="button" class="btn btn-ghost" id="sampleBtn">Probar con datos de ejemplo</button>
+          <button type="button" class="btn btn-ghost" id="sampleBtn">Try with sample data</button>
         </div>
       </div>
 
       <div class="filebar" id="filebar">
-        <span>Archivo: <b id="fname">—</b></span>
-        <button type="button" class="btn btn-ghost" id="clearBtn" style="padding:7px 14px;font-size:.76rem;">Subir otro</button>
+        <span>File: <b id="fname">—</b></span>
+        <button type="button" class="btn btn-ghost" id="clearBtn" style="padding:7px 14px;font-size:.76rem;">Upload another</button>
       </div>
       <div class="errorbox" id="errorbox"></div>
     </div>
@@ -161,22 +161,22 @@
     <div class="wrap">
       <div class="stats-row" id="statsRow"></div>
 
-      <h2 class="section">Estadística por columna</h2>
+      <h2 class="section">Statistics by column</h2>
       <div class="table-wrap">
         <table id="colTable"><thead></thead><tbody></tbody></table>
       </div>
 
-      <h2 class="section">Gráfico automático</h2>
+      <h2 class="section">Automatic chart</h2>
       <div class="chart-card">
         <div class="chart-head">
-          <span class="mono" style="font-size:.78rem;color:var(--ink-soft);">Columna numérica a graficar</span>
+          <span class="mono" style="font-size:.78rem;color:var(--ink-soft);">Numeric column to chart</span>
           <select id="colSelect"></select>
         </div>
         <div class="chart-svg-wrap" id="chartWrap"></div>
         <div class="chart-meta" id="chartMeta"></div>
       </div>
 
-      <h2 class="section">Vista previa (primeras 10 filas)</h2>
+      <h2 class="section">Preview (first 10 rows)</h2>
       <div class="table-wrap">
         <table id="previewTable"><thead></thead><tbody></tbody></table>
       </div>
@@ -186,13 +186,13 @@
 
 <footer>
   <div class="wrap">
-    <span class="fmono">Criterio, datos y norma. Un solo diagnóstico. · MC3G Consulting</span>
+    <span class="fmono">Judgment, data, and standards. One diagnosis. · MC3G Consulting</span>
     <span>
-      <a href="./MC3G_Inclinometro_GKN.html">Inclinómetros GKN →</a>
+      <a href="./MC3G_Inclinometro_GKN_EN.html">GKN Inclinometers →</a>
       &nbsp;·&nbsp;
-      <a href="./MC3G_Dashboard_CSV.html">Dashboard de KPIs →</a>
+      <a href="./MC3G_Dashboard_CSV_EN.html">KPI Dashboard →</a>
       &nbsp;·&nbsp;
-      <a href="./MC3G_Landing_v2_Lecturas.html">← Volver a la página principal</a>
+      <a href="./MC3G_Landing_v2_Lecturas_EN.html">← Back to homepage</a>
     </span>
   </div>
 </footer>
@@ -259,9 +259,9 @@
     var firstLine = cleanText.split('\n')[0] || '';
     var delim = detectDelimiter(firstLine);
     var rows = parseCSV(cleanText, delim);
-    if (rows.length < 2) throw new Error('El archivo no tiene filas de datos suficientes para analizar.');
+    if (rows.length < 2) throw new Error('The file does not have enough data rows to analyze.');
 
-    var header = rows[0].map(function(h){ return h.trim() || '(sin nombre)'; });
+    var header = rows[0].map(function(h){ return h.trim() || '(unnamed)'; });
     var dataRows = rows.slice(1);
     var nCols = header.length;
 
@@ -316,12 +316,12 @@
     var textCols = r.nCols - numericCols;
     var totalMissing = r.columns.reduce(function(s,c){ return s + c.missing; }, 0);
     var chips = [
-      { v: r.nRows, l: 'FILAS' },
-      { v: r.nCols, l: 'COLUMNAS' },
-      { v: numericCols, l: 'NUMÉRICAS' },
-      { v: textCols, l: 'TEXTO' },
-      { v: totalMissing, l: 'FALTANTES' },
-      { v: r.delim === ';' ? '; (decimal ,)' : ',', l: 'SEPARADOR DETECTADO' }
+      { v: r.nRows, l: 'ROWS' },
+      { v: r.nCols, l: 'COLUMNS' },
+      { v: numericCols, l: 'NUMERIC' },
+      { v: textCols, l: 'TEXT' },
+      { v: totalMissing, l: 'MISSING' },
+      { v: r.delim === ';' ? '; (decimal ,)' : ',', l: 'DETECTED SEPARATOR' }
     ];
     statsRow.innerHTML = chips.map(function(c){
       return '<div class="stat-chip"><b>'+c.v+'</b><span>'+c.l+'</span></div>';
@@ -329,12 +329,12 @@
   }
 
   function renderColTable(r){
-    var thead = '<tr><th>Columna</th><th>Tipo</th><th>Valores</th><th>Faltantes</th><th>Media</th><th>Mín</th><th>Máx</th><th>Desvío / únicos</th></tr>';
+    var thead = '<tr><th>Column</th><th>Type</th><th>Values</th><th>Missing</th><th>Mean</th><th>Min</th><th>Max</th><th>Std dev / unique</th></tr>';
     var rowsHtml = r.columns.map(function(c){
       if (c.isNumeric){
-        return '<tr><td>'+escapeHtml(c.name)+'</td><td><span class="badge-type badge-num">numérica</span></td><td>'+c.count+'</td><td>'+c.missing+'</td><td>'+fmt(c.mean)+'</td><td>'+fmt(c.min)+'</td><td>'+fmt(c.max)+'</td><td>'+fmt(c.std)+'</td></tr>';
+        return '<tr><td>'+escapeHtml(c.name)+'</td><td><span class="badge-type badge-num">numeric</span></td><td>'+c.count+'</td><td>'+c.missing+'</td><td>'+fmt(c.mean)+'</td><td>'+fmt(c.min)+'</td><td>'+fmt(c.max)+'</td><td>'+fmt(c.std)+'</td></tr>';
       }
-      return '<tr><td>'+escapeHtml(c.name)+'</td><td><span class="badge-type badge-txt">texto</span></td><td>'+c.count+'</td><td>'+c.missing+'</td><td>—</td><td>—</td><td>—</td><td>'+c.unique+' únicos</td></tr>';
+      return '<tr><td>'+escapeHtml(c.name)+'</td><td><span class="badge-type badge-txt">text</span></td><td>'+c.count+'</td><td>'+c.missing+'</td><td>—</td><td>—</td><td>—</td><td>'+c.unique+' unique</td></tr>';
     }).join('');
     colTable.querySelector('thead').innerHTML = thead;
     colTable.querySelector('tbody').innerHTML = rowsHtml;
@@ -373,18 +373,18 @@
     }
     var t = buildTrace(sampled);
     var meanY = t.pad + (t.h-2*t.pad) * (1 - (col.mean - t.min)/((t.max-t.min)||1));
-    var svg = '<svg viewBox="0 0 '+t.w+' '+t.h+'" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none" role="img" aria-label="Gráfico de '+escapeHtml(col.name)+'">'
+    var svg = '<svg viewBox="0 0 '+t.w+' '+t.h+'" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none" role="img" aria-label="Chart of '+escapeHtml(col.name)+'">'
       + '<line x1="'+t.pad+'" y1="'+meanY.toFixed(1)+'" x2="'+(t.w-t.pad)+'" y2="'+meanY.toFixed(1)+'" stroke="#8CA0B3" stroke-width="1" stroke-dasharray="2,5" opacity=".7"/>'
       + '<path d="'+t.area+'" fill="rgba(123,148,169,.14)"/>'
       + '<path d="'+t.d+'" fill="none" stroke="#16233B" stroke-width="2"/>'
       + '</svg>';
     chartWrap.innerHTML = svg;
     chartMeta.innerHTML =
-      '<span>Media: <b>'+fmt(col.mean)+'</b></span>'
-      + '<span>Mín: <b>'+fmt(col.min)+'</b></span>'
-      + '<span>Máx: <b>'+fmt(col.max)+'</b></span>'
-      + '<span>Desvío: <b>'+fmt(col.std)+'</b></span>'
-      + (sampled.length < values.length ? '<span>Muestreado a '+sampled.length+' de '+values.length+' puntos para graficar</span>' : '');
+      '<span>Mean: <b>'+fmt(col.mean)+'</b></span>'
+      + '<span>Min: <b>'+fmt(col.min)+'</b></span>'
+      + '<span>Max: <b>'+fmt(col.max)+'</b></span>'
+      + '<span>Std dev: <b>'+fmt(col.std)+'</b></span>'
+      + (sampled.length < values.length ? '<span>Sampled to '+sampled.length+' of '+values.length+' points for charting</span>' : '');
   }
 
   function renderResults(r){
@@ -395,7 +395,7 @@
 
     var numericCols = r.columns.filter(function(c){ return c.isNumeric; });
     if (numericCols.length === 0){
-      chartWrap.innerHTML = '<p class="empty-note">No se detectaron columnas numéricas para graficar.</p>';
+      chartWrap.innerHTML = '<p class="empty-note">No numeric columns were detected to chart.</p>';
       chartMeta.innerHTML = '';
       colSelect.innerHTML = '';
       colSelect.style.display = 'none';
@@ -429,10 +429,10 @@
         var result = analyze(String(e.target.result));
         renderResults(result);
       } catch(err){
-        showError('No se pudo analizar el archivo: ' + err.message);
+        showError('Could not analyze the file: ' + err.message);
       }
     };
-    reader.onerror = function(){ showError('No se pudo leer el archivo.'); };
+    reader.onerror = function(){ showError('Could not read the file.'); };
     reader.readAsText(file, 'UTF-8');
   }
 
@@ -450,7 +450,7 @@
   sampleBtn.addEventListener('click', function(e){
     e.stopPropagation();
     clearError();
-    fname.textContent = 'ejemplo-sintetico.csv';
+    fname.textContent = 'synthetic-sample.csv';
     filebar.classList.add('show');
     try { renderResults(analyze(generateSample())); }
     catch(err){ showError(err.message); }
@@ -464,12 +464,12 @@
   });
 
   function generateSample(){
-    var rows = ['fecha,lectura,referencia,estado'];
+    var rows = ['date,reading,reference,status'];
     var start = new Date('2024-01-01T00:00:00');
     for (var i=0;i<60;i++){
       var d = new Date(start.getTime() + i*86400000);
       var val = 20 + 5*Math.sin(i/6) + (Math.random()-0.5)*1.5;
-      var estado = Math.abs(val-18) > 6 ? 'alerta' : 'normal';
+      var estado = Math.abs(val-18) > 6 ? 'alert' : 'normal';
       rows.push(d.toISOString().slice(0,10) + ',' + val.toFixed(2) + ',18.00,' + estado);
     }
     return rows.join('\n');
