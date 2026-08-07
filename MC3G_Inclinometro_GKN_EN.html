@@ -121,8 +121,7 @@
 
   @media (max-width:820px){
     .panel-grid{grid-template-columns:1fr;}
-  }
-  .disclaimer-box{background:var(--card);border:1px solid var(--line);border-left:4px solid var(--ink);border-radius:4px;padding:16px 20px;margin-bottom:26px;font-family:var(--font-mono);font-size:.8rem;color:var(--ink-soft);line-height:1.6;}
+  }  .disclaimer-box{background:var(--card);border:1px solid var(--line);border-left:4px solid var(--ink);border-radius:4px;padding:16px 20px;margin-bottom:26px;font-family:var(--font-mono);font-size:.8rem;color:var(--ink-soft);line-height:1.6;}
   .disclaimer-box strong{color:var(--ink);}
   .dash-header-row{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;margin-bottom:6px;}
   .dash-header-row h2{margin-bottom:0;}
@@ -198,7 +197,17 @@
         </div>
         <div class="field">
           <p class="field-label">Highlight additional campaigns (optional)</p>
-          <div class="check-grid" id="highlightChecks"></div>
+          <p class="field-hint">Ctrl/Cmd+click to pick several. Highlighted in color on Cum.A/Cum.B, incremental, and North/East Component — doesn't affect the Sitemaster-style view below.</p>
+          <select id="highlightSelect" multiple size="6" style="width:100%;max-width:420px;font-family:var(--font-mono);font-size:.8rem;padding:8px;border:1px solid var(--line);border-radius:2px;background:var(--paper);"></select>
+        </div>
+        <div class="field">
+          <p class="field-label">Campaigns in the Sitemaster-style view</p>
+          <p class="field-hint">All checked by default — uncheck to show only some.</p>
+          <div class="dz-actions" style="justify-content:flex-start;margin:0 0 10px;">
+            <button type="button" class="btn btn-ghost btn-sm" id="vendorSelAll">All</button>
+            <button type="button" class="btn btn-ghost btn-sm" id="vendorSelNone">None</button>
+          </div>
+          <div class="check-grid" id="vendorChecks"></div>
         </div>
         <div class="field">
           <p class="field-label">Critical depth</p>
@@ -238,30 +247,39 @@
       <div class="kpi-grid" id="kpiGrid"></div>
       <div id="probeWarnBox"></div>
 
-      <h2 class="section">Cum.A, Cum.B + Chk.A, Chk.B (checksum)</h2>
-      <p class="section-sub">Cum.A/Cum.B are 2 of Sitemaster's 4 standard profiles. Rot.A/Rot.B (the other 2, Sitemaster's proprietary values) are not reproduced here — instead, further down, North/East Component using the standard geotechnical rotation. Depth on the vertical axis (0 at top) · gray = all campaigns · dotted = reference · red = current campaign · red horizontal line = candidate shear zone (Cum.A/Cum.B only).</p>
-      <div class="panel-grid" id="cumPanels"></div>
-      <div class="panel-grid" id="checksumPanels" style="margin-top:18px;"></div>
-
       <h2 class="section">All-campaigns view (Sitemaster style)</h2>
-      <p class="section-sub vendor-note" id="vendorNote">Same format as the vendor's report: each campaign in its own color, with a full legend by date and file. Rotated A-A'/B-B' uses our standard azimuth rotation (North/East Component) — it does not reproduce Sitemaster's exact proprietary formula.</p>
+      <p class="section-sub vendor-note" id="vendorNote">Same format as the vendor's report: each campaign in its own color, with a full legend by date and file. Hover to see each campaign's value at that depth; mouse wheel to zoom ("reset zoom" button top-right when zoomed out). Rotated A-A'/B-B' uses our standard azimuth rotation (North/East Component) — it does not reproduce Sitemaster's exact proprietary formula.</p>
       <div class="panel-grid" id="vendorCumPanels"></div>
       <div class="panel-grid" id="vendorRotPanels" style="margin-top:18px;"></div>
-
-      <h2 class="section">Incremental profile — A axis and B axis</h2>
-      <p class="section-sub">Not part of Sitemaster's standard report — we add it because a sharp, localized spike here is the clearest signature of a real localized kink, when the cumulative profile alone may not show it as clearly.</p>
-      <div class="panel-grid" id="incPanels"></div>
+      <div class="panel-grid" id="vendorIncPanels" style="margin-top:18px;"></div>
 
       <div id="geoSection"></div>
 
       <h2 class="section">The 3 rates — at the critical depth</h2>
       <p class="section-sub" id="ratesSub"></p>
       <div class="rate-grid" id="rateGrid"></div>
-      <div class="panel-card" style="max-width:820px;">
-        <h4>Deflection over time, critical depth</h4>
-        <p class="panel-note" id="rateChartNote"></p>
-        <div id="rateChartWrap"></div>
+      <div class="panel-grid">
+        <div class="panel-card">
+          <h4>Instantaneous rate</h4>
+          <p class="panel-note">Between each pair of consecutive readings, mm/day. Red = advancing, green = retreating.</p>
+          <div id="rateInstantChartWrap"></div>
+        </div>
+        <div class="panel-card">
+          <h4>Monthly rate</h4>
+          <p class="panel-note">Between the last reading of each month and the last reading of the previous month, mm/day.</p>
+          <div id="rateMonthlyChartWrap"></div>
+        </div>
+        <div class="panel-card">
+          <h4>Overall rate</h4>
+          <p class="panel-note">Between the first reading and each subsequent reading — how the cumulative average evolves, mm/day.</p>
+          <div id="rateGeneralChartWrap"></div>
+        </div>
+        <div class="panel-card" id="vectorOrientCard" style="max-width:280px;"></div>
       </div>
+
+      <h2 class="section">Summary table (vendor style)</h2>
+      <p class="section-sub">One row per campaign at the critical depth: date, Cum.A/Cum.B, resultant vector, direction, and the 3 rates accumulated to that date. N° is our own sequential index, not the vendor's internal numbering.</p>
+      <div class="table-wrap" style="max-height:400px;" id="summaryTableWrap"></div>
 
       <div class="dash-actions">
         <button type="button" class="btn btn-ghost" id="reconfigBtn">← Change reference / depth</button>
@@ -323,6 +341,14 @@
     return dt;
   }
 
+  function parseGknTime(s){
+    var m = String(s||'').trim().match(/^(\d{1,2}):(\d{2}):(\d{2})$/);
+    if (!m) return null;
+    var h=+m[1], mi=+m[2], se=+m[3];
+    if (h>23||mi>59||se>59) return null;
+    return { h:h, mi:mi, se:se };
+  }
+
   function normalizeProbe(raw){
     var s=(raw||'').trim();
     var m=s.match(/(\d+)/);
@@ -348,6 +374,9 @@
 
   function processCampaign(parsed){
     var fecha = parseGknDate(parsed.meta['DATE']);
+    var horaStr = parsed.meta['TIME'];
+    var hora = parseGknTime(horaStr);
+    if (fecha && hora){ fecha.setHours(hora.h, hora.mi, hora.se, 0); }
     var probe = normalizeProbe(parsed.meta['PROBE NO.']);
     var hole = (parsed.meta['HOLE NO.']||'').trim();
     var declared = parseInt(parsed.meta['#READINGS'],10);
@@ -400,6 +429,38 @@
     return series;
   }
 
+  // Last reading of each calendar month (year-month), chronologically sorted.
+  function lastReadingPerMonth(series){
+    var byMonth = {};
+    series.forEach(function(p){
+      var key = p.fecha.getFullYear()+'-'+String(p.fecha.getMonth()+1).padStart(2,'0');
+      if (!byMonth[key] || p.fecha > byMonth[key].fecha) byMonth[key] = p;
+    });
+    return Object.keys(byMonth).sort().map(function(k){ return byMonth[k]; });
+  }
+
+  // Real monthly rate: between the last reading of each month and the last reading of the previous month.
+  function buildMonthlyRateSeries(series){
+    var monthly = lastReadingPerMonth(series);
+    var out = [];
+    for (var i=1;i<monthly.length;i++){
+      var days = (monthly[i].fecha-monthly[i-1].fecha)/86400000;
+      if (days>0) out.push({ fecha: monthly[i].fecha, rateDay: (monthly[i].v-monthly[i-1].v)/days });
+    }
+    return out;
+  }
+
+  // Evolving overall rate: first reading vs. each later reading — how the cumulative average moves.
+  function buildGeneralRateSeries(series){
+    var first = series[0];
+    var out = [];
+    for (var i=1;i<series.length;i++){
+      var days = (series[i].fecha-first.fecha)/86400000;
+      if (days>0) out.push({ fecha: series[i].fecha, rateDay: (series[i].v-first.v)/days });
+    }
+    return out;
+  }
+
   function computeRates(series){
     if (series.length<2) return null;
     var last=series[series.length-1], prev=series[series.length-2];
@@ -408,18 +469,22 @@
     var first=series[0];
     var daysTotal=(last.fecha-first.fecha)/86400000;
     var rateGeneral = daysTotal>0 ? (last.v-first.v)/daysTotal*30.44 : null;
-    var windowDays=90;
-    var win = series.filter(function(p){ return (last.fecha-p.fecha)/86400000<=windowDays; });
-    var rateMonthly=null;
-    if (win.length>=2){
-      var x0=win[0].fecha.getTime();
-      var xs=win.map(function(p){return (p.fecha.getTime()-x0)/86400000;});
-      var ys=win.map(function(p){return p.v;});
-      var n=xs.length, mx=mean(xs), my=mean(ys), num=0, den=0;
-      for (var i=0;i<n;i++){ num+=(xs[i]-mx)*(ys[i]-my); den+=(xs[i]-mx)*(xs[i]-mx); }
-      rateMonthly = (den!==0 ? num/den : 0)*30.44;
+    var monthlySeries = buildMonthlyRateSeries(series);
+    var rateMonthly = monthlySeries.length>0 ? monthlySeries[monthlySeries.length-1].rateDay*30.44 : null;
+    return {instant:rateInst, monthly:rateMonthly, general:rateGeneral, monthlyN:monthlySeries.length, daysInst:daysInst, daysTotal:daysTotal};
+  }
+
+  // Rate per interval: the rate computed BETWEEN each pair of consecutive campaigns, not cumulative displacement.
+  // Same chart type as the vendor software's "Tasa desplazamiento nivel de despegue."
+  function buildRatePerIntervalSeries(series){
+    var out = [];
+    for (var i=1;i<series.length;i++){
+      var days = (series[i].fecha - series[i-1].fecha)/86400000;
+      if (days>0){
+        out.push({ fecha: series[i].fecha, rateDay: (series[i].v-series[i-1].v)/days, rateMonth: (series[i].v-series[i-1].v)/days*30.44 });
+      }
     }
-    return {instant:rateInst, monthly:rateMonthly, general:rateGeneral, windowN:win.length, daysInst:daysInst, daysTotal:daysTotal};
+    return out;
   }
 
   function fmt(n, d){ if (n===null||n===undefined||!isFinite(n)) return '—'; return n.toFixed(d===undefined?1:d); }
@@ -527,51 +592,24 @@
     return '<svg viewBox="0 0 '+w+' '+h+'" style="width:100%;height:auto;" xmlns="http://www.w3.org/2000/svg" role="img">'+parts.join('')+'</svg>';
   }
 
-  function buildChecksumPanel(campaigns, curIdx, axisKey, w, h, depthLabelFn){
-    w=w||360; h=h||420;
-    depthLabelFn = depthLabelFn || function(d){ return d.toFixed(0)+'m'; };
-    var padL=42, padR=14, padT=12, padB=26;
-    var innerW=w-padL-padR, innerH=h-padT-padB;
-    var minDepth = Math.min.apply(null, campaigns.map(function(c){return c.minDepth;}));
-    var maxDepth = Math.max.apply(null, campaigns.map(function(c){return c.maxDepth;}));
-    var allVals=[];
-    campaigns.forEach(function(c){ Object.keys(c[axisKey]).forEach(function(d){ allVals.push(c[axisKey][d]); }); });
-    var vMin=Math.min.apply(null, allVals), vMax=Math.max.apply(null, allVals);
-    if (vMax===vMin){ vMax+=1; vMin-=1; }
-    var pad = (vMax-vMin)*0.12;
-    vMin-=pad; vMax+=pad;
-    function xOf(v){ return padL + ((v-vMin)/(vMax-vMin))*innerW; }
-    function yOf(d){ return padT + ((d-minDepth)/((maxDepth-minDepth)||1))*innerH; }
-    var probes = [];
-    campaigns.forEach(function(c){ if (probes.indexOf(c.probe)===-1) probes.push(c.probe); });
-    function colorFor(probe){ var i=probes.indexOf(probe); return PALETTE[i%PALETTE.length]; }
-    var parts=[];
-    var depthStep = niceStep(maxDepth-minDepth, 6);
-    for (var dg=Math.ceil(minDepth/depthStep)*depthStep; dg<=maxDepth+0.01; dg+=depthStep){
-      var y=yOf(dg);
-      parts.push('<line x1="'+padL+'" y1="'+y.toFixed(1)+'" x2="'+(w-padR)+'" y2="'+y.toFixed(1)+'" stroke="#EEF1F3" stroke-width="1"/>');
-      parts.push('<text x="'+(padL-6)+'" y="'+(y+3).toFixed(1)+'" text-anchor="end" font-family="JetBrains Mono, monospace" font-size="9" fill="#5B6B80">'+depthLabelFn(dg)+'</text>');
-    }
-    campaigns.forEach(function(c, idx){
-      var depths = Object.keys(c[axisKey]).map(Number).sort(function(a,b){return a-b;});
-      var pts = depths.map(function(d){ return [xOf(c[axisKey][d]), yOf(d)]; });
-      if (pts.length<2) return;
-      var d = pts.map(function(p,i){ return (i===0?'M':'L')+p[0].toFixed(1)+','+p[1].toFixed(1); }).join(' ');
-      var bold = idx===curIdx;
-      parts.push('<path d="'+d+'" fill="none" stroke="'+colorFor(c.probe)+'" stroke-width="'+(bold?2.2:1)+'" opacity="'+(bold?1:.35)+'"/>');
-    });
-    parts.push('<text x="'+padL+'" y="'+(h-8)+'" font-family="JetBrains Mono, monospace" font-size="9" fill="#5B6B80">'+vMin.toFixed(0)+'</text>');
-    parts.push('<text x="'+(w-padR)+'" y="'+(h-8)+'" text-anchor="end" font-family="JetBrains Mono, monospace" font-size="9" fill="#5B6B80">'+vMax.toFixed(0)+'</text>');
-    var legend = probes.map(function(p){ return '<span class="legend-item"><span class="legend-swatch" style="background:'+colorFor(p)+';"></span>'+escapeHtml(p)+'</span>'; }).join('');
-    return { svg:'<svg viewBox="0 0 '+w+' '+h+'" style="width:100%;height:auto;" xmlns="http://www.w3.org/2000/svg" role="img">'+parts.join('')+'</svg>', legend: legend };
-  }
-
   function colorForCampaignIndex(i){
     var hue = (i*47) % 360;
     return 'hsl('+hue+',58%,42%)';
   }
 
-  // Vendor-software-style panel: ALL campaigns, each with its own color + full legend.
+  // Deflection of each campaign against a fixed reference — this is what "Cumulative A-A'/B-B'"
+  // actually represents (confirmed with real IN-DP-1 data — not each campaign's absolute profile).
+  function deflectProfiles(campaigns, ref, key){
+    return campaigns.map(function(c){
+      var d = {};
+      Object.keys(c[key]).forEach(function(dep){ if (ref[key][dep]!==undefined) d[dep] = c[key][dep]-ref[key][dep]; });
+      var out = {}; for (var k in c){ out[k]=c[k]; }
+      out.deflX = d;
+      return out;
+    });
+  }
+
+  var __vendorPanelData = {};
   function buildVendorPanel(campaigns, axisKey, depthLabelFn, w, h){
     w=w||420; h=h||560;
     depthLabelFn = depthLabelFn || function(d){ return d.toFixed(0)+'m'; };
@@ -588,7 +626,7 @@
     var robustMax = Math.max(1, absVals[p98idx]);
     var outlierNote = '';
     if (trueMax > robustMax*1.3){
-      outlierNote = '<p class="empty-note" style="color:var(--alert-deep);">⚠ Scale trimmed (98th percentile) because at least one campaign has a value much more extreme ('+trueMax.toFixed(0)+'mm) than the rest — likely a bad reading or probe change, not representative. That line may run off the chart.</p>';
+      outlierNote = '<p class="empty-note" style="color:var(--alert-deep);">⚠ Scale trimmed (98th percentile) because at least one campaign has a value much more extreme ('+trueMax.toFixed(0)+'mm) than the rest. Could be a bad reading — or a real, sudden large movement event (confirmed this happens with real data: check "Campaigns in the Sitemaster-style view" before dismissing it). That line may run off the chart.</p>';
     }
     var maxAbs = robustMax;
     var xRange = maxAbs*1.15;
@@ -601,7 +639,8 @@
       return pts.map(function(p,i){ return (i===0?'M':'L')+p[0].toFixed(1)+','+p[1].toFixed(1); }).join(' ');
     }
     var parts=[];
-    var clipId = 'clip'+Math.random().toString(36).slice(2,9);
+    var panelId = 'vp'+Math.random().toString(36).slice(2,10);
+    var clipId = 'clip'+panelId;
     parts.push('<defs><clipPath id="'+clipId+'"><rect x="'+padL+'" y="'+padT+'" width="'+innerW+'" height="'+innerH+'"/></clipPath></defs>');
     parts.push('<line x1="'+xOf(0).toFixed(1)+'" y1="'+padT+'" x2="'+xOf(0).toFixed(1)+'" y2="'+(h-padB)+'" stroke="#D7E0E6" stroke-width="1"/>');
     var depthStep = niceStep(maxDepth-minDepth, 6);
@@ -611,7 +650,7 @@
       parts.push('<text x="'+(padL-6)+'" y="'+(y+3).toFixed(1)+'" text-anchor="end" font-family="JetBrains Mono, monospace" font-size="9" fill="#5B6B80">'+depthLabelFn(dg)+'</text>');
     }
     var legendItems = [];
-    parts.push('<g clip-path="url(#'+clipId+')">');
+    parts.push('<g clip-path="url(#'+clipId+')" id="lines'+panelId+'">');
     campaigns.forEach(function(c, idx){
       var color = colorForCampaignIndex(idx);
       var d = pathFor(c);
@@ -622,11 +661,111 @@
     parts.push('<text x="'+padL+'" y="'+(h-8)+'" font-family="JetBrains Mono, monospace" font-size="9" fill="#5B6B80">'+(-xRange).toFixed(0)+'mm</text>');
     parts.push('<text x="'+xOf(0).toFixed(1)+'" y="'+(h-8)+'" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="9" fill="#5B6B80">0</text>');
     parts.push('<text x="'+(w-padR)+'" y="'+(h-8)+'" text-anchor="end" font-family="JetBrains Mono, monospace" font-size="9" fill="#5B6B80">+'+xRange.toFixed(0)+'mm</text>');
-    return {
-      svg: '<svg viewBox="0 0 '+w+' '+h+'" style="width:100%;height:auto;" xmlns="http://www.w3.org/2000/svg" role="img">'+parts.join('')+'</svg>',
-      legend: '<div class="legend-scroll">'+legendItems.join('')+'</div>',
-      outlierNote: outlierNote
+
+    __vendorPanelData[panelId] = {
+      campaigns: campaigns, axisKey: axisKey, depthLabelFn: depthLabelFn,
+      padL: padL, padR: padR, padT: padT, padB: padB, w: w, h: h,
+      minDepth: minDepth, maxDepth: maxDepth, xRange: xRange
     };
+    var svgInner = '<svg id="'+panelId+'" viewBox="0 0 '+w+' '+h+'" style="width:100%;height:auto;display:block;" xmlns="http://www.w3.org/2000/svg" role="img">'+parts.join('')+'</svg>';
+    var wrap = '<div class="vendor-chart-wrap" style="position:relative;">'
+      + svgInner
+      + '<button type="button" class="zoom-reset-btn" id="reset'+panelId+'" style="display:none;position:absolute;top:4px;right:4px;font-family:var(--font-mono);font-size:.62rem;padding:3px 8px;background:var(--card);border:1px solid var(--line);border-radius:2px;cursor:pointer;color:var(--ink-soft);">↺ reset zoom</button>'
+      + '</div>';
+    return {
+      svg: wrap,
+      legend: '<div class="legend-scroll">'+legendItems.join('')+'</div>',
+      outlierNote: outlierNote,
+      panelId: panelId
+    };
+  }
+
+  // Interactivity: hover tooltip (values from all campaigns at that depth) + mouse-wheel zoom.
+  // Called AFTER the HTML is inserted into the DOM (needs the <svg> to already exist).
+  var __vendorTooltip = null;
+  function getVendorTooltip(){
+    if (__vendorTooltip) return __vendorTooltip;
+    var t = document.createElement('div');
+    t.style.cssText = 'position:fixed;display:none;z-index:500;pointer-events:none;background:#16233B;color:#F7F8F5;font-family:JetBrains Mono, monospace;font-size:11px;line-height:1.5;padding:8px 10px;border-radius:4px;max-width:260px;box-shadow:0 4px 14px rgba(0,0,0,.25);';
+    document.body.appendChild(t);
+    __vendorTooltip = t;
+    return t;
+  }
+  function initVendorPanelInteractivity(panelId){
+    var meta = __vendorPanelData[panelId];
+    if (!meta) return;
+    var svg = document.getElementById(panelId);
+    if (!svg) return;
+    var resetBtn = document.getElementById('reset'+panelId);
+    var originalView = {x:0, y:0, w:meta.w, h:meta.h};
+    var view = {x:0, y:0, w:meta.w, h:meta.h};
+    var tooltip = getVendorTooltip();
+
+    // real grid of available depths (to "snap" the tooltip to an exact reading row)
+    var depthSet = {};
+    meta.campaigns.forEach(function(c){ Object.keys(c[meta.axisKey]||{}).forEach(function(d){ depthSet[d]=1; }); });
+    var depthGrid = Object.keys(depthSet).map(Number).sort(function(a,b){return a-b;});
+
+    function svgPoint(clientX, clientY){
+      var pt = svg.createSVGPoint();
+      pt.x = clientX; pt.y = clientY;
+      var ctm = svg.getScreenCTM();
+      if (!ctm) return null;
+      return pt.matrixTransform(ctm.inverse());
+    }
+    function nearestDepth(y){
+      var d = meta.minDepth + (y-meta.padT)/((meta.h-meta.padT-meta.padB)||1)*(meta.maxDepth-meta.minDepth);
+      var best=depthGrid[0], bestDiff=Infinity;
+      depthGrid.forEach(function(dg){ var diff=Math.abs(dg-d); if (diff<bestDiff){bestDiff=diff; best=dg;} });
+      return best;
+    }
+
+    svg.addEventListener('mousemove', function(e){
+      var p = svgPoint(e.clientX, e.clientY);
+      if (!p) return;
+      var innerT=meta.padT, innerB=meta.h-meta.padB;
+      if (p.y<innerT || p.y>innerB || p.x<meta.padL || p.x>meta.w-meta.padR){ tooltip.style.display='none'; return; }
+      var depth = nearestDepth(p.y);
+      var rows = meta.campaigns.map(function(c){
+        var v = c[meta.axisKey] ? c[meta.axisKey][depth] : undefined;
+        return v===undefined ? null : {fecha:c.fecha, fileName:c.fileName, v:v};
+      }).filter(Boolean);
+      rows.sort(function(a,b){ return Math.abs(b.v)-Math.abs(a.v); });
+      var shown = rows.slice(0,8);
+      var html = '<b>'+meta.depthLabelFn(depth)+'</b><br>' + shown.map(function(r){
+        return fmtDate(r.fecha)+': <b>'+r.v.toFixed(1)+'mm</b>';
+      }).join('<br>');
+      if (rows.length>8) html += '<br>+'+(rows.length-8)+' more';
+      tooltip.innerHTML = html;
+      tooltip.style.left = (e.clientX+14)+'px';
+      tooltip.style.top = (e.clientY+14)+'px';
+      tooltip.style.display = 'block';
+    });
+    svg.addEventListener('mouseleave', function(){ tooltip.style.display='none'; });
+
+    svg.style.cursor = 'crosshair';
+    svg.addEventListener('wheel', function(e){
+      e.preventDefault();
+      var p = svgPoint(e.clientX, e.clientY);
+      if (!p) return;
+      var factor = e.deltaY<0 ? 0.85 : 1/0.85;
+      var newW = view.w*factor, newH = view.h*factor;
+      // limits: don't zoom out beyond the original, don't zoom in more than 12x
+      if (newW>originalView.w || newH>originalView.h){ newW=originalView.w; newH=originalView.h; }
+      if (newW<originalView.w/12){ newW=originalView.w/12; newH=originalView.h/12; }
+      var newX = p.x - (p.x-view.x)*(newW/view.w);
+      var newY = p.y - (p.y-view.y)*(newH/view.h);
+      view = {x:newX, y:newY, w:newW, h:newH};
+      svg.setAttribute('viewBox', view.x.toFixed(2)+' '+view.y.toFixed(2)+' '+view.w.toFixed(2)+' '+view.h.toFixed(2));
+      var isZoomed = Math.abs(view.w-originalView.w)>0.5;
+      resetBtn.style.display = isZoomed ? 'block' : 'none';
+    }, {passive:false});
+
+    resetBtn.addEventListener('click', function(){
+      view = {x:0,y:0,w:originalView.w,h:originalView.h};
+      svg.setAttribute('viewBox', '0 0 '+originalView.w+' '+originalView.h);
+      resetBtn.style.display = 'none';
+    });
   }
 
 
@@ -661,12 +800,44 @@
     return '<svg viewBox="0 0 '+w+' '+h+'" style="width:100%;height:auto;" xmlns="http://www.w3.org/2000/svg" role="img">'+parts.join('')+'</svg>';
   }
 
-  // ---------- state & DOM ----------
+  // Rate-over-time chart: each point is that interval's rate (mm/day), not cumulative displacement.
+  function buildRateSeriesChart(rateSeries, w, h){
+    w=w||780; h=h||220;
+    var padL=46, padR=16, padT=14, padB=26;
+    var innerW=w-padL-padR, innerH=h-padT-padB;
+    var tMin=rateSeries[0].fecha.getTime(), tMax=rateSeries[rateSeries.length-1].fecha.getTime();
+    var tRange=(tMax-tMin)||1;
+    var vals=rateSeries.map(function(p){return p.rateDay;});
+    var vMax=Math.max.apply(null, vals.map(Math.abs));
+    if (vMax===0) vMax=1;
+    vMax*=1.15;
+    var vMin=-vMax;
+    function xOf(t){ return padL + ((t-tMin)/tRange)*innerW; }
+    function yOf(v){ return padT + (1-(v-vMin)/(vMax-vMin))*innerH; }
+    var zeroY = yOf(0);
+    var pts = rateSeries.map(function(p){ return [xOf(p.fecha.getTime()), yOf(p.rateDay)]; });
+    var d = pts.map(function(p,i){ return (i===0?'M':'L')+p[0].toFixed(1)+','+p[1].toFixed(1); }).join(' ');
+    var parts=[];
+    parts.push('<line x1="'+padL+'" y1="'+zeroY.toFixed(1)+'" x2="'+(w-padR)+'" y2="'+zeroY.toFixed(1)+'" stroke="#D7E0E6" stroke-width="1"/>');
+    parts.push('<path d="'+d+'" fill="none" stroke="#16233B" stroke-width="1.4"/>');
+    rateSeries.forEach(function(p,i){
+      var r = i===rateSeries.length-1 ? 3.2 : 2;
+      var color = p.rateDay>=0 ? '#C0392B' : '#2F6F5E';
+      parts.push('<circle cx="'+xOf(p.fecha.getTime()).toFixed(1)+'" cy="'+yOf(p.rateDay).toFixed(1)+'" r="'+r+'" fill="'+color+'"/>');
+    });
+    parts.push('<text x="'+padL+'" y="'+(h-6)+'" font-family="JetBrains Mono, monospace" font-size="9" fill="#5B6B80">'+fmtDate(rateSeries[0].fecha)+'</text>');
+    parts.push('<text x="'+(w-padR)+'" y="'+(h-6)+'" text-anchor="end" font-family="JetBrains Mono, monospace" font-size="9" fill="#5B6B80">'+fmtDate(rateSeries[rateSeries.length-1].fecha)+'</text>');
+    parts.push('<text x="'+padL+'" y="'+(padT+8)+'" font-family="JetBrains Mono, monospace" font-size="9" fill="#5B6B80">+'+vMax.toFixed(2)+'mm/day</text>');
+    parts.push('<text x="'+padL+'" y="'+(h-padB-2)+'" font-family="JetBrains Mono, monospace" font-size="9" fill="#5B6B80">'+vMin.toFixed(2)+'mm/day</text>');
+    return '<svg viewBox="0 0 '+w+' '+h+'" style="width:100%;height:auto;" xmlns="http://www.w3.org/2000/svg" role="img">'+parts.join('')+'</svg>';
+  }
+
+
   var state = { campaigns: [] };
   var dropzone=document.getElementById('dropzone'), gknInput=document.getElementById('gknInput'), sampleBtn=document.getElementById('sampleBtn');
   var errorbox=document.getElementById('errorbox'), fileListWrap=document.getElementById('fileListWrap'), fileTable=document.getElementById('fileTable'), holeWarn=document.getElementById('holeWarn');
   var configSection=document.getElementById('config'), dashboardSection=document.getElementById('dashboard');
-  var refSelect=document.getElementById('refSelect'), curSelect=document.getElementById('curSelect'), highlightChecks=document.getElementById('highlightChecks');
+  var refSelect=document.getElementById('refSelect'), curSelect=document.getElementById('curSelect'), highlightSelect=document.getElementById('highlightSelect');
   var criticalDepthInput=document.getElementById('criticalDepthInput'), cotaBocaInput=document.getElementById('cotaBocaInput'), azimuthInput=document.getElementById('azimuthInput'), generateBtn=document.getElementById('generateBtn'), reconfigBtn=document.getElementById('reconfigBtn');
 
   function showError(msg){ errorbox.textContent = msg; errorbox.classList.add('show'); }
@@ -700,10 +871,11 @@
     var holes = {};
     state.campaigns.forEach(function(c){ holes[c.hole]=(holes[c.hole]||0)+1; });
     var holeNames = Object.keys(holes);
-    var thead = '<tr><th>File</th><th>Date</th><th>Probe</th><th>Hole</th><th>Readings</th><th></th></tr>';
+    var thead = '<tr><th>File</th><th>Date and time</th><th>Probe</th><th>Hole</th><th>Readings</th><th></th></tr>';
     var tbody = state.campaigns.map(function(c, idx){
       var okReadings = c.declaredReadings===null || c.declaredReadings===c.actualReadings;
-      return '<tr><td>'+escapeHtml(c.fileName)+'</td><td>'+fmtDate(c.fecha)+'</td><td>'+escapeHtml(c.probe)+'</td><td>'+escapeHtml(c.hole)+'</td>'
+      var fh = fmtDate(c.fecha) + (c.fecha ? ' ' + String(c.fecha.getHours()).padStart(2,'0')+':'+String(c.fecha.getMinutes()).padStart(2,'0') : '');
+      return '<tr><td>'+escapeHtml(c.fileName)+'</td><td>'+fh+'</td><td>'+escapeHtml(c.probe)+'</td><td>'+escapeHtml(c.hole)+'</td>'
         + '<td class="'+(okReadings?'ok-tag':'bad-tag')+'">'+c.actualReadings+(c.declaredReadings!==null?'/'+c.declaredReadings:'')+'</td>'
         + '<td><button type="button" class="btn btn-ghost btn-sm" data-remove="'+idx+'">Remove</button></td></tr>';
     }).join('');
@@ -738,9 +910,20 @@
     refSelect.value = 0;
     curSelect.value = state.campaigns.length-1;
 
-    highlightChecks.innerHTML = state.campaigns.map(function(c,idx){
-      return '<label class="check-chip"><input type="checkbox" class="hlCheck" value="'+idx+'">'+fmtDate(c.fecha)+'</label>';
+    highlightSelect.innerHTML = state.campaigns.map(function(c,idx){
+      return '<option value="'+idx+'">'+fmtDate(c.fecha)+'</option>';
     }).join('');
+
+    var vendorChecks = document.getElementById('vendorChecks');
+    vendorChecks.innerHTML = state.campaigns.map(function(c,idx){
+      return '<label class="check-chip"><input type="checkbox" class="vendorCheck" value="'+idx+'" checked>'+fmtDate(c.fecha)+'</label>';
+    }).join('');
+    document.getElementById('vendorSelAll').onclick = function(){
+      Array.prototype.slice.call(document.querySelectorAll('.vendorCheck')).forEach(function(cb){ cb.checked=true; });
+    };
+    document.getElementById('vendorSelNone').onclick = function(){
+      Array.prototype.slice.call(document.querySelectorAll('.vendorCheck')).forEach(function(cb){ cb.checked=false; });
+    };
 
     updateCriticalDepthSuggestion();
     refSelect.onchange = updateCriticalDepthSuggestion;
@@ -766,13 +949,14 @@
 
   generateBtn.addEventListener('click', function(){
     var refIdx = parseInt(refSelect.value,10), curIdx = parseInt(curSelect.value,10);
-    var highlightIdxs = Array.prototype.slice.call(document.querySelectorAll('.hlCheck:checked')).map(function(c){return parseInt(c.value,10);});
+    var highlightIdxs = Array.prototype.slice.call(highlightSelect.selectedOptions).map(function(o){return parseInt(o.value,10);});
+    var vendorIdxs = Array.prototype.slice.call(document.querySelectorAll('.vendorCheck:checked')).map(function(c){return parseInt(c.value,10);});
     var criticalDepth = parseFloat(criticalDepthInput.value);
     var cotaBoca = parseFloat(cotaBocaInput.value);
     var azimuth = parseFloat(azimuthInput.value);
     var ejeModeEl = document.querySelector('input[name="ejeMode"]:checked');
     var ejeMode = ejeModeEl ? ejeModeEl.value : 'depth';
-    renderDashboard(refIdx, curIdx, highlightIdxs, isNaN(criticalDepth)?null:criticalDepth, isNaN(cotaBoca)?null:cotaBoca, ejeMode, isNaN(azimuth)?null:azimuth);
+    renderDashboard(refIdx, curIdx, highlightIdxs, isNaN(criticalDepth)?null:criticalDepth, isNaN(cotaBoca)?null:cotaBoca, ejeMode, isNaN(azimuth)?null:azimuth, vendorIdxs);
   });
 
   var downloadReportBtn = document.getElementById('downloadReportBtn');
@@ -783,7 +967,7 @@
     configSection.scrollIntoView({behavior:'smooth', block:'start'});
   });
 
-  function renderDashboard(refIdx, curIdx, highlightIdxs, criticalDepth, cotaBoca, ejeMode, azimuthDeg){
+  function renderDashboard(refIdx, curIdx, highlightIdxs, criticalDepth, cotaBoca, ejeMode, azimuthDeg, vendorIdxs){
     var campaigns = state.campaigns;
     var ref = campaigns[refIdx], cur = campaigns[curIdx];
     var singleMode = campaigns.length < 2;
@@ -862,9 +1046,9 @@
       rates = computeRates(series);
     }
     if (rates){
-      kpis.push({name:'Instantaneous rate', value: fmt(rates.instant,2)+' mm/mo', sub:'last 2 campaigns ('+fmt(rates.daysInst,0)+'d)'});
-      kpis.push({name:'Monthly rate', value: rates.monthly!==null?fmt(rates.monthly,2)+' mm/mo':'—', sub: 'regression, '+rates.windowN+' campaigns / 90d'});
-      kpis.push({name:'Overall rate', value: fmt(rates.general,2)+' mm/mo', sub: 'first vs. last ('+fmt(rates.daysTotal,0)+'d)'});
+      kpis.push({name:'Instantaneous rate', value: fmt(rates.instant,2)+' mm/mo', sub:'('+fmt(rates.instant/30.44,2)+' mm/day) · last 2 campaigns ('+fmt(rates.daysInst,0)+'d)'});
+      kpis.push({name:'Monthly rate', value: rates.monthly!==null?fmt(rates.monthly,2)+' mm/mo':'—', sub: (rates.monthly!==null?'('+fmt(rates.monthly/30.44,2)+' mm/day) · ':'')+'last reading of the month vs. previous month ('+rates.monthlyN+' months with data)'});
+      kpis.push({name:'Overall rate', value: fmt(rates.general,2)+' mm/mo', sub: '('+fmt(rates.general/30.44,2)+' mm/day) · first vs. last ('+fmt(rates.daysTotal,0)+'d)'});
     }
 
     document.getElementById('kpiGrid').innerHTML = kpis.map(function(k){
@@ -874,42 +1058,55 @@
     document.getElementById('probeWarnBox').innerHTML = probeWarnHtml;
 
     if (singleMode){
-      document.getElementById('cumPanels').innerHTML = '<p class="empty-note">Upload at least 2 campaigns to see deflection, shear zone, and rates. With a single campaign there is no reference to measure movement against.</p>';
-      document.getElementById('incPanels').innerHTML = '';
-      document.getElementById('checksumPanels').innerHTML = '';
       document.getElementById('geoSection').innerHTML = '';
-      document.getElementById('vendorCumPanels').innerHTML = '';
+      document.getElementById('vendorCumPanels').innerHTML = '<p class="empty-note">Upload at least 2 campaigns to see deflection, shear zone, and rates. With a single campaign there is no reference to measure movement against.</p>';
       document.getElementById('vendorRotPanels').innerHTML = '';
+      document.getElementById('vendorIncPanels').innerHTML = '';
     } else {
-      document.getElementById('cumPanels').innerHTML =
-        '<div class="panel-card"><h4>Cum.A</h4><p class="panel-note">Cumulative deflection from the (fixed) bottom up to each depth.</p>'+buildDeflectionPanel(campaigns, refIdx, curIdx, highlightIdxs, 'profileA', criticalDepth, null, null, depthLabelFn)+'</div>'
-        + '<div class="panel-card"><h4>Cum.B</h4><p class="panel-note">Perpendicular to the A axis.</p>'+buildDeflectionPanel(campaigns, refIdx, curIdx, highlightIdxs, 'profileB', criticalDepth, null, null, depthLabelFn)+'</div>';
-      document.getElementById('incPanels').innerHTML =
-        '<div class="panel-card"><h4>A axis — incremental</h4><p class="panel-note">Change per 0.5m interval. An isolated spike here = localized kink.</p>'+buildDeflectionPanel(campaigns, refIdx, curIdx, highlightIdxs, 'incA', criticalDepth, null, null, depthLabelFn)+'</div>'
-        + '<div class="panel-card"><h4>B axis — incremental</h4><p class="panel-note">Perpendicular to the A axis.</p>'+buildDeflectionPanel(campaigns, refIdx, curIdx, highlightIdxs, 'incB', criticalDepth, null, null, depthLabelFn)+'</div>';
+      var vendorCampaigns = campaigns.filter(function(c,i){ return (vendorIdxs||[]).indexOf(i)!==-1; });
+      if (vendorCampaigns.length === 0){
+        document.getElementById('vendorCumPanels').innerHTML = '<p class="empty-note">No campaigns selected for this view — pick at least one in "Campaigns in the Sitemaster-style view."</p>';
+        document.getElementById('vendorIncPanels').innerHTML = '';
+      } else {
+        var deflVA = deflectProfiles(vendorCampaigns, ref, 'profileA');
+        var deflVB = deflectProfiles(vendorCampaigns, ref, 'profileB');
+        var vCumA = buildVendorPanel(deflVA, 'deflX', depthLabelFn);
+        var vCumB = buildVendorPanel(deflVB, 'deflX', depthLabelFn);
+        document.getElementById('vendorCumPanels').innerHTML =
+          '<div class="panel-card"><h4>Cumulative A-A\' <span class="mono" style="font-size:.66rem;color:var(--ink-soft);">(deflection vs '+fmtDate(ref.fecha)+')</span></h4>'+vCumA.svg+(vCumA.outlierNote||'')+vCumA.legend+'</div>'
+          + '<div class="panel-card"><h4>Cumulative B-B\'</h4>'+vCumB.svg+(vCumB.outlierNote||'')+vCumB.legend+'</div>';
+        if (vCumA.panelId) initVendorPanelInteractivity(vCumA.panelId);
+        if (vCumB.panelId) initVendorPanelInteractivity(vCumB.panelId);
 
-      var csA = buildChecksumPanel(campaigns, curIdx, 'checksumA', null, null, depthLabelFn);
-      var csB = buildChecksumPanel(campaigns, curIdx, 'checksumB', null, null, depthLabelFn);
-      document.getElementById('checksumPanels').innerHTML =
-        '<div class="panel-card"><h4>Chk.A</h4><p class="panel-note">A+ + A−. Should stay stable — it validates the 180° rotation, it does not measure movement. Colored by probe.</p>'+csA.svg+'<div class="legend-row">'+csA.legend+'</div></div>'
-        + '<div class="panel-card"><h4>Chk.B</h4><p class="panel-note">B+ + B−. Same criterion, B axis.</p>'+csB.svg+'<div class="legend-row">'+csB.legend+'</div></div>';
-
-      var vCumA = buildVendorPanel(campaigns, 'profileA', depthLabelFn);
-      var vCumB = buildVendorPanel(campaigns, 'profileB', depthLabelFn);
-      document.getElementById('vendorCumPanels').innerHTML =
-        '<div class="panel-card"><h4>Cumulative A-A\'</h4>'+vCumA.svg+(vCumA.outlierNote||'')+vCumA.legend+'</div>'
-        + '<div class="panel-card"><h4>Cumulative B-B\'</h4>'+vCumB.svg+(vCumB.outlierNote||'')+vCumB.legend+'</div>';
+        var deflVIncA = deflectProfiles(vendorCampaigns, ref, 'incA');
+        var deflVIncB = deflectProfiles(vendorCampaigns, ref, 'incB');
+        var vIncA = buildVendorPanel(deflVIncA, 'deflX', depthLabelFn);
+        var vIncB = buildVendorPanel(deflVIncB, 'deflX', depthLabelFn);
+        document.getElementById('vendorIncPanels').innerHTML =
+          '<div class="panel-card"><h4>Incremental A <span class="mono" style="font-size:.66rem;color:var(--alert-deep);">shear ≈ '+(criticalDepth!==null?depthLabelFn(criticalDepth):'—')+'</span></h4>'+vIncA.svg+(vIncA.outlierNote||'')+vIncA.legend+'</div>'
+          + '<div class="panel-card"><h4>Incremental B</h4>'+vIncB.svg+(vIncB.outlierNote||'')+vIncB.legend+'</div>';
+        if (vIncA.panelId) initVendorPanelInteractivity(vIncA.panelId);
+        if (vIncB.panelId) initVendorPanelInteractivity(vIncB.panelId);
+      }
 
       if (hasAzimuth){
         campaigns.forEach(function(c){
           var ne = rotateToNorthEast(c.profileA, c.profileB, azimuthDeg);
           c.north = ne.north; c.east = ne.east;
         });
-        var vRotA = buildVendorPanel(campaigns, 'north', depthLabelFn);
-        var vRotB = buildVendorPanel(campaigns, 'east', depthLabelFn);
-        document.getElementById('vendorRotPanels').innerHTML =
-          '<div class="panel-card"><h4>Rotated A-A\'</h4>'+vRotA.svg+(vRotA.outlierNote||'')+vRotA.legend+'</div>'
-          + '<div class="panel-card"><h4>Rotated B-B\'</h4>'+vRotB.svg+(vRotB.outlierNote||'')+vRotB.legend+'</div>';
+        if (vendorCampaigns.length === 0){
+          document.getElementById('vendorRotPanels').innerHTML = '<p class="empty-note">No campaigns selected for this view.</p>';
+        } else {
+          var deflVRA = deflectProfiles(vendorCampaigns, ref, 'north');
+          var deflVRB = deflectProfiles(vendorCampaigns, ref, 'east');
+          var vRotA = buildVendorPanel(deflVRA, 'deflX', depthLabelFn);
+          var vRotB = buildVendorPanel(deflVRB, 'deflX', depthLabelFn);
+          document.getElementById('vendorRotPanels').innerHTML =
+            '<div class="panel-card"><h4>Rotated A-A\'</h4>'+vRotA.svg+(vRotA.outlierNote||'')+vRotA.legend+'</div>'
+            + '<div class="panel-card"><h4>Rotated B-B\'</h4>'+vRotB.svg+(vRotB.outlierNote||'')+vRotB.legend+'</div>';
+          if (vRotA.panelId) initVendorPanelInteractivity(vRotA.panelId);
+          if (vRotB.panelId) initVendorPanelInteractivity(vRotB.panelId);
+        }
         var vectorHtml = vectorInfo ? '<div class="panel-card" style="max-width:260px;"><h4>Movement vector</h4><p class="panel-note">Real (compass) direction and magnitude at the critical depth, first vs. current.</p>'
           + buildCompass(vectorInfo.magnitude, vectorInfo.azimuth) + '<p class="mono" style="text-align:center;font-size:.85rem;margin-top:8px;">'+vectorInfo.azimuth.toFixed(0)+'° · '+fmt(vectorInfo.magnitude,1)+'mm</p></div>' : '';
         document.getElementById('geoSection').innerHTML =
@@ -929,16 +1126,57 @@
     if (rates && series && series.length>=2){
       document.getElementById('ratesSub').textContent = (useCota?'Critical elevation: ':'Critical depth: ')+depthLabelFn(criticalDepth)+' — resultant deflection (A and B) against the reference, across all loaded campaigns.';
       document.getElementById('rateGrid').innerHTML =
-        '<div class="rate-card"><p class="rname">Instantaneous</p><p class="rvalue">'+fmt(rates.instant,2)+'</p><p class="runit">mm/mo</p></div>'
-        + '<div class="rate-card"><p class="rname">Monthly</p><p class="rvalue">'+(rates.monthly!==null?fmt(rates.monthly,2):'—')+'</p><p class="runit">mm/mo</p></div>'
-        + '<div class="rate-card"><p class="rname">Overall</p><p class="rvalue">'+fmt(rates.general,2)+'</p><p class="runit">mm/mo</p></div>';
-      document.getElementById('rateChartNote').textContent = 'Faint red band = 90-day window used for the monthly rate. Large dot = latest reading.';
-      document.getElementById('rateChartWrap').innerHTML = buildRateTimeChart(series, 90);
+        '<div class="rate-card"><p class="rname">Instantaneous</p><p class="rvalue">'+fmt(rates.instant,2)+'</p><p class="runit">mm/mo · '+fmt(rates.instant/30.44,2)+' mm/day</p></div>'
+        + '<div class="rate-card"><p class="rname">Monthly</p><p class="rvalue">'+(rates.monthly!==null?fmt(rates.monthly,2):'—')+'</p><p class="runit">mm/mo'+(rates.monthly!==null?' · '+fmt(rates.monthly/30.44,2)+' mm/day':'')+'</p></div>'
+        + '<div class="rate-card"><p class="rname">Overall</p><p class="rvalue">'+fmt(rates.general,2)+'</p><p class="runit">mm/mo · '+fmt(rates.general/30.44,2)+' mm/day</p></div>';
+
+      var instSeries = buildRatePerIntervalSeries(series);
+      document.getElementById('rateInstantChartWrap').innerHTML = instSeries.length>=1
+        ? buildRateSeriesChart(instSeries) : '<p class="empty-note">Not enough intervals.</p>';
+
+      var monthlySeries = buildMonthlyRateSeries(series);
+      document.getElementById('rateMonthlyChartWrap').innerHTML = monthlySeries.length>=1
+        ? buildRateSeriesChart(monthlySeries) : '<p class="empty-note">Needs data from at least 2 different months.</p>';
+
+      var generalSeries = buildGeneralRateSeries(series);
+      document.getElementById('rateGeneralChartWrap').innerHTML = generalSeries.length>=1
+        ? buildRateSeriesChart(generalSeries) : '<p class="empty-note">Not enough readings.</p>';
+
+      var vecCard = document.getElementById('vectorOrientCard');
+      if (vectorInfo){
+        vecCard.innerHTML = '<h4>Vector orientation</h4><p class="panel-note">Real (compass) direction and magnitude, first vs. current.</p>'
+          + buildCompass(vectorInfo.magnitude, vectorInfo.azimuth)
+          + '<p class="mono" style="text-align:center;font-size:.85rem;margin-top:8px;">'+vectorInfo.azimuth.toFixed(0)+'° · '+fmt(vectorInfo.magnitude,1)+'mm</p>';
+      } else {
+        vecCard.innerHTML = '<h4>Vector orientation</h4><p class="empty-note">Provide the installation azimuth in the configuration to see it.</p>';
+      }
     } else {
       document.getElementById('ratesSub').textContent = 'Needs 2 or more campaigns and a valid critical depth.';
       document.getElementById('rateGrid').innerHTML = '';
-      document.getElementById('rateChartNote').textContent = '';
-      document.getElementById('rateChartWrap').innerHTML = '<p class="empty-note">Not enough data.</p>';
+      document.getElementById('rateInstantChartWrap').innerHTML = '<p class="empty-note">Not enough data.</p>';
+      document.getElementById('rateMonthlyChartWrap').innerHTML = '';
+      document.getElementById('rateGeneralChartWrap').innerHTML = '';
+      document.getElementById('vectorOrientCard').innerHTML = '';
+    }
+
+    if (!singleMode && criticalDepth!==null){
+      var pointSeries = campaigns.map(function(c){
+        var cumA = (c.profileA[criticalDepth]||0) - (ref.profileA[criticalDepth]||0);
+        var cumB = (c.profileB[criticalDepth]||0) - (ref.profileB[criticalDepth]||0);
+        return { fecha: c.fecha, cumA: cumA, cumB: cumB, v: Math.hypot(cumA,cumB) };
+      }).filter(function(p){return p.fecha;}).sort(function(a,b){ return a.fecha-b.fecha; });
+
+      var theadT = '<tr><th>N°</th><th>Date</th><th>Cum.A</th><th>Cum.B</th><th>Vect Resul</th>'+(hasAzimuth?'<th>Direc</th>':'')+'<th>Vect Rate (mm/day)</th><th>Overall Rate (mm/day)</th><th>Monthly Rate (mm/day)</th></tr>';
+      var tbodyT = pointSeries.map(function(p, idx){
+        var subSeries = pointSeries.slice(0, idx+1);
+        var r = computeRates(subSeries);
+        var direcCell = hasAzimuth ? '<td>'+(((180+Math.atan2(p.cumB,p.cumA)*180/Math.PI+azimuthDeg)%360+360)%360).toFixed(0)+'°</td>' : '';
+        return '<tr><td>'+(idx+1)+'</td><td>'+fmtDate(p.fecha)+'</td><td>'+fmt(p.cumA,2)+'</td><td>'+fmt(p.cumB,2)+'</td><td>'+fmt(p.v,2)+'</td>'+direcCell
+          + '<td>'+(r&&r.instant!==null?fmt(r.instant/30.44,3):'—')+'</td><td>'+(r?fmt(r.general/30.44,3):'—')+'</td><td>'+(r&&r.monthly!==null?fmt(r.monthly/30.44,3):'—')+'</td></tr>';
+      }).join('');
+      document.getElementById('summaryTableWrap').innerHTML = '<table><thead>'+theadT+'</thead><tbody>'+tbodyT+'</tbody></table>';
+    } else {
+      document.getElementById('summaryTableWrap').innerHTML = '<p class="empty-note">Needs 2 or more campaigns and a valid critical depth.</p>';
     }
 
     configSection.hidden = true;
