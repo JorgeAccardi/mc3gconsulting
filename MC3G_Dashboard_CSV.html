@@ -4,6 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Dashboard de KPIs desde CSV — MC3G Consulting</title>
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect x='4' y='4' width='56' height='56' rx='12' fill='%230E1420'/%3E%3Cpath d='M14,44 C24,40 34,34 40,30' stroke='%23D98B3F' stroke-width='6' fill='none' stroke-linecap='round'/%3E%3Cpath d='M14,20 C24,24 34,28 40,30' stroke='%237FC4E8' stroke-width='6' fill='none' stroke-linecap='round'/%3E%3Ccircle cx='40' cy='30' r='3.4' fill='%23F2F3F0'/%3E%3C/svg%3E">
 <meta name="description" content="Subí cualquier CSV: el sistema sugiere columna de fecha y KPIs candidatos con el motivo de cada sugerencia, vos confirmás, y arma un dashboard con métricas y gráficos temporales. Todo en tu navegador.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@600;700&family=IBM+Plex+Sans+Condensed:wght@500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
@@ -75,10 +76,22 @@
 
   h2.section{font-size:1.15rem;margin:34px 0 16px;}
   .kpi-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:16px;margin-bottom:8px;}
-  .kpi-card{background:var(--card);border:1px solid var(--line);border-radius:4px;padding:20px;}
+  .kpi-card{background:var(--card);border:1px solid var(--line);border-left:4px solid var(--line);border-radius:4px;padding:20px;}
+  .kpi-card.status-ok{border-left-color:var(--ok);}
+  .kpi-card.status-watch{border-left-color:#C9A227;}
+  .kpi-card.status-alert{border-left-color:var(--alert);}
+  .kpi-status{display:inline-flex;align-items:center;gap:5px;font-family:var(--font-mono);font-size:.64rem;letter-spacing:.05em;text-transform:uppercase;padding:3px 9px;border-radius:10px;margin-bottom:10px;}
+  .kpi-status::before{content:"";width:6px;height:6px;border-radius:50%;background:currentColor;}
+  .kpi-status.status-ok{background:rgba(47,111,94,.12);color:var(--ok);}
+  .kpi-status.status-watch{background:rgba(201,162,39,.16);color:#8A6D15;}
+  .kpi-status.status-alert{background:rgba(192,57,43,.12);color:var(--alert-deep);}
   .kpi-card .kpi-name{font-family:var(--font-mono);font-size:.7rem;letter-spacing:.05em;text-transform:uppercase;color:var(--ink-soft);margin-bottom:8px;}
   .kpi-card .kpi-value{font-size:1.8rem;font-weight:700;color:var(--ink);line-height:1;margin-bottom:6px;}
-  .kpi-card .kpi-delta{font-family:var(--font-mono);font-size:.76rem;color:var(--ink-soft);margin-bottom:12px;}
+  .kpi-card .kpi-delta{font-family:var(--font-mono);font-size:.8rem;font-weight:600;margin-bottom:12px;}
+  .kpi-card .kpi-delta.trend-up{color:var(--ink);}
+  .kpi-card .kpi-delta.trend-down{color:var(--ink);}
+  .kpi-card .kpi-delta .arrow-up{color:var(--ok);}
+  .kpi-card .kpi-delta .arrow-down{color:var(--alert-deep);}
   .kpi-card svg{width:100%;height:auto;display:block;}
 
   .chart-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));gap:18px;}
@@ -381,6 +394,27 @@
 
   function fmtDate(d){ return String(d.getDate()).padStart(2,'0')+'/'+String(d.getMonth()+1).padStart(2,'0')+'/'+d.getFullYear(); }
 
+  // Clasifica el último valor contra la mediana y el MAD (desvío absoluto mediano) de la serie —
+  // robusto ante un solo outlier extremo, a diferencia de media±desvío estándar (que un solo
+  // valor espurio puede inflar tanto que esconde otras alertas reales).
+  function median(arr){
+    var s = arr.slice().sort(function(a,b){return a-b;});
+    var mid = Math.floor(s.length/2);
+    return s.length%2 ? s[mid] : (s[mid-1]+s[mid])/2;
+  }
+  function statusFor(lastValue, allValues){
+    if (allValues.length < 2) return 'ok';
+    var med = median(allValues);
+    var mad = median(allValues.map(function(v){ return Math.abs(v-med); }));
+    var scaledMad = mad * 1.4826;
+    if (scaledMad === 0 || !isFinite(scaledMad)) return 'ok';
+    var z = Math.abs(lastValue - med) / scaledMad;
+    if (z > 3.5) return 'alert';
+    if (z > 2) return 'watch';
+    return 'ok';
+  }
+  var STATUS_LABEL = { ok:'Normal', watch:'Atención', alert:'Alerta' };
+
   function generateDashboard(){
     var r = current;
     var dateIdx = dateSelect.value === '' ? null : parseInt(dateSelect.value,10);
@@ -403,19 +437,22 @@
       var seriesRaw = order.map(function(i){ return col.raw[i]; });
       var series = seriesRaw.map(function(v){ return toNumber(v, r.delim); }).filter(function(v){ return !isNaN(v); });
       if (series.length===0) return '';
+      var lastVal = series[series.length-1];
+      var status = statusFor(lastVal, series);
       var headline, deltaLine;
       if (dateIdx !== null && series.length>=2){
         var last = series[series.length-1], first = series[0];
         var delta = last-first;
         var pct = first!==0 ? (delta/Math.abs(first))*100 : null;
         headline = fmt(last);
-        deltaLine = (delta>=0?'↑ +':'↓ ')+fmt(Math.abs(delta))+(pct!==null?' ('+(delta>=0?'+':'-')+Math.abs(pct).toFixed(1)+'%)':'')+' desde el primer registro';
+        var arrowSpan = delta>=0 ? '<span class="arrow-up">↑</span>' : '<span class="arrow-down">↓</span>';
+        deltaLine = arrowSpan+' '+fmt(Math.abs(delta))+(pct!==null?' ('+(delta>=0?'+':'-')+Math.abs(pct).toFixed(1)+'%)':'')+' desde el primer registro';
       } else {
         headline = fmt(mean(series));
         deltaLine = 'media · mín '+fmt(Math.min.apply(null,series))+' · máx '+fmt(Math.max.apply(null,series));
       }
       var sampled = series.length>150 ? series.filter(function(_,i){ return i % Math.ceil(series.length/150) === 0; }) : series;
-      return '<div class="kpi-card"><p class="kpi-name">'+escapeHtml(col.name)+'</p><p class="kpi-value">'+headline+'</p><p class="kpi-delta">'+deltaLine+'</p>'
+      return '<div class="kpi-card status-'+status+'"><span class="kpi-status status-'+status+'">'+STATUS_LABEL[status]+'</span><p class="kpi-name">'+escapeHtml(col.name)+'</p><p class="kpi-value">'+headline+'</p><p class="kpi-delta">'+deltaLine+'</p>'
         + traceSvg(sampled, 240, 60, 6, false) + '</div>';
     }).join('') || '<p class="empty-note">No hay KPIs seleccionados.</p>';
 
