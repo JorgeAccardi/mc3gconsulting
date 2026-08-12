@@ -664,11 +664,33 @@
     var trueMax = absVals[absVals.length-1];
     var p98idx = Math.min(absVals.length-1, Math.floor(absVals.length*0.98));
     var robustMax = Math.max(1, absVals[p98idx]);
+
+    // Campañas outlier: su propio máximo supera ampliamente el techo "normal" del resto.
+    // No se usan para calcular la escala (así las demás campañas se ven bien), pero SÍ se dibujan,
+    // en rojo, para no esconder ninguna lectura — solo se marcan.
+    var outlierThreshold = robustMax*1.3;
+    var outlierSet = {};
+    var outlierCampaigns = [];
+    campaigns.forEach(function(c){
+      var vals = Object.keys(c[axisKey]||{}).map(function(d){ return Math.abs(c[axisKey][d]); });
+      var cMax = vals.length ? Math.max.apply(null, vals) : 0;
+      if (cMax > outlierThreshold){ outlierSet[c.fileName] = true; outlierCampaigns.push(c); }
+    });
+
     var outlierNote = '';
-    if (trueMax > robustMax*1.3){
-      outlierNote = '<p class="empty-note" style="color:var(--alert-deep);">⚠ Se recortó la escala (percentil 98) porque al menos una campaña tiene un valor mucho más extremo ('+trueMax.toFixed(0)+'mm) que el resto. Puede ser una lectura mala — o un evento real de movimiento grande y repentino (confirmado que esto pasa con datos reales: revisá con "Campañas en la vista estilo Sitemaster" antes de descartarlo). Esa línea puede salir del cuadro.</p>';
+    var maxAbs;
+    if (outlierCampaigns.length > 0){
+      var normalVals = [];
+      campaigns.forEach(function(c){
+        if (outlierSet[c.fileName]) return;
+        Object.keys(c[axisKey]||{}).forEach(function(d){ normalVals.push(Math.abs(c[axisKey][d])); });
+      });
+      maxAbs = normalVals.length ? Math.max.apply(null, normalVals) : robustMax;
+      var names = outlierCampaigns.map(function(c){ return fmtDate(c.fecha); }).join(', ');
+      outlierNote = '<p class="empty-note" style="color:var(--alert-deep);">⚠ '+outlierCampaigns.length+' campaña'+(outlierCampaigns.length>1?'s':'')+' ('+names+', en rojo) tiene un valor mucho más extremo ('+trueMax.toFixed(0)+'mm) que el resto. Se excluye del cálculo de escala para que las demás campañas se vean con detalle, pero está dibujada igual — no se esconde, solo se marca. Puede ser una lectura mala o un evento real de movimiento grande: revisala en la tabla resumen antes de descartarla.</p>';
+    } else {
+      maxAbs = trueMax;
     }
-    var maxAbs = robustMax;
     var xRange = maxAbs*1.15;
     function xOf(v){ return padL + innerW/2 + (v/xRange)*(innerW/2); }
     function yOf(d){ return padT + ((d-minDepth)/((maxDepth-minDepth)||1))*innerH; }
@@ -692,10 +714,11 @@
     var legendItems = [];
     parts.push('<g clip-path="url(#'+clipId+')" id="lines'+panelId+'">');
     campaigns.forEach(function(c, idx){
-      var color = colorForCampaignIndex(idx);
+      var isOut = !!outlierSet[c.fileName];
+      var color = isOut ? 'var(--alert,#E6553F)' : colorForCampaignIndex(idx);
       var d = pathFor(c);
-      if (d) parts.push('<path d="'+d+'" fill="none" stroke="'+color+'" stroke-width="1.3" opacity=".85"/>');
-      legendItems.push('<span class="legend-item"><span class="legend-swatch" style="background:'+color+';"></span>'+fmtDate(c.fecha)+' · '+escapeHtml(c.fileName)+'</span>');
+      if (d) parts.push('<path d="'+d+'" fill="none" stroke="'+color+'" stroke-width="'+(isOut?'1.8':'1.3')+'" opacity="'+(isOut?'1':'.85')+'"/>');
+      legendItems.push('<span class="legend-item"><span class="legend-swatch" style="background:'+color+';"></span>'+(isOut?'⚠ ':'')+fmtDate(c.fecha)+' · '+escapeHtml(c.fileName)+'</span>');
     });
     parts.push('</g>');
     parts.push('<text x="'+padL+'" y="'+(h-8)+'" font-family="JetBrains Mono, monospace" font-size="9" fill="#8B95A0">'+(-xRange).toFixed(0)+'mm</text>');
@@ -1055,8 +1078,15 @@
 
     if (!singleMode && criticalDepth!==null){
       var maxA = deflectionAt(cur, ref, criticalDepth);
-      var critLabel = useCota ? 'Cota crítica (sizalla candidata)' : 'Profundidad crítica (sizalla candidata)';
-      kpis.push({name:critLabel, value: depthLabelFn(criticalDepth), sub: 'deflexión ahí: '+fmt(maxA,1)+' mm'});
+      var critLabel = useCota ? 'Cota crítica — sizalla candidata' : 'Profundidad crítica — sizalla candidata';
+      var candidates = detectCriticalDepth(ref, cur);
+      var critSub;
+      if (candidates.agree){
+        critSub = 'eje A y eje B coinciden · deflexión ahí: '+fmt(maxA,1)+' mm';
+      } else {
+        critSub = '⚠ eje A → '+depthLabelFn(candidates.depthA)+' · eje B → '+depthLabelFn(candidates.depthB)+' — no coinciden, puede haber más de una zona de interés';
+      }
+      kpis.push({name:critLabel, value: depthLabelFn(criticalDepth), sub: critSub});
     } else {
       kpis.push({name:'Profundidad crítica', value:'—', sub: singleMode?'necesita 2+ campañas':''});
     }

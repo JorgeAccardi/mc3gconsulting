@@ -664,11 +664,33 @@
     var trueMax = absVals[absVals.length-1];
     var p98idx = Math.min(absVals.length-1, Math.floor(absVals.length*0.98));
     var robustMax = Math.max(1, absVals[p98idx]);
+
+    // Outlier campaigns: their own max value greatly exceeds the "normal" ceiling of the rest.
+    // They're excluded from the scale calculation (so the other campaigns are readable), but
+    // they ARE still drawn, in red, so no reading is hidden — only flagged.
+    var outlierThreshold = robustMax*1.3;
+    var outlierSet = {};
+    var outlierCampaigns = [];
+    campaigns.forEach(function(c){
+      var vals = Object.keys(c[axisKey]||{}).map(function(d){ return Math.abs(c[axisKey][d]); });
+      var cMax = vals.length ? Math.max.apply(null, vals) : 0;
+      if (cMax > outlierThreshold){ outlierSet[c.fileName] = true; outlierCampaigns.push(c); }
+    });
+
     var outlierNote = '';
-    if (trueMax > robustMax*1.3){
-      outlierNote = '<p class="empty-note" style="color:var(--alert-deep);">⚠ Scale trimmed (98th percentile) because at least one campaign has a value much more extreme ('+trueMax.toFixed(0)+'mm) than the rest. Could be a bad reading — or a real, sudden large movement event (confirmed this happens with real data: check "Campaigns in the Sitemaster-style view" before dismissing it). That line may run off the chart.</p>';
+    var maxAbs;
+    if (outlierCampaigns.length > 0){
+      var normalVals = [];
+      campaigns.forEach(function(c){
+        if (outlierSet[c.fileName]) return;
+        Object.keys(c[axisKey]||{}).forEach(function(d){ normalVals.push(Math.abs(c[axisKey][d])); });
+      });
+      maxAbs = normalVals.length ? Math.max.apply(null, normalVals) : robustMax;
+      var names = outlierCampaigns.map(function(c){ return fmtDate(c.fecha); }).join(', ');
+      outlierNote = '<p class="empty-note" style="color:var(--alert-deep);">⚠ '+outlierCampaigns.length+' campaign'+(outlierCampaigns.length>1?'s':'')+' ('+names+', in red) '+(outlierCampaigns.length>1?'have':'has')+' a value much more extreme ('+trueMax.toFixed(0)+'mm) than the rest. It is excluded from the scale calculation so the other campaigns can be read in detail, but it is still drawn — nothing is hidden, only flagged. Could be a bad reading or a real large movement event: check it in the summary table before dismissing it.</p>';
+    } else {
+      maxAbs = trueMax;
     }
-    var maxAbs = robustMax;
     var xRange = maxAbs*1.15;
     function xOf(v){ return padL + innerW/2 + (v/xRange)*(innerW/2); }
     function yOf(d){ return padT + ((d-minDepth)/((maxDepth-minDepth)||1))*innerH; }
@@ -692,10 +714,11 @@
     var legendItems = [];
     parts.push('<g clip-path="url(#'+clipId+')" id="lines'+panelId+'">');
     campaigns.forEach(function(c, idx){
-      var color = colorForCampaignIndex(idx);
+      var isOut = !!outlierSet[c.fileName];
+      var color = isOut ? 'var(--alert,#E6553F)' : colorForCampaignIndex(idx);
       var d = pathFor(c);
-      if (d) parts.push('<path d="'+d+'" fill="none" stroke="'+color+'" stroke-width="1.3" opacity=".85"/>');
-      legendItems.push('<span class="legend-item"><span class="legend-swatch" style="background:'+color+';"></span>'+fmtDate(c.fecha)+' · '+escapeHtml(c.fileName)+'</span>');
+      if (d) parts.push('<path d="'+d+'" fill="none" stroke="'+color+'" stroke-width="'+(isOut?'1.8':'1.3')+'" opacity="'+(isOut?'1':'.85')+'"/>');
+      legendItems.push('<span class="legend-item"><span class="legend-swatch" style="background:'+color+';"></span>'+(isOut?'⚠ ':'')+fmtDate(c.fecha)+' · '+escapeHtml(c.fileName)+'</span>');
     });
     parts.push('</g>');
     parts.push('<text x="'+padL+'" y="'+(h-8)+'" font-family="JetBrains Mono, monospace" font-size="9" fill="#8B95A0">'+(-xRange).toFixed(0)+'mm</text>');
@@ -1055,8 +1078,15 @@
 
     if (!singleMode && criticalDepth!==null){
       var maxA = deflectionAt(cur, ref, criticalDepth);
-      var critLabel = useCota ? 'Critical elevation (candidate shear zone)' : 'Critical depth (candidate shear zone)';
-      kpis.push({name:critLabel, value: depthLabelFn(criticalDepth), sub: 'deflection there: '+fmt(maxA,1)+' mm'});
+      var critLabel = useCota ? 'Critical elevation — candidate shear zone' : 'Critical depth — candidate shear zone';
+      var candidates = detectCriticalDepth(ref, cur);
+      var critSub;
+      if (candidates.agree){
+        critSub = 'A axis and B axis agree · deflection there: '+fmt(maxA,1)+' mm';
+      } else {
+        critSub = '⚠ A axis → '+depthLabelFn(candidates.depthA)+' · B axis → '+depthLabelFn(candidates.depthB)+' — they disagree, there may be more than one zone of interest';
+      }
+      kpis.push({name:critLabel, value: depthLabelFn(criticalDepth), sub: critSub});
     } else {
       kpis.push({name:'Critical depth', value:'—', sub: singleMode?'needs 2+ campaigns':''});
     }
