@@ -4,23 +4,24 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>CSV Analyzer — MC3G Consulting</title>
-<meta name="description" content="Upload any CSV and get instant descriptive statistics and a chart. All analysis happens in your browser — the file is never uploaded to any server.">
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect x='4' y='4' width='56' height='56' rx='12' fill='%230E1420'/%3E%3Cpath d='M14,44 C24,40 34,34 40,30' stroke='%23D98B3F' stroke-width='6' fill='none' stroke-linecap='round'/%3E%3Cpath d='M14,20 C24,24 34,28 40,30' stroke='%237FC4E8' stroke-width='6' fill='none' stroke-linecap='round'/%3E%3Ccircle cx='40' cy='30' r='3.4' fill='%23F2F3F0'/%3E%3C/svg%3E">
+<meta name="description" content="Upload any CSV and get descriptive statistics and an instant chart. All analysis happens in your browser, nothing gets uploaded to any server.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@600;700&family=IBM+Plex+Sans+Condensed:wght@500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
   :root{
-    --paper:#F7F8F5;
-    --grid:#DCE4E9;
-    --ink:#16233B;
-    --ink-soft:#5B6B80;
-    --line:#D7E0E6;
-    --card:#FFFFFF;
-    --band:rgba(123,148,169,.14);
-    --centerline:#8CA0B3;
-    --alert:#C0392B;
-    --alert-deep:#9B2E22;
-    --ok:#2F6F5E;
-    --font-display:'IBM Plex Sans Condensed',sans-serif;
+    --paper:#0E1420;
+    --grid:#1A2333;
+    --ink:#F2F3F0;
+    --ink-soft:#8B95A0;
+    --line:#2A3648;
+    --card:#161F2E;
+    --band:rgba(127,196,232,.10);
+    --centerline:#7C8A99;
+    --alert:#E6553F;
+    --alert-deep:#C23F2D;
+    --ok:#3FBF8F;
+    --font-display:'Space Grotesk',sans-serif;
     --font-body:'Inter',sans-serif;
     --font-mono:'JetBrains Mono',monospace;
     --font-word:'Space Grotesk',sans-serif;
@@ -31,9 +32,6 @@
   body{
     font-family:var(--font-body);color:var(--ink);line-height:1.6;-webkit-font-smoothing:antialiased;
     background:var(--paper);
-    background-image:
-      repeating-linear-gradient(0deg, var(--grid) 0 1px, transparent 1px 28px),
-      repeating-linear-gradient(90deg, var(--grid) 0 1px, transparent 1px 28px);
   }
   h1,h2,h3,h4{font-family:var(--font-display);}
   .mono{font-family:var(--font-mono);}
@@ -44,7 +42,7 @@
   .skip-link:focus{left:12px;top:12px;}
 
   .wrap{max-width:1000px;margin:0 auto;padding:0 24px;}
-  nav{position:sticky;top:0;z-index:50;height:var(--nav-h);background:rgba(247,248,245,.92);backdrop-filter:blur(6px);border-bottom:1.5px dashed var(--ink-soft);}
+  nav{position:sticky;top:0;z-index:50;height:var(--nav-h);background:rgba(14,20,32,.9);backdrop-filter:blur(6px);border-bottom:1.5px dashed var(--ink-soft);}
   nav .wrap{height:100%;display:flex;align-items:center;justify-content:space-between;}
   .back{font-family:var(--font-mono);font-size:.76rem;letter-spacing:.06em;color:var(--ink-soft);text-decoration:none;}
   .back:hover{color:var(--ink);}
@@ -62,7 +60,7 @@
     border:1.5px dashed var(--ink-soft);border-radius:6px;background:var(--card);
     padding:40px 24px;text-align:center;cursor:pointer;transition:border-color .2s,background .2s;
   }
-  .dropzone.drag{border-color:var(--alert);background:#FBF0EE;}
+  .dropzone.drag{border-color:var(--alert);background:#2A1A18;}
   .dropzone .dz-title{font-family:var(--font-display);font-weight:600;font-size:1.05rem;margin-bottom:6px;}
   .dropzone .dz-sub{font-family:var(--font-mono);font-size:.76rem;color:var(--ink-soft);}
   .dz-actions{display:flex;justify-content:center;gap:14px;margin-top:18px;flex-wrap:wrap;}
@@ -76,7 +74,7 @@
   .filebar{display:none;align-items:center;justify-content:space-between;gap:14px;margin-top:16px;font-family:var(--font-mono);font-size:.8rem;color:var(--ink-soft);flex-wrap:wrap;}
   .filebar.show{display:flex;}
   .filebar b{color:var(--ink);}
-  .errorbox{display:none;margin-top:18px;padding:14px 16px;border-left:3px solid var(--alert);background:#FBF0EE;font-family:var(--font-mono);font-size:.82rem;color:var(--alert-deep);}
+  .errorbox{display:none;margin-top:18px;padding:14px 16px;border-left:3px solid var(--alert);background:#2A1A18;font-family:var(--font-mono);font-size:.82rem;color:var(--alert-deep);}
   .errorbox.show{display:block;}
 
   #resultados{padding:12px 0 90px;}
@@ -105,7 +103,41 @@
   .chart-meta b{color:var(--ink);}
   .empty-note{font-family:var(--font-mono);font-size:.82rem;color:var(--ink-soft);}
 
-  footer{background:var(--ink);border-top:1px solid rgba(247,248,245,.15);padding:26px 0;margin-top:60px;}
+  /* --- EDA: histogram --- */
+  .hist-bar-label{font-family:var(--font-mono);font-size:.62rem;fill:var(--ink-soft);}
+
+  /* --- EDA: correlation matrix --- */
+  .corr-table{border-collapse:collapse;width:100%;font-size:.72rem;}
+  .corr-table th{font-family:var(--font-mono);font-size:.62rem;color:var(--ink-soft);padding:6px 8px;text-align:center;background:var(--paper);}
+  .corr-table th.rowhead{text-align:right;font-size:.66rem;color:var(--ink);}
+  .corr-cell{font-family:var(--font-mono);text-align:center;padding:8px 6px;color:#fff;font-size:.72rem;min-width:52px;}
+  .corr-diag{background:var(--ink)!important;color:var(--paper)!important;}
+  .corr-scroll{overflow-x:auto;}
+
+  /* --- EDA: missing-data map --- */
+  .missing-row{display:flex;align-items:center;gap:12px;padding:7px 0;border-bottom:1px solid var(--line);}
+  .missing-row:last-child{border-bottom:none;}
+  .missing-name{font-family:var(--font-mono);font-size:.76rem;width:180px;flex-shrink:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+  .missing-track{flex:1;height:14px;background:#2A1A18;border-radius:2px;overflow:hidden;position:relative;}
+  .missing-fill{height:100%;background:var(--ok);}
+  .missing-pct{font-family:var(--font-mono);font-size:.7rem;color:var(--ink-soft);width:70px;text-align:right;flex-shrink:0;}
+
+  /* --- EDA: boxplot small multiples --- */
+  .box-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:16px;}
+  .box-card{text-align:center;}
+  .box-card .box-title{font-family:var(--font-mono);font-size:.72rem;color:var(--ink);margin-bottom:6px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+  .box-card svg{width:100%;height:auto;}
+
+  /* --- EDA: categorical --- */
+  .cat-row{display:flex;align-items:center;gap:10px;padding:6px 0;}
+  .cat-name{font-family:var(--font-mono);font-size:.76rem;width:150px;flex-shrink:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+  .cat-track{flex:1;height:16px;background:var(--paper);border-radius:2px;overflow:hidden;}
+  .cat-fill{height:100%;background:var(--centerline);}
+  .cat-count{font-family:var(--font-mono);font-size:.7rem;color:var(--ink-soft);width:90px;text-align:right;flex-shrink:0;}
+  .date-note{font-family:var(--font-mono);font-size:.74rem;color:var(--ok);margin-bottom:12px;display:flex;align-items:center;gap:6px;}
+  .date-note::before{content:"●";font-size:.55rem;}
+
+  footer{background:var(--card);border-top:1px solid var(--line);padding:26px 0;margin-top:60px;}
   footer .wrap{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;}
   footer a{color:#B9C3D0;font-family:var(--font-mono);font-size:.78rem;text-decoration:none;}
   footer a:hover{color:var(--paper);}
@@ -134,14 +166,14 @@
 <main id="contenido">
   <header class="tool-hero">
     <div class="wrap">
-      <p class="eyebrow">Channel B · Data Lab</p>
+      <p class="eyebrow">Channel B · Data lab</p>
       <h1>Upload a CSV. See what it finds in seconds.</h1>
-      <p class="lede">A quick descriptive analysis of any CSV file: rows, columns, data type, per-column statistics, and an automatic chart. Detects comma or semicolon separators.</p>
+      <p class="lede">A quick descriptive analysis of any CSV file: rows, columns, data type, per-column statistics, and an automatic chart. Detects comma or semicolon delimiters.</p>
       <p class="privacy-note">All analysis happens in your browser. The file is never uploaded to any server.</p>
 
       <div class="dropzone" id="dropzone" tabindex="0" role="button" aria-label="Upload CSV file">
         <p class="dz-title">Drag your CSV here, or click to choose it</p>
-        <p class="dz-sub">.csv · comma or semicolon separator · any number of columns</p>
+        <p class="dz-sub">.csv · comma or semicolon delimiter · any number of columns</p>
         <label for="csvInput" class="visually-hidden">Choose CSV file</label>
         <input type="file" id="csvInput" accept=".csv,text/csv" class="visually-hidden">
         <div class="dz-actions">
@@ -172,8 +204,44 @@
           <span class="mono" style="font-size:.78rem;color:var(--ink-soft);">Numeric column to chart</span>
           <select id="colSelect"></select>
         </div>
+        <p class="date-note" id="dateNote" style="display:none;"></p>
         <div class="chart-svg-wrap" id="chartWrap"></div>
         <div class="chart-meta" id="chartMeta"></div>
+      </div>
+
+      <h2 class="section">Distribution (histogram)</h2>
+      <div class="chart-card">
+        <div class="chart-head">
+          <span class="mono" style="font-size:.78rem;color:var(--ink-soft);">Numeric column</span>
+          <select id="histSelect"></select>
+        </div>
+        <div id="histWrap"></div>
+      </div>
+
+      <h2 class="section">Correlation matrix</h2>
+      <div class="chart-card">
+        <p class="panel-note mono" style="font-size:.76rem;color:var(--ink-soft);margin-bottom:14px;">Pearson correlation between numeric columns. Red = negative, green = positive, more intense = stronger.</p>
+        <div id="corrWrap"></div>
+      </div>
+
+      <h2 class="section">Missing data by column</h2>
+      <div class="chart-card">
+        <div id="missingWrap"></div>
+      </div>
+
+      <h2 class="section">Boxplot — outlier detection</h2>
+      <div class="chart-card">
+        <p class="panel-note mono" style="font-size:.76rem;color:var(--ink-soft);margin-bottom:14px;">Box = 25%–75% of the data, line = median, dots = outliers (more than 1.5×IQR outside the box).</p>
+        <div class="box-grid" id="boxplotWrap"></div>
+      </div>
+
+      <h2 class="section">Categorical columns — most frequent values</h2>
+      <div class="chart-card" id="catCard">
+        <div class="chart-head">
+          <span class="mono" style="font-size:.78rem;color:var(--ink-soft);">Text column</span>
+          <select id="catSelect"></select>
+        </div>
+        <div id="catWrap"></div>
       </div>
 
       <h2 class="section">Preview (first 10 rows)</h2>
@@ -254,6 +322,48 @@
     return n.toFixed(2);
   }
 
+  // Flexible date detection: dd/mm/yyyy, dd-mm-yyyy, yyyy-mm-dd (with or without time).
+  function parseFlexibleDate(str){
+    var s = String(str).trim();
+    if (s === '') return null;
+    var m = s.match(/^(\d{1,2})[\/\-](\d{1,2})[\/\-](\d{2,4})/);
+    if (m){
+      var d=+m[1], mo=+m[2], y=+m[3];
+      if (y<100) y += 2000;
+      if (mo>=1 && mo<=12 && d>=1 && d<=31){
+        var dt = new Date(y, mo-1, d);
+        if (dt.getFullYear()===y && dt.getMonth()===mo-1 && dt.getDate()===d) return dt;
+      }
+      return null;
+    }
+    m = s.match(/^(\d{4})-(\d{1,2})-(\d{1,2})/);
+    if (m){
+      var y2=+m[1], mo2=+m[2], d2=+m[3];
+      if (mo2>=1 && mo2<=12 && d2>=1 && d2<=31){
+        var dt2 = new Date(y2, mo2-1, d2);
+        if (dt2.getFullYear()===y2 && dt2.getMonth()===mo2-1 && dt2.getDate()===d2) return dt2;
+      }
+    }
+    return null;
+  }
+
+  function quantile(sortedArr, q){
+    var pos = (sortedArr.length-1)*q;
+    var base = Math.floor(pos), rest = pos-base;
+    if (sortedArr[base+1] !== undefined) return sortedArr[base] + rest*(sortedArr[base+1]-sortedArr[base]);
+    return sortedArr[base];
+  }
+
+  function pearson(xs, ys){
+    var n = xs.length;
+    if (n < 2) return null;
+    var mx = mean(xs), my = mean(ys);
+    var num=0, dx2=0, dy2=0;
+    for (var i=0;i<n;i++){ var dx=xs[i]-mx, dy=ys[i]-my; num+=dx*dy; dx2+=dx*dx; dy2+=dy*dy; }
+    var den = Math.sqrt(dx2*dy2);
+    return den===0 ? null : num/den;
+  }
+
   function analyze(text){
     var cleanText = text.replace(/^\uFEFF/, '');
     var firstLine = cleanText.split('\n')[0] || '';
@@ -277,8 +387,22 @@
         col.min = Math.min.apply(null, nums);
         col.max = Math.max.apply(null, nums);
         col.std = stdev(nums, col.mean);
+        var sorted = nums.slice().sort(function(a,b){return a-b;});
+        var q1 = quantile(sorted, 0.25), q3 = quantile(sorted, 0.75), med = quantile(sorted, 0.5);
+        var iqr = q3-q1;
+        var loFence = q1 - 1.5*iqr, hiFence = q3 + 1.5*iqr;
+        col.q1=q1; col.q3=q3; col.median=med; col.iqr=iqr;
+        col.whiskerLo = Math.max(col.min, sorted.filter(function(v){return v>=loFence;})[0] !== undefined ? sorted.filter(function(v){return v>=loFence;})[0] : col.min);
+        col.whiskerHi = Math.min(col.max, (function(){ var f=sorted.filter(function(v){return v<=hiFence;}); return f.length? f[f.length-1] : col.max; })());
+        col.outliers = sorted.filter(function(v){ return v<loFence || v>hiFence; });
       } else {
         col.unique = new Set(nonEmpty.map(function(v){ return v.trim(); })).size;
+        var parsedDates = nonEmpty.map(function(v){ return parseFlexibleDate(v); });
+        var validDates = parsedDates.filter(function(d){ return d!==null; });
+        col.isDate = nonEmpty.length>0 && (validDates.length/nonEmpty.length) >= 0.8;
+        if (col.isDate){
+          col.dates = raw.map(function(v){ return v.trim()==='' ? null : parseFlexibleDate(v); });
+        }
       }
       return col;
     });
@@ -301,6 +425,15 @@
   var chartWrap = document.getElementById('chartWrap');
   var chartMeta = document.getElementById('chartMeta');
   var previewTable = document.getElementById('previewTable');
+  var dateNote = document.getElementById('dateNote');
+  var histSelect = document.getElementById('histSelect');
+  var histWrap = document.getElementById('histWrap');
+  var corrWrap = document.getElementById('corrWrap');
+  var missingWrap = document.getElementById('missingWrap');
+  var boxplotWrap = document.getElementById('boxplotWrap');
+  var catSelect = document.getElementById('catSelect');
+  var catWrap = document.getElementById('catWrap');
+  var catCard = document.getElementById('catCard');
 
   var currentResult = null;
 
@@ -321,7 +454,7 @@
       { v: numericCols, l: 'NUMERIC' },
       { v: textCols, l: 'TEXT' },
       { v: totalMissing, l: 'MISSING' },
-      { v: r.delim === ';' ? '; (decimal ,)' : ',', l: 'DETECTED SEPARATOR' }
+      { v: r.delim === ';' ? '; (decimal ,)' : ',', l: 'DETECTED DELIMITER' }
     ];
     statsRow.innerHTML = chips.map(function(c){
       return '<div class="stat-chip"><b>'+c.v+'</b><span>'+c.l+'</span></div>';
@@ -329,7 +462,7 @@
   }
 
   function renderColTable(r){
-    var thead = '<tr><th>Column</th><th>Type</th><th>Values</th><th>Missing</th><th>Mean</th><th>Min</th><th>Max</th><th>Std dev / unique</th></tr>';
+    var thead = '<tr><th>Column</th><th>Type</th><th>Values</th><th>Missing</th><th>Mean</th><th>Min</th><th>Max</th><th>Std / unique</th></tr>';
     var rowsHtml = r.columns.map(function(c){
       if (c.isNumeric){
         return '<tr><td>'+escapeHtml(c.name)+'</td><td><span class="badge-type badge-num">numeric</span></td><td>'+c.count+'</td><td>'+c.missing+'</td><td>'+fmt(c.mean)+'</td><td>'+fmt(c.min)+'</td><td>'+fmt(c.max)+'</td><td>'+fmt(c.std)+'</td></tr>';
@@ -364,7 +497,67 @@
     return { d: d, area: area, w: w, h: h, pad: pad, min: min, max: max };
   }
 
+  function buildTraceByDate(pairs){
+    var w=800, h=220, pad=22;
+    var vals = pairs.map(function(p){return p.v;});
+    var min = Math.min.apply(null, vals), max = Math.max.apply(null, vals);
+    var range = (max-min) || 1;
+    var tMin = pairs[0].d.getTime(), tMax = pairs[pairs.length-1].d.getTime();
+    var tRange = (tMax-tMin) || 1;
+    var pts = pairs.map(function(p){
+      var x = pad + ((p.d.getTime()-tMin)/tRange) * (w-2*pad);
+      var y = pad + (h-2*pad) * (1 - (p.v-min)/range);
+      return [x,y];
+    });
+    var d = pts.map(function(p,i){ return (i===0?'M':'L') + p[0].toFixed(1) + ',' + p[1].toFixed(1); }).join(' ');
+    var area = d + ' L' + (w-pad).toFixed(1) + ',' + (h-pad).toFixed(1) + ' L' + pad.toFixed(1) + ',' + (h-pad).toFixed(1) + ' Z';
+    return { d: d, area: area, w: w, h: h, pad: pad, min: min, max: max };
+  }
+
+  function getAlignedByDate(col, dateCol){
+    var pairs = [];
+    currentResult.dataRows.forEach(function(row, i){
+      var dt = dateCol.dates[i];
+      var v = toNumber(row[col.index], currentResult.delim);
+      if (dt && !isNaN(v)) pairs.push({d:dt, v:v});
+    });
+    pairs.sort(function(a,b){ return a.d-b.d; });
+    return pairs;
+  }
+
+  function fmtDateShort(d){ return String(d.getDate()).padStart(2,'0')+'/'+String(d.getMonth()+1).padStart(2,'0')+'/'+d.getFullYear(); }
+
   function renderChart(col){
+    var dateCol = currentResult.dateCol;
+    if (dateCol){
+      var pairs = getAlignedByDate(col, dateCol);
+      if (pairs.length >= 2){
+        var sampledPairs = pairs;
+        if (pairs.length > 400){
+          var step2 = Math.ceil(pairs.length/400);
+          sampledPairs = pairs.filter(function(_,i){ return i%step2===0; });
+        }
+        var t2 = buildTraceByDate(sampledPairs);
+        var meanY2 = t2.pad + (t2.h-2*t2.pad) * (1 - (col.mean - t2.min)/((t2.max-t2.min)||1));
+        var svg2 = '<svg viewBox="0 0 '+t2.w+' '+t2.h+'" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none" role="img" aria-label="Time series of '+escapeHtml(col.name)+'">'
+          + '<line x1="'+t2.pad+'" y1="'+meanY2.toFixed(1)+'" x2="'+(t2.w-t2.pad)+'" y2="'+meanY2.toFixed(1)+'" stroke="#7C8A99" stroke-width="1" stroke-dasharray="2,5" opacity=".7"/>'
+          + '<path d="'+t2.area+'" fill="rgba(127,196,232,.10)"/>'
+          + '<path d="'+t2.d+'" fill="none" stroke="#F2F3F0" stroke-width="2"/>'
+          + '</svg>';
+        chartWrap.innerHTML = svg2;
+        chartMeta.innerHTML =
+          '<span>Mean: <b>'+fmt(col.mean)+'</b></span>'
+          + '<span>Min: <b>'+fmt(col.min)+'</b></span>'
+          + '<span>Max: <b>'+fmt(col.max)+'</b></span>'
+          + '<span>Std dev: <b>'+fmt(col.std)+'</b></span>'
+          + '<span>'+fmtDateShort(pairs[0].d)+' → '+fmtDateShort(pairs[pairs.length-1].d)+'</span>'
+          + (sampledPairs.length < pairs.length ? '<span>Sampled to '+sampledPairs.length+' of '+pairs.length+' points</span>' : '');
+        dateNote.style.display = 'flex';
+        dateNote.textContent = 'X axis = real date, detected in column "'+dateCol.name+'"';
+        return;
+      }
+    }
+    dateNote.style.display = 'none';
     var values = col.values;
     var sampled = values;
     if (values.length > 400){
@@ -374,9 +567,9 @@
     var t = buildTrace(sampled);
     var meanY = t.pad + (t.h-2*t.pad) * (1 - (col.mean - t.min)/((t.max-t.min)||1));
     var svg = '<svg viewBox="0 0 '+t.w+' '+t.h+'" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none" role="img" aria-label="Chart of '+escapeHtml(col.name)+'">'
-      + '<line x1="'+t.pad+'" y1="'+meanY.toFixed(1)+'" x2="'+(t.w-t.pad)+'" y2="'+meanY.toFixed(1)+'" stroke="#8CA0B3" stroke-width="1" stroke-dasharray="2,5" opacity=".7"/>'
-      + '<path d="'+t.area+'" fill="rgba(123,148,169,.14)"/>'
-      + '<path d="'+t.d+'" fill="none" stroke="#16233B" stroke-width="2"/>'
+      + '<line x1="'+t.pad+'" y1="'+meanY.toFixed(1)+'" x2="'+(t.w-t.pad)+'" y2="'+meanY.toFixed(1)+'" stroke="#7C8A99" stroke-width="1" stroke-dasharray="2,5" opacity=".7"/>'
+      + '<path d="'+t.area+'" fill="rgba(127,196,232,.10)"/>'
+      + '<path d="'+t.d+'" fill="none" stroke="#F2F3F0" stroke-width="2"/>'
       + '</svg>';
     chartWrap.innerHTML = svg;
     chartMeta.innerHTML =
@@ -384,21 +577,149 @@
       + '<span>Min: <b>'+fmt(col.min)+'</b></span>'
       + '<span>Max: <b>'+fmt(col.max)+'</b></span>'
       + '<span>Std dev: <b>'+fmt(col.std)+'</b></span>'
-      + (sampled.length < values.length ? '<span>Sampled to '+sampled.length+' of '+values.length+' points for charting</span>' : '');
+      + (sampled.length < values.length ? '<span>Sampled to '+sampled.length+' of '+values.length+' points to chart</span>' : '');
+  }
+
+  // ---------- EDA: histogram ----------
+  function buildHistogram(values, w, h){
+    w=w||760; h=h||200;
+    var padL=40, padR=14, padT=10, padB=24;
+    var innerW=w-padL-padR, innerH=h-padT-padB;
+    var min=Math.min.apply(null,values), max=Math.max.apply(null,values);
+    var nBins = Math.max(6, Math.min(16, Math.ceil(Math.sqrt(values.length))));
+    var range=(max-min)||1;
+    var binW=range/nBins;
+    var bins=new Array(nBins).fill(0);
+    values.forEach(function(v){
+      var idx=Math.min(nBins-1, Math.floor((v-min)/binW));
+      bins[idx]++;
+    });
+    var maxCount=Math.max.apply(null,bins);
+    var barW=innerW/nBins;
+    var parts=[];
+    bins.forEach(function(c,i){
+      var bh=(c/maxCount)*innerH;
+      var x=padL+i*barW, y=padT+innerH-bh;
+      parts.push('<rect x="'+(x+1.5).toFixed(1)+'" y="'+y.toFixed(1)+'" width="'+(barW-3).toFixed(1)+'" height="'+bh.toFixed(1)+'" fill="var(--centerline,#7C8A99)" opacity=".85"/>');
+      if (i%2===0 || nBins<=8) parts.push('<text x="'+(x+barW/2).toFixed(1)+'" y="'+(h-8)+'" text-anchor="middle" class="hist-bar-label">'+(min+i*binW).toFixed(1)+'</text>');
+    });
+    parts.push('<line x1="'+padL+'" y1="'+(padT+innerH)+'" x2="'+(w-padR)+'" y2="'+(padT+innerH)+'" stroke="#2A3648" stroke-width="1"/>');
+    parts.push('<text x="8" y="'+(padT+8)+'" class="hist-bar-label">'+maxCount+'</text>');
+    return '<svg viewBox="0 0 '+w+' '+h+'" style="width:100%;height:auto;" xmlns="http://www.w3.org/2000/svg" role="img"><g fill="#8B95A0">'+parts.join('')+'</g></svg>';
+  }
+
+  // ---------- EDA: correlation matrix ----------
+  function renderCorrMatrix(numericCols){
+    if (numericCols.length < 2){ corrWrap.innerHTML = '<p class="empty-note">At least 2 numeric columns are needed to compute correlation.</p>'; return; }
+    var n = numericCols.length;
+    var matrix = [];
+    for (var i=0;i<n;i++){
+      matrix.push([]);
+      for (var j=0;j<n;j++){
+        if (i===j){ matrix[i].push(1); continue; }
+        var ci = numericCols[i], cj = numericCols[j];
+        var xs=[], ys=[];
+        for (var k=0;k<currentResult.dataRows.length;k++){
+          var vi = toNumber(currentResult.dataRows[k][ci.index], currentResult.delim);
+          var vj = toNumber(currentResult.dataRows[k][cj.index], currentResult.delim);
+          if (!isNaN(vi) && !isNaN(vj)){ xs.push(vi); ys.push(vj); }
+        }
+        matrix[i].push(pearson(xs,ys));
+      }
+    }
+    function colorFor(v){
+      if (v===null) return '#B9C3D0';
+      var t = Math.abs(v);
+      if (v>=0){ var g=Math.round(120-70*t), r=Math.round(180-90*t); return 'rgb('+r+','+Math.round(110+90*t)+','+g+')'; }
+      var rr=Math.round(150+90*t), gg=Math.round(90-50*t);
+      return 'rgb('+rr+','+gg+',80)';
+    }
+    var thead = '<tr><th></th>' + numericCols.map(function(c){ return '<th>'+escapeHtml(c.name.length>10?c.name.slice(0,9)+'…':c.name)+'</th>'; }).join('') + '</tr>';
+    var tbody = numericCols.map(function(ci,i){
+      return '<tr><th class="rowhead">'+escapeHtml(ci.name.length>16?ci.name.slice(0,15)+'…':ci.name)+'</th>'
+        + matrix[i].map(function(v,j){
+            var isDiag = i===j;
+            return '<td class="corr-cell'+(isDiag?' corr-diag':'')+'" style="background:'+(isDiag?'':colorFor(v))+';">'+(v===null?'—':v.toFixed(2))+'</td>';
+          }).join('') + '</tr>';
+    }).join('');
+    corrWrap.innerHTML = '<div class="corr-scroll"><table class="corr-table"><thead>'+thead+'</thead><tbody>'+tbody+'</tbody></table></div>';
+  }
+
+  // ---------- EDA: missing-data map ----------
+  function renderMissingMap(r){
+    missingWrap.innerHTML = r.columns.map(function(c){
+      var pct = r.nRows>0 ? (c.missing/r.nRows*100) : 0;
+      var completePct = 100-pct;
+      var color = pct===0 ? 'var(--ok)' : (pct<10 ? '#C9A227' : 'var(--alert)');
+      return '<div class="missing-row"><span class="missing-name" title="'+escapeHtml(c.name)+'">'+escapeHtml(c.name)+'</span>'
+        + '<div class="missing-track"><div class="missing-fill" style="width:'+completePct.toFixed(1)+'%;background:'+color+';"></div></div>'
+        + '<span class="missing-pct">'+c.missing+' ('+pct.toFixed(1)+'%)</span></div>';
+    }).join('');
+  }
+
+  // ---------- EDA: boxplot ----------
+  function buildBoxplotSVG(col, w, h){
+    w=w||160; h=h||190;
+    var padT=10, padB=10, padX=30;
+    var innerH=h-padT-padB;
+    var range=(col.max-col.min)||1;
+    function yOf(v){ return padT + innerH*(1-(v-col.min)/range); }
+    var cx=w/2, boxW=Math.min(60,w-padX*2);
+    var yQ1=yOf(col.q1), yQ3=yOf(col.q3), yMed=yOf(col.median), yWLo=yOf(col.whiskerLo), yWHi=yOf(col.whiskerHi);
+    var parts=[];
+    parts.push('<line x1="'+cx+'" y1="'+yWLo.toFixed(1)+'" x2="'+cx+'" y2="'+yQ1.toFixed(1)+'" stroke="#8B95A0" stroke-width="1.3"/>');
+    parts.push('<line x1="'+cx+'" y1="'+yQ3.toFixed(1)+'" x2="'+cx+'" y2="'+yWHi.toFixed(1)+'" stroke="#8B95A0" stroke-width="1.3"/>');
+    parts.push('<line x1="'+(cx-boxW/4)+'" y1="'+yWLo.toFixed(1)+'" x2="'+(cx+boxW/4)+'" y2="'+yWLo.toFixed(1)+'" stroke="#8B95A0" stroke-width="1.3"/>');
+    parts.push('<line x1="'+(cx-boxW/4)+'" y1="'+yWHi.toFixed(1)+'" x2="'+(cx+boxW/4)+'" y2="'+yWHi.toFixed(1)+'" stroke="#8B95A0" stroke-width="1.3"/>');
+    parts.push('<rect x="'+(cx-boxW/2).toFixed(1)+'" y="'+yQ3.toFixed(1)+'" width="'+boxW+'" height="'+Math.max(1,(yQ1-yQ3)).toFixed(1)+'" fill="rgba(127,196,232,.20)" stroke="#F2F3F0" stroke-width="1.2"/>');
+    parts.push('<line x1="'+(cx-boxW/2)+'" y1="'+yMed.toFixed(1)+'" x2="'+(cx+boxW/2)+'" y2="'+yMed.toFixed(1)+'" stroke="#F2F3F0" stroke-width="2"/>');
+    col.outliers.slice(0,60).forEach(function(o){
+      parts.push('<circle cx="'+cx+'" cy="'+yOf(o).toFixed(1)+'" r="2.6" fill="none" stroke="var(--alert,#E6553F)" stroke-width="1.2" opacity=".8"/>');
+    });
+    return '<svg viewBox="0 0 '+w+' '+h+'" xmlns="http://www.w3.org/2000/svg" role="img">'+parts.join('')+'</svg>';
+  }
+  function renderBoxplots(numericCols){
+    if (numericCols.length===0){ boxplotWrap.innerHTML = '<p class="empty-note">No numeric columns.</p>'; return; }
+    boxplotWrap.innerHTML = numericCols.map(function(c){
+      return '<div class="box-card"><p class="box-title" title="'+escapeHtml(c.name)+'">'+escapeHtml(c.name)+'</p>'+buildBoxplotSVG(c)
+        + '<p class="empty-note" style="font-size:.66rem;">'+c.outliers.length+' outlier'+(c.outliers.length===1?'':'s')+'</p></div>';
+    }).join('');
+  }
+
+  // ---------- EDA: categorical ----------
+  function renderCategoricalBars(col){
+    var raw = currentResult.dataRows.map(function(r){ return (r[col.index]||'').trim(); }).filter(function(v){ return v!==''; });
+    var counts = {};
+    raw.forEach(function(v){ counts[v]=(counts[v]||0)+1; });
+    var entries = Object.keys(counts).map(function(k){ return [k, counts[k]]; }).sort(function(a,b){ return b[1]-a[1]; });
+    var top = entries.slice(0,10);
+    var maxCount = top.length? top[0][1] : 1;
+    catWrap.innerHTML = top.map(function(e){
+      var pct = (e[1]/maxCount*100);
+      return '<div class="cat-row"><span class="cat-name" title="'+escapeHtml(e[0])+'">'+escapeHtml(e[0])+'</span>'
+        + '<div class="cat-track"><div class="cat-fill" style="width:'+pct.toFixed(1)+'%;"></div></div>'
+        + '<span class="cat-count">'+e[1]+' ('+(e[1]/raw.length*100).toFixed(1)+'%)</span></div>';
+    }).join('') + (entries.length>10 ? '<p class="empty-note" style="margin-top:8px;">+'+(entries.length-10)+' more values, not shown</p>' : '');
   }
 
   function renderResults(r){
     currentResult = r;
+    r.dateCol = r.columns.filter(function(c){ return c.isDate; })[0] || null;
     renderStats(r);
     renderColTable(r);
     renderPreview(r);
 
     var numericCols = r.columns.filter(function(c){ return c.isNumeric; });
+    var textCols = r.columns.filter(function(c){ return !c.isNumeric && !c.isDate; });
+
     if (numericCols.length === 0){
       chartWrap.innerHTML = '<p class="empty-note">No numeric columns were detected to chart.</p>';
       chartMeta.innerHTML = '';
       colSelect.innerHTML = '';
       colSelect.style.display = 'none';
+      dateNote.style.display = 'none';
+      histSelect.style.display = 'none';
+      histWrap.innerHTML = '<p class="empty-note">No numeric columns.</p>';
     } else {
       colSelect.style.display = '';
       colSelect.innerHTML = numericCols.map(function(c){ return '<option value="'+c.index+'">'+escapeHtml(c.name)+'</option>'; }).join('');
@@ -408,7 +729,35 @@
         var col = r.columns.filter(function(c){ return c.index === idx; })[0];
         if (col) renderChart(col);
       };
+
+      histSelect.style.display = '';
+      histSelect.innerHTML = numericCols.map(function(c){ return '<option value="'+c.index+'">'+escapeHtml(c.name)+'</option>'; }).join('');
+      histWrap.innerHTML = buildHistogram(numericCols[0].values);
+      histSelect.onchange = function(){
+        var idx = parseInt(histSelect.value, 10);
+        var col = numericCols.filter(function(c){ return c.index === idx; })[0];
+        if (col) histWrap.innerHTML = buildHistogram(col.values);
+      };
     }
+
+    renderCorrMatrix(numericCols);
+    renderMissingMap(r);
+    renderBoxplots(numericCols);
+
+    if (textCols.length === 0){
+      catSelect.style.display = 'none';
+      catWrap.innerHTML = '<p class="empty-note">No text (categorical) columns were detected — all columns may be numeric or date.</p>';
+    } else {
+      catSelect.style.display = '';
+      catSelect.innerHTML = textCols.map(function(c){ return '<option value="'+c.index+'">'+escapeHtml(c.name)+'</option>'; }).join('');
+      renderCategoricalBars(textCols[0]);
+      catSelect.onchange = function(){
+        var idx = parseInt(catSelect.value, 10);
+        var col = textCols.filter(function(c){ return c.index === idx; })[0];
+        if (col) renderCategoricalBars(col);
+      };
+    }
+
     resultados.hidden = false;
   }
 
@@ -450,7 +799,7 @@
   sampleBtn.addEventListener('click', function(e){
     e.stopPropagation();
     clearError();
-    fname.textContent = 'synthetic-sample.csv';
+    fname.textContent = 'sample-data.csv';
     filebar.classList.add('show');
     try { renderResults(analyze(generateSample())); }
     catch(err){ showError(err.message); }

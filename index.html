@@ -35,17 +35,19 @@
   .campaign{position:relative;padding-left:64px;}
   .campaign::before{content:"";position:absolute;left:19px;top:8px;bottom:8px;border-left:1.5px dashed var(--line);}
   .campaign-marker{position:absolute;left:0;top:0;width:40px;height:40px;border-radius:50%;background:var(--bg2);border:1.5px solid var(--line);display:flex;align-items:center;justify-content:center;font-family:var(--font-mono);font-size:.78rem;color:var(--ink);}
+  .campaign-marker.channel-a{border-color:var(--amber);color:var(--amber);}
+  .campaign-marker.channel-b{border-color:var(--cyan);color:var(--cyan);}
   .campaign-tag{font-family:var(--font-mono);font-size:.72rem;letter-spacing:.12em;text-transform:uppercase;color:var(--cyan);margin-bottom:8px;}
 
   /* ---------- NAV ---------- */
   nav{position:sticky;top:0;z-index:100;height:var(--nav-h);background:rgba(14,20,32,.88);backdrop-filter:blur(8px);border-bottom:1px solid var(--line);}
-  nav .wrap{height:100%;display:flex;align-items:center;justify-content:space-between;}
+  nav .wrap{height:100%;display:flex;align-items:center;justify-content:space-between;max-width:1400px;gap:24px;}
   .wordmark{font-weight:700;font-size:1.1rem;letter-spacing:-.01em;display:flex;align-items:center;gap:8px;}
   .wordmark small{font-family:var(--font-mono);font-weight:400;font-size:.58rem;letter-spacing:.12em;color:var(--ink-soft);}
-  .status{display:flex;align-items:center;gap:7px;font-family:var(--font-mono);font-size:.72rem;color:var(--ink-soft);letter-spacing:.05em;}
-  .status-dot{width:6px;height:6px;border-radius:50%;background:var(--cyan);}
-  .navlinks{display:flex;align-items:center;gap:26px;list-style:none;}
-  .navlinks a{font-family:var(--font-mono);font-size:.76rem;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-soft);transition:color .2s;}
+  .status{display:flex;align-items:center;gap:7px;font-family:var(--font-mono);font-size:.72rem;color:var(--ink-soft);letter-spacing:.05em;white-space:nowrap;}
+  .status-dot{width:6px;height:6px;border-radius:50%;background:var(--cyan);flex-shrink:0;}
+  .navlinks{display:flex;align-items:center;gap:22px;list-style:none;}
+  .navlinks a{font-family:var(--font-mono);font-size:.76rem;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-soft);transition:color .2s;white-space:nowrap;}
   .navlinks a:hover{color:var(--ink);}
   .navcta{color:#0E1420;background:var(--ink);padding:9px 16px;border-radius:2px;}
   .navcta:hover{background:var(--cyan);}
@@ -82,7 +84,7 @@
   .btn-ghost:hover{border-color:var(--ink);}
 
   /* --- gráfico de doble canal, el hero ES el gráfico --- */
-  .chart-hero{position:relative;margin-top:6px;}
+  .chart-hero{position:relative;margin-top:38px;}
   .chart-hero svg{display:block;width:100%;height:auto;}
   .trace-draw{stroke-dasharray:2000;stroke-dashoffset:2000;animation:draw 2.6s cubic-bezier(.65,0,.35,1) forwards;}
   .trace-draw.b{animation-delay:.25s;}
@@ -163,10 +165,12 @@
 
   @media (max-width:860px){
     .perfil-grid{grid-template-columns:1fr;}
-    .navlinks{display:none;}
-    .navtoggle{display:block;}
     .registro{grid-template-columns:1fr;gap:10px;}
     .registro .spark{order:2;}
+  }
+  @media (max-width:1240px){
+    .navlinks{display:none;}
+    .navtoggle{display:block;}
   }
   @media (max-width:600px){
     .campaign{padding-left:44px;}
@@ -186,8 +190,8 @@
       <li><a href="#especialidades">Especialidades</a></li>
       <li><a href="#formacion">Formación</a></li>
       <li><a href="#diagnosticos">Diagnósticos</a></li>
-      <li><a href="./MC3G_Analizador_CSV.html" target="_blank" rel="noopener">Analizador CSV</a></li>
-      <li><a href="./MC3G_Dashboard_CSV.html" target="_blank" rel="noopener">Dashboard CSV</a></li>
+      <li><a href="./MC3G_Analizador_CSV.html">Analizador CSV</a></li>
+      <li><a href="./MC3G_Dashboard_CSV.html">Dashboard CSV</a></li>
       <li><a href="./MC3G_Landing_v2_Lecturas_EN.html" class="lang-switch">EN</a></li>
       <li><a href="#contacto" class="navcta">Contacto</a></li>
     </ul>
@@ -295,7 +299,7 @@
             <span class="chip">Revisión de umbrales normativos</span>
             <span class="chip">Capacitación in-company</span>
           </div>
-          <a href="./MC3G_Inclinometro_GKN.html" target="_blank" rel="noopener" class="canal-cta">→ Probar el analizador de inclinómetros GKN en vivo</a>
+          <a href="./MC3G_Inclinometro_GKN.html" class="canal-cta">→ Probar el analizador de inclinómetros GKN en vivo</a>
         </div>
 
         <div class="canal-card b">
@@ -308,8 +312,8 @@
             <span class="chip">Integración de asistentes de IA en el flujo de ingeniería</span>
             <span class="chip">Capacitación en IA aplicada al monitoreo</span>
           </div>
-          <a href="./MC3G_Analizador_CSV.html" target="_blank" rel="noopener" class="canal-cta">→ Probar el analizador de CSV en vivo</a>
-          <a href="./MC3G_Dashboard_CSV.html" target="_blank" rel="noopener" class="canal-cta" style="border-top:none;padding-top:0;margin-top:8px;">→ Armar un dashboard de KPIs desde un CSV</a>
+          <a href="./MC3G_Analizador_CSV.html" class="canal-cta">→ Probar el analizador de CSV en vivo</a>
+          <a href="./MC3G_Dashboard_CSV.html" class="canal-cta" style="border-top:none;padding-top:0;margin-top:8px;">→ Armar un dashboard de KPIs desde un CSV</a>
         </div>
       </div>
 
@@ -338,7 +342,7 @@
   <!-- HERRAMIENTA INSIGNIA -->
   <section id="insignia">
     <div class="wrap campaign">
-      <div class="campaign-marker">03</div>
+      <div class="campaign-marker channel-b">03</div>
       <p class="campaign-tag">Campaña N.º 03 · Herramienta insignia</p>
       <h2>El analizador de inclinómetros GKN — completo, en tu navegador</h2>
       <p class="lede">No es una demo — es la misma metodología con la que trabajo: convención de ejes real, checksum de sonda, zona de sizalla con dos candidatos explícitos y las 3 tasas de siempre. Subís tus .gkn, nada se sube a ningún servidor.</p>
@@ -351,7 +355,7 @@
           <span class="flagship-feature">Vector de movimiento con azimut real (Norte/Este)</span>
           <span class="flagship-feature">Informe descargable en PDF</span>
         </div>
-        <a class="btn btn-primary flagship-cta" href="./MC3G_Inclinometro_GKN.html" target="_blank" rel="noopener">Abrir el analizador de inclinómetros →</a>
+        <a class="btn btn-primary flagship-cta" href="./MC3G_Inclinometro_GKN.html">Abrir el analizador de inclinómetros →</a>
       </div>
     </div>
   </section>
@@ -393,7 +397,7 @@
   <!-- DIAGNÓSTICOS -->
   <section id="diagnosticos">
     <div class="wrap campaign">
-      <div class="campaign-marker">05</div>
+      <div class="campaign-marker channel-a">05</div>
       <p class="campaign-tag">Campaña N.º 05 · Diagnósticos de campo</p>
       <h2>Registros de campaña, no casos de venta</h2>
       <p class="lede">Cuatro ejemplos reales de trabajo, anonimizados: sin nombre de presa, empresa ni cliente.</p>

@@ -4,20 +4,20 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>KPI Dashboard from CSV — MC3G Consulting</title>
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect x='4' y='4' width='56' height='56' rx='12' fill='%230E1420'/%3E%3Cpath d='M14,44 C24,40 34,34 40,30' stroke='%23D98B3F' stroke-width='6' fill='none' stroke-linecap='round'/%3E%3Cpath d='M14,20 C24,24 34,28 40,30' stroke='%237FC4E8' stroke-width='6' fill='none' stroke-linecap='round'/%3E%3Ccircle cx='40' cy='30' r='3.4' fill='%23F2F3F0'/%3E%3C/svg%3E">
 <meta name="description" content="Upload any CSV: the system suggests a date column and candidate KPIs with the reason for each suggestion, you confirm, and it builds a dashboard with metrics and time-series charts. All in your browser.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@600;700&family=IBM+Plex+Sans+Condensed:wght@500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
   :root{
-    --paper:#F7F8F5;--grid:#DCE4E9;--ink:#16233B;--ink-soft:#5B6B80;--line:#D7E0E6;--card:#FFFFFF;
-    --band:rgba(123,148,169,.14);--centerline:#8CA0B3;--alert:#C0392B;--alert-deep:#9B2E22;--ok:#2F6F5E;
-    --font-display:'IBM Plex Sans Condensed',sans-serif;--font-body:'Inter',sans-serif;
+    --paper:#0E1420;--grid:#1A2333;--ink:#F2F3F0;--ink-soft:#8B95A0;--line:#2A3648;--card:#161F2E;
+    --band:rgba(127,196,232,.10);--centerline:#7C8A99;--alert:#E6553F;--alert-deep:#C23F2D;--ok:#3FBF8F;
+    --font-display:'Space Grotesk',sans-serif;--font-body:'Inter',sans-serif;
     --font-mono:'JetBrains Mono',monospace;--font-word:'Space Grotesk',sans-serif;--nav-h:60px;
   }
   *{box-sizing:border-box;margin:0;padding:0;}
   html{scroll-behavior:smooth;}
-  body{font-family:var(--font-body);color:var(--ink);line-height:1.6;-webkit-font-smoothing:antialiased;background:var(--paper);
-    background-image:repeating-linear-gradient(0deg, var(--grid) 0 1px, transparent 1px 28px),repeating-linear-gradient(90deg, var(--grid) 0 1px, transparent 1px 28px);}
+  body{font-family:var(--font-body);color:var(--ink);line-height:1.6;-webkit-font-smoothing:antialiased;background:var(--paper);}
   h1,h2,h3,h4{font-family:var(--font-display);}
   .mono{font-family:var(--font-mono);}
   a{color:inherit;text-decoration:none;}
@@ -27,7 +27,7 @@
   .skip-link:focus{left:12px;top:12px;}
 
   .wrap{max-width:1080px;margin:0 auto;padding:0 24px;}
-  nav{position:sticky;top:0;z-index:50;height:var(--nav-h);background:rgba(247,248,245,.92);backdrop-filter:blur(6px);border-bottom:1.5px dashed var(--ink-soft);}
+  nav{position:sticky;top:0;z-index:50;height:var(--nav-h);background:rgba(14,20,32,.9);backdrop-filter:blur(6px);border-bottom:1.5px dashed var(--ink-soft);}
   nav .wrap{height:100%;display:flex;align-items:center;justify-content:space-between;}
   .back{font-family:var(--font-mono);font-size:.76rem;letter-spacing:.06em;color:var(--ink-soft);}
   .back:hover{color:var(--ink);}
@@ -42,7 +42,7 @@
   .privacy-note::before{content:"●";font-size:.6rem;}
 
   .dropzone{border:1.5px dashed var(--ink-soft);border-radius:6px;background:var(--card);padding:40px 24px;text-align:center;cursor:pointer;transition:border-color .2s,background .2s;}
-  .dropzone.drag{border-color:var(--alert);background:#FBF0EE;}
+  .dropzone.drag{border-color:var(--alert);background:#2A1A18;}
   .dz-title{font-family:var(--font-display);font-weight:600;font-size:1.05rem;margin-bottom:6px;}
   .dz-sub{font-family:var(--font-mono);font-size:.76rem;color:var(--ink-soft);}
   .dz-actions{display:flex;justify-content:center;gap:14px;margin-top:18px;flex-wrap:wrap;}
@@ -55,7 +55,7 @@
   .filebar{display:none;align-items:center;justify-content:space-between;gap:14px;margin-top:16px;font-family:var(--font-mono);font-size:.8rem;color:var(--ink-soft);flex-wrap:wrap;}
   .filebar.show{display:flex;}
   .filebar b{color:var(--ink);}
-  .errorbox{display:none;margin-top:18px;padding:14px 16px;border-left:3px solid var(--alert);background:#FBF0EE;font-family:var(--font-mono);font-size:.82rem;color:var(--alert-deep);}
+  .errorbox{display:none;margin-top:18px;padding:14px 16px;border-left:3px solid var(--alert);background:#2A1A18;font-family:var(--font-mono);font-size:.82rem;color:var(--alert-deep);}
   .errorbox.show{display:block;}
 
   /* config */
@@ -75,10 +75,22 @@
 
   h2.section{font-size:1.15rem;margin:34px 0 16px;}
   .kpi-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:16px;margin-bottom:8px;}
-  .kpi-card{background:var(--card);border:1px solid var(--line);border-radius:4px;padding:20px;}
+  .kpi-card{background:var(--card);border:1px solid var(--line);border-left:4px solid var(--line);border-radius:4px;padding:20px;}
+  .kpi-card.status-ok{border-left-color:var(--ok);}
+  .kpi-card.status-watch{border-left-color:#C9A227;}
+  .kpi-card.status-alert{border-left-color:var(--alert);}
+  .kpi-status{display:inline-flex;align-items:center;gap:5px;font-family:var(--font-mono);font-size:.64rem;letter-spacing:.05em;text-transform:uppercase;padding:3px 9px;border-radius:10px;margin-bottom:10px;}
+  .kpi-status::before{content:"";width:6px;height:6px;border-radius:50%;background:currentColor;}
+  .kpi-status.status-ok{background:rgba(47,111,94,.12);color:var(--ok);}
+  .kpi-status.status-watch{background:rgba(201,162,39,.16);color:#8A6D15;}
+  .kpi-status.status-alert{background:rgba(192,57,43,.12);color:var(--alert-deep);}
   .kpi-card .kpi-name{font-family:var(--font-mono);font-size:.7rem;letter-spacing:.05em;text-transform:uppercase;color:var(--ink-soft);margin-bottom:8px;}
   .kpi-card .kpi-value{font-size:1.8rem;font-weight:700;color:var(--ink);line-height:1;margin-bottom:6px;}
-  .kpi-card .kpi-delta{font-family:var(--font-mono);font-size:.76rem;color:var(--ink-soft);margin-bottom:12px;}
+  .kpi-card .kpi-delta{font-family:var(--font-mono);font-size:.8rem;font-weight:600;margin-bottom:12px;}
+  .kpi-card .kpi-delta.trend-up{color:var(--ink);}
+  .kpi-card .kpi-delta.trend-down{color:var(--ink);}
+  .kpi-card .kpi-delta .arrow-up{color:var(--ok);}
+  .kpi-card .kpi-delta .arrow-down{color:var(--alert-deep);}
   .kpi-card svg{width:100%;height:auto;display:block;}
 
   .chart-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));gap:18px;}
@@ -101,7 +113,7 @@
   #dashboard{padding-bottom:80px;}
   .dash-actions{margin:36px 0 0;}
 
-  footer{background:var(--ink);border-top:1px solid rgba(247,248,245,.15);padding:26px 0;margin-top:60px;}
+  footer{background:var(--card);border-top:1px solid var(--line);padding:26px 0;margin-top:60px;}
   footer .wrap{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;}
   footer a{color:#B9C3D0;font-family:var(--font-mono);font-size:.78rem;}
   footer a:hover{color:var(--paper);}
@@ -129,12 +141,12 @@
     <div class="wrap">
       <p class="eyebrow">Channel B · KPI Dashboard</p>
       <h1>Upload a CSV. We build a dashboard from your metrics.</h1>
-      <p class="lede">The system suggests which column to use as the date and which numeric columns look like KPIs — with the reason for each suggestion shown up front. You confirm or change it before generating the dashboard.</p>
+      <p class="lede">The system suggests which column to use as the date axis and which numeric columns look like KPIs — with the reason for each suggestion visible. You confirm or change it before generating the dashboard.</p>
       <p class="privacy-note">All analysis happens in your browser. The file is never uploaded to any server.</p>
 
       <div class="dropzone" id="dropzone" tabindex="0" role="button" aria-label="Upload CSV file">
         <p class="dz-title">Drag your CSV here, or click to choose it</p>
-        <p class="dz-sub">.csv · comma or semicolon separator · any column structure</p>
+        <p class="dz-sub">.csv · comma or semicolon delimiter · any column structure</p>
         <label for="csvInput" class="visually-hidden">Choose CSV file</label>
         <input type="file" id="csvInput" accept=".csv,text/csv" class="visually-hidden">
         <div class="dz-actions">
@@ -152,7 +164,7 @@
   <section id="config" hidden>
     <div class="wrap">
       <div class="config-card">
-        <p class="config-note">Automatic suggestions — you decide which to use. None is applied on its own.</p>
+        <p class="config-note">Automatic suggestions — you decide which to use. None are applied on their own.</p>
 
         <div class="field">
           <p class="field-label">Date / time column</p>
@@ -160,7 +172,7 @@
         </div>
 
         <div class="field">
-          <p class="field-label">KPI columns to feature</p>
+          <p class="field-label">KPI columns to highlight</p>
           <div class="kpi-list" id="kpiList"></div>
         </div>
 
@@ -174,10 +186,10 @@
       <h2 class="section">KPIs</h2>
       <div class="kpi-grid" id="kpiGrid"></div>
 
-      <h2 class="section">Trend Over Time</h2>
+      <h2 class="section">Time evolution</h2>
       <div class="chart-grid" id="chartGrid"></div>
 
-      <h2 class="section">All Columns</h2>
+      <h2 class="section">All columns</h2>
       <div class="table-wrap">
         <table id="colTable"><thead></thead><tbody></tbody></table>
       </div>
@@ -259,7 +271,7 @@
   }
   function isLikelyId(name, numericValues){
     var n=name.toLowerCase();
-    var hints=['id','indice','índice','codigo','código','folio','n°','nro','item','idx'];
+    var hints=['id','index','indice','índice','code','codigo','código','folio','n°','nro','item','idx'];
     var nameFlag = hints.some(function(h){ return n.indexOf(h)!==-1; });
     var uniqueCount = new Set(numericValues).size;
     var allUnique = uniqueCount===numericValues.length;
@@ -324,7 +336,7 @@
     current = r;
     var dateCols = r.columns.filter(function(c){ return c.isDate; }).sort(function(a,b){ return b.dateScore-a.dateScore; });
     var otherCols = r.columns.filter(function(c){ return !c.isDate; });
-    var options = '<option value="">No time axis (sort by row)</option>';
+    var options = '<option value="">No time axis (order by row)</option>';
     dateCols.concat(otherCols).forEach(function(c){
       options += '<option value="'+c.index+'"'+(dateCols[0] && c.index===dateCols[0].index?' selected':'')+'>'+escapeHtml(c.name)+(c.isDate?' — detected as date':'')+'</option>';
     });
@@ -339,7 +351,7 @@
       var reason;
       if (c.isLikelyId) reason = 'excluded: looks like a sequential ID';
       else if (checked) reason = 'suggested: high variation, ' + c.missing + ' missing';
-      else reason = 'low variation or too many missing values';
+      else reason = 'low variation or many missing values';
       return '<div class="kpi-row'+(c.isLikelyId?' excluded':'')+'">'
         + '<input type="checkbox" id="kpi_'+c.index+'" value="'+c.index+'" '+(checked?'checked':'')+'>'
         + '<label class="name" for="kpi_'+c.index+'">'+escapeHtml(c.name)+'</label>'
@@ -370,16 +382,37 @@
       var m = mean(values);
       var min=Math.min.apply(null,values), max=Math.max.apply(null,values), range=(max-min)||1;
       var my = (pad||20) + (t.h-2*(pad||20)) * (1-(m-min)/range);
-      extra = '<line x1="'+(pad||20)+'" y1="'+my.toFixed(1)+'" x2="'+(t.w-(pad||20))+'" y2="'+my.toFixed(1)+'" stroke="#8CA0B3" stroke-width="1" stroke-dasharray="2,5" opacity=".7"/>';
+      extra = '<line x1="'+(pad||20)+'" y1="'+my.toFixed(1)+'" x2="'+(t.w-(pad||20))+'" y2="'+my.toFixed(1)+'" stroke="#7C8A99" stroke-width="1" stroke-dasharray="2,5" opacity=".7"/>';
     }
     return '<svg viewBox="0 0 '+t.w+' '+t.h+'" preserveAspectRatio="none">'
       + extra
-      + '<path d="'+t.area+'" fill="rgba(123,148,169,.14)"/>'
-      + '<path d="'+t.d+'" fill="none" stroke="#16233B" stroke-width="2"/>'
+      + '<path d="'+t.area+'" fill="rgba(127,196,232,.10)"/>'
+      + '<path d="'+t.d+'" fill="none" stroke="#F2F3F0" stroke-width="2"/>'
       + '</svg>';
   }
 
   function fmtDate(d){ return String(d.getDate()).padStart(2,'0')+'/'+String(d.getMonth()+1).padStart(2,'0')+'/'+d.getFullYear(); }
+
+  // Classifies the latest value against the series' median and MAD (median absolute deviation) —
+  // robust to a single extreme outlier, unlike mean±standard deviation (which a single spurious
+  // value can inflate so much that it masks other real alerts).
+  function median(arr){
+    var s = arr.slice().sort(function(a,b){return a-b;});
+    var mid = Math.floor(s.length/2);
+    return s.length%2 ? s[mid] : (s[mid-1]+s[mid])/2;
+  }
+  function statusFor(lastValue, allValues){
+    if (allValues.length < 2) return 'ok';
+    var med = median(allValues);
+    var mad = median(allValues.map(function(v){ return Math.abs(v-med); }));
+    var scaledMad = mad * 1.4826;
+    if (scaledMad === 0 || !isFinite(scaledMad)) return 'ok';
+    var z = Math.abs(lastValue - med) / scaledMad;
+    if (z > 3.5) return 'alert';
+    if (z > 2) return 'watch';
+    return 'ok';
+  }
+  var STATUS_LABEL = { ok:'Normal', watch:'Watch', alert:'Alert' };
 
   function generateDashboard(){
     var r = current;
@@ -403,19 +436,22 @@
       var seriesRaw = order.map(function(i){ return col.raw[i]; });
       var series = seriesRaw.map(function(v){ return toNumber(v, r.delim); }).filter(function(v){ return !isNaN(v); });
       if (series.length===0) return '';
+      var lastVal = series[series.length-1];
+      var status = statusFor(lastVal, series);
       var headline, deltaLine;
       if (dateIdx !== null && series.length>=2){
         var last = series[series.length-1], first = series[0];
         var delta = last-first;
         var pct = first!==0 ? (delta/Math.abs(first))*100 : null;
         headline = fmt(last);
-        deltaLine = (delta>=0?'↑ +':'↓ ')+fmt(Math.abs(delta))+(pct!==null?' ('+(delta>=0?'+':'-')+Math.abs(pct).toFixed(1)+'%)':'')+' since first record';
+        var arrowSpan = delta>=0 ? '<span class="arrow-up">↑</span>' : '<span class="arrow-down">↓</span>';
+        deltaLine = arrowSpan+' '+fmt(Math.abs(delta))+(pct!==null?' ('+(delta>=0?'+':'-')+Math.abs(pct).toFixed(1)+'%)':'')+' since the first record';
       } else {
         headline = fmt(mean(series));
         deltaLine = 'mean · min '+fmt(Math.min.apply(null,series))+' · max '+fmt(Math.max.apply(null,series));
       }
       var sampled = series.length>150 ? series.filter(function(_,i){ return i % Math.ceil(series.length/150) === 0; }) : series;
-      return '<div class="kpi-card"><p class="kpi-name">'+escapeHtml(col.name)+'</p><p class="kpi-value">'+headline+'</p><p class="kpi-delta">'+deltaLine+'</p>'
+      return '<div class="kpi-card status-'+status+'"><span class="kpi-status status-'+status+'">'+STATUS_LABEL[status]+'</span><p class="kpi-name">'+escapeHtml(col.name)+'</p><p class="kpi-value">'+headline+'</p><p class="kpi-delta">'+deltaLine+'</p>'
         + traceSvg(sampled, 240, 60, 6, false) + '</div>';
     }).join('') || '<p class="empty-note">No KPIs selected.</p>';
 
@@ -436,7 +472,7 @@
     }).join('') || '<p class="empty-note">No KPIs selected to chart.</p>';
 
     // full column table
-    var thead = '<tr><th>Column</th><th>Type</th><th>Values</th><th>Missing</th><th>Mean</th><th>Min</th><th>Max</th><th>Std dev / unique</th></tr>';
+    var thead = '<tr><th>Column</th><th>Type</th><th>Values</th><th>Missing</th><th>Mean</th><th>Min</th><th>Max</th><th>Std / unique</th></tr>';
     var tbody = r.columns.map(function(c){
       var typeBadge = c.isDate ? '<span class="badge-type badge-date">date</span>' : c.isNumeric ? '<span class="badge-type badge-num">numeric</span>' : '<span class="badge-type badge-txt">text</span>';
       if (c.isNumeric) return '<tr><td>'+escapeHtml(c.name)+'</td><td>'+typeBadge+'</td><td>'+c.count+'</td><td>'+c.missing+'</td><td>'+fmt(c.mean)+'</td><td>'+fmt(c.min)+'</td><td>'+fmt(c.max)+'</td><td>'+fmt(c.std)+'</td></tr>';
@@ -480,7 +516,7 @@
   });
   sampleBtn.addEventListener('click', function(e){
     e.stopPropagation(); clearError();
-    fname.textContent = 'synthetic-sample.csv'; filebar.classList.add('show');
+    fname.textContent = 'sample-data.csv'; filebar.classList.add('show');
     try {
       var text = generateSample();
       var r = analyze(text);

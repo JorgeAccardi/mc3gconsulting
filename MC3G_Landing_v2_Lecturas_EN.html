@@ -3,116 +3,99 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>MC3G Consulting — Eng. Jorge Gaspar Accardi | Dam Monitoring &amp; Applied AI</title>
-<meta name="description" content="MC3G Consulting — Eng. Jorge Gaspar Accardi. Dam and large infrastructure monitoring and instrumentation. Artificial intelligence applied to engineering and monitoring.">
+<title>MC3G Consulting — Eng. Jorge Gaspar Accardi | Dam Auscultation & Applied AI</title>
+<meta name="description" content="MC3G Consulting — Eng. Jorge Gaspar Accardi. Auscultation and instrumentation of dams and large structures. Artificial intelligence applied to engineering and monitoring.">
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect x='4' y='4' width='56' height='56' rx='12' fill='%230E1420'/%3E%3Cpath d='M14,44 C24,40 34,34 40,30' stroke='%23D98B3F' stroke-width='6' fill='none' stroke-linecap='round'/%3E%3Cpath d='M14,20 C24,24 34,28 40,30' stroke='%237FC4E8' stroke-width='6' fill='none' stroke-linecap='round'/%3E%3Ccircle cx='40' cy='30' r='3.4' fill='%23F2F3F0'/%3E%3C/svg%3E">
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@600;700&family=IBM+Plex+Sans+Condensed:wght@500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
   :root{
-    --paper:#F7F8F5;
-    --grid:#DCE4E9;
-    --ink:#16233B;
-    --ink-soft:#5B6B80;
-    --line:#D7E0E6;
-    --card:#FFFFFF;
-    --band:rgba(123,148,169,.14);
-    --centerline:#8CA0B3;
-    --alert:#C0392B;
-    --alert-deep:#9B2E22;
-    --ok:#2F6F5E;
-    --font-display:'IBM Plex Sans Condensed',sans-serif;
-    --font-body:'Inter',sans-serif;
-    --font-mono:'JetBrains Mono',monospace;
-    --font-word:'Space Grotesk',sans-serif;
+    --bg:#0E1420; --bg2:#141C2B; --card:#161F2E; --ink:#F2F3F0; --ink-soft:#8B95A0; --line:#232D3D;
+    --amber:#D98B3F; --cyan:#7FC4E8; --alert:#E6553F; --ok:#3FBF8F;
+    --font-display:'Space Grotesk',sans-serif; --font-body:'Inter',sans-serif; --font-mono:'JetBrains Mono',monospace;
     --nav-h:64px;
   }
   *{box-sizing:border-box;margin:0;padding:0;}
   html{scroll-behavior:smooth;scroll-padding-top:calc(var(--nav-h) + 14px);}
-  body{
-    font-family:var(--font-body);color:var(--ink);line-height:1.6;
-    -webkit-font-smoothing:antialiased;
-    background:var(--paper);
-    background-image:
-      repeating-linear-gradient(0deg, var(--grid) 0 1px, transparent 1px 28px),
-      repeating-linear-gradient(90deg, var(--grid) 0 1px, transparent 1px 28px);
-  }
+  body{font-family:var(--font-body);color:var(--ink);line-height:1.6;-webkit-font-smoothing:antialiased;background:var(--bg);}
   h1,h2,h3,h4,.wordmark{font-family:var(--font-display);}
   .mono{font-family:var(--font-mono);}
   a{color:inherit;text-decoration:none;}
   svg{display:block;max-width:100%;}
-  .skip-link{position:absolute;left:-9999px;top:0;background:var(--alert);color:#fff;padding:10px 16px;z-index:200;font-family:var(--font-mono);font-size:.85rem;}
+  .skip-link{position:absolute;left:-9999px;top:0;background:var(--amber);color:#0E1420;padding:10px 16px;z-index:200;font-family:var(--font-mono);font-size:.85rem;}
   .skip-link:focus{left:12px;top:12px;}
-  :focus-visible{outline:2px solid var(--alert);outline-offset:3px;}
+  :focus-visible{outline:2px solid var(--cyan);outline-offset:3px;}
 
   .wrap{max-width:1120px;margin:0 auto;padding:0 28px;}
   section{padding:90px 0;}
-  h2{font-size:clamp(1.5rem,3vw,2.05rem);font-weight:600;color:var(--ink);letter-spacing:-.01em;margin-bottom:14px;}
+  h2{font-size:clamp(1.5rem,3vw,2.05rem);font-weight:700;color:var(--ink);letter-spacing:-.01em;margin-bottom:14px;}
   .lede{font-size:1.02rem;color:var(--ink-soft);max-width:620px;margin-bottom:44px;font-family:var(--font-body);}
 
   /* ---------- campaign spine ---------- */
   .campaign{position:relative;padding-left:64px;}
-  .campaign::before{content:"";position:absolute;left:19px;top:8px;bottom:8px;border-left:1.5px dashed var(--ink-soft);opacity:.3;}
-  .campaign-marker{
-    position:absolute;left:0;top:0;width:40px;height:40px;border-radius:50%;
-    background:var(--card);border:1.5px solid var(--ink);display:flex;align-items:center;justify-content:center;
-    font-family:var(--font-mono);font-size:.78rem;color:var(--ink);
-  }
-  .campaign-tag{font-family:var(--font-mono);font-size:.72rem;letter-spacing:.12em;text-transform:uppercase;color:var(--alert-deep);margin-bottom:8px;}
+  .campaign::before{content:"";position:absolute;left:19px;top:8px;bottom:8px;border-left:1.5px dashed var(--line);}
+  .campaign-marker{position:absolute;left:0;top:0;width:40px;height:40px;border-radius:50%;background:var(--bg2);border:1.5px solid var(--line);display:flex;align-items:center;justify-content:center;font-family:var(--font-mono);font-size:.78rem;color:var(--ink);}
+  .campaign-marker.channel-a{border-color:var(--amber);color:var(--amber);}
+  .campaign-marker.channel-b{border-color:var(--cyan);color:var(--cyan);}
+  .campaign-tag{font-family:var(--font-mono);font-size:.72rem;letter-spacing:.12em;text-transform:uppercase;color:var(--cyan);margin-bottom:8px;}
 
   /* ---------- NAV ---------- */
-  nav{position:sticky;top:0;z-index:100;height:var(--nav-h);background:rgba(247,248,245,.9);backdrop-filter:blur(6px);border-bottom:1.5px dashed var(--ink-soft);}
-  nav .wrap{height:100%;display:flex;align-items:center;justify-content:space-between;}
-  .wordmark{font-weight:700;font-size:1.1rem;letter-spacing:-.01em;font-family:var(--font-word);display:flex;align-items:center;gap:8px;}
+  nav{position:sticky;top:0;z-index:100;height:var(--nav-h);background:rgba(14,20,32,.88);backdrop-filter:blur(8px);border-bottom:1px solid var(--line);}
+  nav .wrap{height:100%;display:flex;align-items:center;justify-content:space-between;max-width:1400px;gap:24px;}
+  .wordmark{font-weight:700;font-size:1.1rem;letter-spacing:-.01em;display:flex;align-items:center;gap:8px;}
   .wordmark small{font-family:var(--font-mono);font-weight:400;font-size:.58rem;letter-spacing:.12em;color:var(--ink-soft);}
-  .logo-big{display:inline-flex;align-items:baseline;flex-wrap:wrap;gap:2px;margin-bottom:22px;}
-  .logo-big .seg{font-family:var(--font-word);font-weight:700;font-size:clamp(1.8rem,5vw,3rem);color:var(--ink);padding:0 10px;line-height:1;}
-  .logo-big .sep{font-family:var(--font-word);font-weight:300;font-size:clamp(1.4rem,4vw,2.4rem);color:var(--ink-soft);opacity:.45;line-height:1;}
-  .logo-big .brand-sub{font-family:var(--font-mono);font-size:.72rem;letter-spacing:.18em;text-transform:uppercase;color:var(--ink-soft);margin-left:14px;align-self:center;}
-  .logo-big.on-dark .seg{color:var(--paper);}
-  .logo-big.on-dark .sep{color:#B9C3D0;}
-  .logo-big.on-dark .brand-sub{color:#B9C3D0;}
-  .logo-big.small{margin-bottom:0;}
-  .logo-big.small .seg{font-size:clamp(1.25rem,3.2vw,1.6rem);padding:0 6px;}
-  .logo-big.small .sep{font-size:clamp(1rem,2.6vw,1.2rem);}
-  .status{display:flex;align-items:center;gap:7px;font-family:var(--font-mono);font-size:.72rem;color:var(--ink-soft);letter-spacing:.05em;}
-  .status-dot{width:7px;height:7px;border-radius:50%;background:var(--ok);}
-  .navlinks{display:flex;align-items:center;gap:26px;list-style:none;}
-  .navlinks a{font-family:var(--font-mono);font-size:.76rem;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-soft);transition:color .2s;}
+  .status{display:flex;align-items:center;gap:7px;font-family:var(--font-mono);font-size:.72rem;color:var(--ink-soft);letter-spacing:.05em;white-space:nowrap;}
+  .status-dot{width:6px;height:6px;border-radius:50%;background:var(--cyan);flex-shrink:0;}
+  .navlinks{display:flex;align-items:center;gap:22px;list-style:none;}
+  .navlinks a{font-family:var(--font-mono);font-size:.76rem;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-soft);transition:color .2s;white-space:nowrap;}
   .navlinks a:hover{color:var(--ink);}
-  .navcta{color:#fff;background:var(--alert);padding:9px 16px;border-radius:2px;}
-  .navcta:hover{background:var(--alert-deep);}
+  .navcta{color:#0E1420;background:var(--ink);padding:9px 16px;border-radius:2px;}
+  .navcta:hover{background:var(--cyan);}
   .lang-switch{border:1px solid var(--line);padding:6px 10px;border-radius:2px;}
   .navtoggle{display:none;background:none;border:none;color:var(--ink);width:30px;height:30px;cursor:pointer;}
   .navtoggle span,.navtoggle::before,.navtoggle::after{content:"";display:block;height:2px;background:var(--ink);margin:6px 4px;}
 
-  /* ---------- HERO ---------- */
-  .hero{padding:64px 0 0;}
-  .hero-eyebrow{font-family:var(--font-mono);font-size:.78rem;letter-spacing:.12em;text-transform:uppercase;color:var(--alert-deep);margin-bottom:18px;}
-  .hero h1{font-size:clamp(2rem,4.2vw,3.1rem);font-weight:700;letter-spacing:-.02em;line-height:1.14;margin-bottom:22px;max-width:820px;}
-  .hero h1 .accent{color:var(--alert);}
-  .role-chips{display:flex;flex-direction:column;gap:8px;margin-bottom:24px;max-width:640px;}
-  .role-chip{font-family:var(--font-mono);font-size:.82rem;color:var(--ink-soft);padding-left:18px;position:relative;}
-  .role-chip::before{content:"›";position:absolute;left:0;color:var(--alert);font-weight:700;}
-  .readout-row{display:flex;flex-wrap:wrap;gap:10px;margin-bottom:30px;}
+  /* ---------- HERO / dual channel ---------- */
+  .hero{padding:56px 0 0;}
+  .logo-big{display:inline-flex;align-items:baseline;flex-wrap:wrap;gap:2px;margin-bottom:26px;}
+  .logo-big .seg{font-family:var(--font-display);font-weight:700;font-size:clamp(1.8rem,5vw,3rem);color:var(--ink);padding:0 10px;line-height:1;}
+  .logo-big .sep{font-family:var(--font-display);font-weight:300;font-size:clamp(1.4rem,4vw,2.4rem);color:var(--ink-soft);opacity:.45;line-height:1;}
+  .logo-big .brand-sub{font-family:var(--font-mono);font-size:.72rem;letter-spacing:.18em;text-transform:uppercase;color:var(--ink-soft);margin-left:14px;align-self:center;}
+  .logo-big.small{margin-bottom:0;}
+  .logo-big.small .seg{font-size:clamp(1.25rem,3.2vw,1.6rem);padding:0 6px;}
+  .logo-big.small .sep{font-size:clamp(1rem,2.6vw,1.2rem);}
+
+  .hero-eyebrow{font-family:var(--font-mono);font-size:.78rem;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-soft);margin-bottom:18px;}
+  .hero h1{font-size:clamp(1.9rem,4vw,2.9rem);font-weight:700;letter-spacing:-.015em;line-height:1.2;margin-bottom:26px;max-width:760px;}
+  .hero h1 .a{color:var(--amber);} .hero h1 .b{color:var(--cyan);}
+  .role-chips{display:flex;flex-direction:column;gap:8px;margin-bottom:0;max-width:640px;}
+  .role-chip{font-family:var(--font-mono);font-size:.82rem;color:var(--ink-soft);padding-left:16px;position:relative;}
+  .role-chip::before{content:"●";position:absolute;left:0;font-size:.5rem;top:.55em;}
+  .role-chip.role-a::before{color:var(--amber);}
+  .role-chip.role-b::before{color:var(--cyan);}
+  .readout-row{display:flex;flex-wrap:wrap;gap:10px;margin:20px 0 0;}
   .readout{font-family:var(--font-mono);font-size:.72rem;color:var(--ink-soft);background:var(--card);border:1px solid var(--line);padding:7px 12px;border-radius:2px;letter-spacing:.02em;}
-  .hero-ctas{display:flex;gap:14px;flex-wrap:wrap;margin-bottom:56px;}
-  .btn{font-family:var(--font-display);font-size:.9rem;font-weight:600;letter-spacing:.02em;padding:13px 22px;border-radius:2px;display:inline-flex;align-items:center;gap:8px;transition:transform .15s,background .2s,border-color .2s;}
+  .hero-ctas{display:flex;gap:14px;flex-wrap:wrap;margin:26px 0 6px;}
+  .btn{font-family:var(--font-display);font-size:.88rem;font-weight:600;letter-spacing:.02em;padding:13px 22px;border-radius:2px;display:inline-flex;align-items:center;gap:8px;transition:transform .15s,background .2s,border-color .2s;}
   .btn:hover{transform:translateY(-1px);}
-  .btn-primary{background:var(--alert);color:#fff;}
-  .btn-primary:hover{background:var(--alert-deep);}
-  .btn-ghost{border:1.5px solid var(--ink);color:var(--ink);}
-  .btn-ghost:hover{background:var(--ink);color:var(--paper);}
+  .btn-primary{background:var(--ink);color:#0E1420;}
+  .btn-primary:hover{background:var(--cyan);}
+  .btn-ghost{border:1.5px solid var(--line);color:var(--ink);}
+  .btn-ghost:hover{border-color:var(--ink);}
 
-  .trace-wrap{width:100%;border-top:1.5px dashed var(--line);background:var(--card);}
-  .trace-wrap svg{width:100%;height:auto;}
-  .trace-caption{text-align:center;font-size:.68rem;letter-spacing:.16em;color:var(--ink-soft);padding:10px 0 22px;text-transform:uppercase;}
-
-  @media (prefers-reduced-motion: no-preference){
-    .status-dot{animation:blink 2.2s ease-in-out infinite;}
-    .alert-ring{animation:ping 2.4s ease-out infinite;}
-  }
-  @keyframes blink{0%,100%{opacity:1;}50%{opacity:.25;}}
-  @keyframes ping{0%{r:6;opacity:.85;}100%{r:24;opacity:0;}}
+  /* --- dual-channel chart, the hero IS the chart --- */
+  .chart-hero{position:relative;margin-top:38px;}
+  .chart-hero svg{display:block;width:100%;height:auto;}
+  .trace-draw{stroke-dasharray:2000;stroke-dashoffset:2000;animation:draw 2.6s cubic-bezier(.65,0,.35,1) forwards;}
+  .trace-draw.b{animation-delay:.25s;}
+  @keyframes draw{to{stroke-dashoffset:0;}}
+  .node-fade{opacity:0;animation:fadein .6s ease forwards;}
+  @keyframes fadein{to{opacity:1;}}
+  .chart-annot{font-family:var(--font-mono);}
+  .chart-annot .lbl{font-size:11px;letter-spacing:.04em;}
+  .chart-annot .val{font-size:15px;font-weight:600;}
+  .trace-caption{text-align:center;font-size:.68rem;letter-spacing:.14em;color:var(--ink-soft);padding:10px 0 6px;text-transform:uppercase;}
+  @media (prefers-reduced-motion: reduce){ .trace-draw{animation:none;stroke-dashoffset:0;} .node-fade{animation:none;opacity:1;} }
 
   /* ---------- ABOUT ---------- */
   .perfil-grid{display:grid;grid-template-columns:1.3fr .9fr;gap:56px;align-items:start;}
@@ -120,73 +103,74 @@
   .stats{display:flex;gap:40px;flex-wrap:wrap;margin-top:6px;}
   .stat b{display:block;font-family:var(--font-mono);font-size:1.9rem;color:var(--ink);font-weight:600;}
   .stat span{font-size:.76rem;color:var(--ink-soft);font-family:var(--font-mono);letter-spacing:.02em;}
-  .ruler{width:52px;height:6px;margin-top:6px;background-image:repeating-linear-gradient(90deg, var(--centerline) 0 1px, transparent 1px 6px);opacity:.6;}
+  .ruler{width:52px;height:6px;margin-top:6px;background-image:repeating-linear-gradient(90deg, var(--ink-soft) 0 1px, transparent 1px 6px);opacity:.5;}
 
-  /* ---------- EXPERTISE ---------- */
+  /* ---------- SPECIALTIES ---------- */
   .canal-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));gap:22px;margin-bottom:34px;}
-  .canal-card{background:var(--card);border:1px solid var(--line);border-radius:4px;padding:32px;position:relative;}
-  .canal-card .strip{margin-bottom:18px;}
-  .canal-card .tag{font-family:var(--font-mono);font-size:.72rem;letter-spacing:.1em;text-transform:uppercase;color:var(--alert-deep);margin-bottom:8px;display:block;}
-  .canal-card h3{font-size:1.28rem;font-weight:600;margin-bottom:12px;color:var(--ink);}
+  .canal-card{background:var(--card);border:1px solid var(--line);border-radius:4px;padding:32px;position:relative;border-top:3px solid var(--line);}
+  .canal-card.a{border-top-color:var(--amber);}
+  .canal-card.b{border-top-color:var(--cyan);}
+  .canal-card .tag{font-family:var(--font-mono);font-size:.72rem;letter-spacing:.1em;text-transform:uppercase;margin-bottom:8px;display:block;}
+  .canal-card.a .tag{color:var(--amber);}
+  .canal-card.b .tag{color:var(--cyan);}
+  .canal-card h3{font-size:1.28rem;font-weight:700;margin-bottom:12px;color:var(--ink);}
   .canal-card p{color:var(--ink-soft);margin-bottom:18px;}
   .chips{display:flex;flex-wrap:wrap;gap:9px;}
   .chip{font-family:var(--font-mono);font-size:.74rem;padding:6px 12px;border-radius:2px;border:1px solid var(--line);color:var(--ink-soft);}
-  .canal-cta{display:inline-block;margin-top:18px;font-family:var(--font-mono);font-size:.8rem;color:var(--alert-deep);border-top:1px dashed var(--line);padding-top:14px;width:100%;}
-  .canal-cta:hover{color:var(--alert);}
-  .flagship-card{background:var(--card);border:1px solid var(--line);border-left:4px solid var(--alert);border-radius:4px;padding:40px;margin-top:6px;}
-  .flagship-features{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:13px;margin:26px 0 32px;}
-  .flagship-feature{font-family:var(--font-mono);font-size:.85rem;color:var(--ink-soft);padding-left:22px;position:relative;}
-  .flagship-feature::before{content:"✓";position:absolute;left:0;color:var(--alert);font-weight:700;}
-  .flagship-cta{font-size:1rem;padding:16px 30px;}
+  .canal-cta{display:inline-block;margin-top:18px;font-family:var(--font-mono);font-size:.8rem;border-top:1px dashed var(--line);padding-top:14px;width:100%;}
+  .canal-card.a .canal-cta{color:var(--amber);} .canal-card.a .canal-cta:hover{color:#EBAE72;}
+  .canal-card.b .canal-cta{color:var(--cyan);} .canal-card.b .canal-cta:hover{color:#A8D8EE;}
   .sector-label{font-family:var(--font-mono);font-size:.76rem;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-soft);margin:4px 0 16px;}
-  .spec-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:18px;}
-  .spec-card{background:var(--card);border:1px solid var(--line);border-radius:4px;padding:22px;border-top:3px solid var(--centerline);}
+  .spec-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:1px;background:var(--line);border:1px solid var(--line);}
+  .spec-card{background:var(--bg2);padding:22px;}
   .spec-card h4{font-size:.98rem;font-weight:600;margin-bottom:8px;color:var(--ink);}
   .spec-card p{font-size:.84rem;color:var(--ink-soft);}
+
+  /* ---------- FLAGSHIP TOOL ---------- */
+  .flagship-card{background:var(--card);border:1px solid var(--line);border-left:4px solid var(--cyan);border-radius:4px;padding:40px;margin-top:6px;}
+  .flagship-features{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:13px;margin:26px 0 32px;}
+  .flagship-feature{font-family:var(--font-mono);font-size:.85rem;color:var(--ink-soft);padding-left:22px;position:relative;}
+  .flagship-feature::before{content:"✓";position:absolute;left:0;color:var(--cyan);font-weight:700;}
+  .flagship-cta{font-size:1rem;padding:16px 30px;}
 
   /* ---------- TRAINING ---------- */
   .cursos-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(270px,1fr));gap:20px;}
   .curso-card{background:var(--card);border:1px solid var(--line);border-radius:4px;padding:26px;display:flex;flex-direction:column;}
   .curso-badge{align-self:flex-start;font-family:var(--font-mono);font-size:.68rem;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-soft);border:1px solid var(--line);padding:4px 9px;border-radius:2px;margin-bottom:14px;}
-  .curso-badge.nuevo{color:#fff;background:var(--alert);border-color:var(--alert);}
+  .curso-badge.nuevo{color:#0E1420;background:var(--amber);border-color:var(--amber);}
   .curso-card h4{font-size:1.04rem;font-weight:600;margin-bottom:6px;line-height:1.3;}
   .curso-card .oficial{font-family:var(--font-mono);font-size:.7rem;color:var(--ink-soft);opacity:.85;margin-bottom:14px;}
   .curso-card p{font-size:.87rem;color:var(--ink-soft);flex-grow:1;margin-bottom:16px;}
   .curso-card .link{font-family:var(--font-mono);font-size:.76rem;color:var(--ink);border-top:1px dashed var(--line);padding-top:14px;}
-  .curso-card .link:hover{color:var(--alert-deep);}
+  .curso-card .link:hover{color:var(--cyan);}
 
-  /* ---------- FIELD FINDINGS ---------- */
+  /* ---------- FIELD DIAGNOSTICS ---------- */
   .registro{display:grid;grid-template-columns:110px 100px 1fr;gap:22px;align-items:start;padding:26px 0;border-top:1px dashed var(--line);}
   .registro:last-child{border-bottom:1px dashed var(--line);}
-  .registro .tag{font-family:var(--font-mono);font-size:.76rem;color:var(--alert-deep);}
+  .registro .tag{font-family:var(--font-mono);font-size:.76rem;color:var(--amber);}
   .registro .tag small{display:block;color:var(--ink-soft);font-size:.7rem;margin-top:4px;}
   .registro .spark{padding-top:4px;}
   .registro h4{font-size:.98rem;font-weight:600;margin-bottom:8px;font-family:var(--font-display);}
   .registro p{color:var(--ink-soft);font-size:.9rem;}
 
   /* ---------- CONTACT ---------- */
-  .contacto{background:var(--ink);color:var(--paper);}
-  .contacto .campaign-tag{color:#E8938A;}
-  .contacto .campaign-marker{background:var(--ink);border-color:var(--paper);color:var(--paper);}
-  .contacto::before{border-left-color:rgba(247,248,245,.3) !important;}
-  .contacto h2{color:var(--paper);}
-  .contacto .lede{color:#B9C3D0;}
+  .contacto{background:var(--bg2);}
+  .contacto .campaign-tag{color:var(--amber);}
   .contact-row{display:flex;gap:14px;flex-wrap:wrap;margin-bottom:24px;}
-  .contacto .btn-ghost{border-color:rgba(247,248,245,.5);color:var(--paper);}
-  .contacto .btn-ghost:hover{background:var(--paper);color:var(--ink);}
-  .contact-note{font-family:var(--font-mono);font-size:.78rem;color:#B9C3D0;}
+  .contact-note{font-family:var(--font-mono);font-size:.78rem;color:var(--ink-soft);}
 
-  footer{background:var(--ink);border-top:1px solid rgba(247,248,245,.15);padding:28px 0;}
+  footer{background:var(--bg);border-top:1px solid var(--line);padding:28px 0;}
   footer .wrap{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;}
-  footer .fmono{font-family:var(--font-mono);font-size:.74rem;color:#B9C3D0;}
-  footer .wordmark{color:var(--paper);}
+  footer .fmono{font-family:var(--font-mono);font-size:.74rem;color:var(--ink-soft);}
 
   @media (max-width:860px){
     .perfil-grid{grid-template-columns:1fr;}
-    .navlinks{display:none;}
-    .navtoggle{display:block;}
     .registro{grid-template-columns:1fr;gap:10px;}
     .registro .spark{order:2;}
+  }
+  @media (max-width:1240px){
+    .navlinks{display:none;}
+    .navtoggle{display:block;}
   }
   @media (max-width:600px){
     .campaign{padding-left:44px;}
@@ -202,16 +186,16 @@
   <div class="wrap">
     <a href="#" class="wordmark">MC3G<small>CONSULTING</small></a>
     <ul class="navlinks">
-      <li class="status"><span class="status-dot"></span>ONLINE</li>
-      <li><a href="#especialidades">Expertise</a></li>
+      <li class="status"><span class="status-dot"></span>CHANNEL A + CHANNEL B — ONLINE</li>
+      <li><a href="#especialidades">Specialties</a></li>
       <li><a href="#formacion">Training</a></li>
-      <li><a href="#diagnosticos">Findings</a></li>
-      <li><a href="./MC3G_Analizador_CSV_EN.html" target="_blank" rel="noopener">CSV Analyzer</a></li>
-      <li><a href="./MC3G_Dashboard_CSV_EN.html" target="_blank" rel="noopener">CSV Dashboard</a></li>
+      <li><a href="#diagnosticos">Diagnostics</a></li>
+      <li><a href="./MC3G_Analizador_CSV_EN.html">CSV Analyzer</a></li>
+      <li><a href="./MC3G_Dashboard_CSV_EN.html">CSV Dashboard</a></li>
       <li><a href="./MC3G_Landing_v2_Lecturas.html" class="lang-switch">ES</a></li>
       <li><a href="#contacto" class="navcta">Contact</a></li>
     </ul>
-    <button class="navtoggle" aria-label="Open menu" onclick="const n=document.querySelector('.navlinks');n.style.display=n.style.display==='flex'?'none':'flex';n.style.flexDirection='column';n.style.position='absolute';n.style.top='64px';n.style.right='0';n.style.background='var(--paper)';n.style.padding='18px 28px';n.style.borderBottom='1.5px dashed var(--ink-soft)';n.style.width='100%';n.style.gap='16px';"></button>
+    <button class="navtoggle" aria-label="Open menu" onclick="const n=document.querySelector('.navlinks');n.style.display=n.style.display==='flex'?'none':'flex';n.style.flexDirection='column';n.style.position='absolute';n.style.top='64px';n.style.right='0';n.style.background='var(--bg2)';n.style.padding='18px 28px';n.style.borderBottom='1px solid var(--line)';n.style.width='100%';n.style.gap='16px';"></button>
   </div>
 </nav>
 
@@ -225,39 +209,54 @@
         <span class="brand-sub">Consulting</span>
       </div>
       <p class="hero-eyebrow">Eng. Jorge Gaspar Accardi · MC3G Consulting</p>
-      <h1>The bridge between engineering and <span class="accent">AI</span>.</h1>
+      <h1>Two channels, <span class="a">field</span> and <span class="b">data</span>, converging into a single diagnosis.</h1>
       <div class="role-chips">
-        <span class="role-chip">Channel A — Dam and Large Infrastructure Monitoring &amp; Instrumentation Specialist</span>
-        <span class="role-chip">Channel B — AI Applied to Engineering and Monitoring Specialist</span>
+        <span class="role-chip role-a">Channel A — Auscultation and Instrumentation of dams and large structures, with a proposed extension to mining, oil &amp; gas and industry</span>
+        <span class="role-chip role-b">Channel B — Data Science and AI: custom analysis, in-house notebooks, systems engineering</span>
       </div>
       <div class="readout-row">
         <span class="readout">MODE · JUDGMENT + DATA + STANDARDS</span>
-        <span class="readout">COVERAGE · DAMS AND LARGE INFRASTRUCTURE</span>
-        <span class="readout">STATUS · AVAILABLE FOR CONSULTATION</span>
+        <span class="readout">COVERAGE · DAMS AND LARGE STRUCTURES</span>
+        <span class="readout">STATUS · AVAILABLE FOR DIAGNOSIS</span>
       </div>
       <div class="hero-ctas">
-        <a class="btn btn-primary" href="#contacto">Schedule a consultation</a>
-        <a class="btn btn-ghost" href="#especialidades">View expertise</a>
+        <a class="btn btn-primary" href="#contacto">Schedule a diagnosis</a>
+        <a class="btn btn-ghost" href="#especialidades">See specialties</a>
       </div>
     </div>
 
-    <div class="trace-wrap" aria-hidden="true">
-      <svg viewBox="0 0 1200 170" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none">
-        <line x1="0" y1="130" x2="1200" y2="130" stroke="#8CA0B3" stroke-width="1" stroke-dasharray="2,5" opacity=".6"/>
-        <path d="M0,130 L30,124 L60,133 L90,127 L120,135 L150,123 L180,131 L210,126 L240,134 L260,128 L330,60 L430,60 L540,130 L580,124 L620,132 L660,126 L700,133 L740,125 L780,131 L820,127 L860,134 L900,80 L920,132 L960,126 L1000,133 L1040,127 L1080,131 L1120,125 L1160,132 L1200,128 L1200,170 L0,170 Z" fill="rgba(123,148,169,.14)"/>
-        <path d="M0,130 L30,124 L60,133 L90,127 L120,135 L150,123 L180,131 L210,126 L240,134 L260,128 L330,60 L430,60 L540,130 L580,124 L620,132 L660,126 L700,133 L740,125 L780,131 L820,127 L860,134 L900,80 L920,132 L960,126 L1000,133 L1040,127 L1080,131 L1120,125 L1160,132 L1200,128" fill="none" stroke="#16233B" stroke-width="2"/>
-        <g stroke="#8CA0B3" stroke-width="1" opacity=".7">
-          <line x1="0" y1="130" x2="0" y2="138"/><line x1="100" y1="130" x2="100" y2="138"/><line x1="200" y1="130" x2="200" y2="138"/>
-          <line x1="300" y1="130" x2="300" y2="138"/><line x1="400" y1="130" x2="400" y2="138"/><line x1="500" y1="130" x2="500" y2="138"/>
-          <line x1="600" y1="130" x2="600" y2="138"/><line x1="700" y1="130" x2="700" y2="138"/><line x1="800" y1="130" x2="800" y2="138"/>
-          <line x1="900" y1="130" x2="900" y2="138"/><line x1="1000" y1="130" x2="1000" y2="138"/><line x1="1100" y1="130" x2="1100" y2="138"/><line x1="1200" y1="130" x2="1200" y2="138"/>
+    <div class="chart-hero" aria-hidden="true">
+      <svg viewBox="0 0 1200 300" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none">
+        <g stroke="var(--line)" stroke-width="1">
+          <line x1="0" y1="60" x2="1200" y2="60"/><line x1="0" y1="120" x2="1200" y2="120"/>
+          <line x1="0" y1="180" x2="1200" y2="180"/><line x1="0" y1="240" x2="1200" y2="240"/>
         </g>
-        <circle cx="330" cy="60" r="3" fill="#16233B"/>
-        <circle cx="430" cy="60" r="3" fill="#16233B"/>
-        <circle class="alert-ring" cx="900" cy="80" r="6" fill="none" stroke="#C0392B" stroke-width="2"/>
-        <circle cx="900" cy="80" r="4.5" fill="#C0392B"/>
+        <path class="trace-draw" fill="none" stroke="var(--amber)" stroke-width="2.4" stroke-linecap="round" d="M0,215 C50,210 90,200 130,204 C175,209 210,190 250,192
+          C300,195 335,182 380,185 C425,188 460,168 505,171 C545,174 575,158 615,155
+          C655,152 685,148 715,144 C745,140 765,138 790,140 C820,143 845,155 870,160
+          C900,166 930,172 965,172 C1000,172 1040,171 1200,171"/>
+        <path class="trace-draw b" fill="none" stroke="var(--cyan)" stroke-width="2.4" stroke-linecap="round" d="M0,95 C55,90 100,110 145,106 C190,102 225,80 270,85
+          C310,90 345,110 385,108 C425,106 460,85 500,89 C540,93 570,115 610,118
+          C645,121 675,138 710,135 C740,133 765,140 790,140
+          C820,143 850,152 880,158 C910,164 935,168 970,170 C1005,170 1040,171 1200,171"/>
+        <g class="node-fade" style="animation-delay:2.5s;"><circle cx="790" cy="140" r="4.5" fill="var(--ink)"/><circle cx="790" cy="140" r="9" fill="none" stroke="var(--ink)" stroke-width="1" opacity=".4"/></g>
+        <g class="chart-annot node-fade" style="animation-delay:2.7s;">
+          <line x1="130" y1="204" x2="130" y2="248" stroke="var(--amber)"/>
+          <text x="130" y="264" text-anchor="middle" class="lbl" fill="var(--amber)">CHANNEL A</text>
+          <text x="130" y="282" text-anchor="middle" class="val" fill="var(--ink)">+13 YEARS</text>
+        </g>
+        <g class="chart-annot node-fade" style="animation-delay:2.9s;">
+          <line x1="270" y1="85" x2="270" y2="42" stroke="var(--cyan)"/>
+          <text x="270" y="28" text-anchor="middle" class="lbl" fill="var(--cyan)">CHANNEL B</text>
+          <text x="270" y="14" text-anchor="middle" class="val" fill="var(--ink)">APPLIED AI</text>
+        </g>
+        <g class="chart-annot node-fade" style="animation-delay:3.1s;">
+          <line x1="790" y1="140" x2="900" y2="100" stroke="var(--ink-soft)"/>
+          <text x="906" y="96" class="lbl" fill="var(--ink-soft)">CONVERGENCE POINT</text>
+          <text x="906" y="114" class="val" fill="var(--ink)">MC3G</text>
+        </g>
       </svg>
-      <p class="trace-caption mono">Continuous instrumentation reading — a real detection case is flagged in the series</p>
+      <p class="trace-caption mono">A continuous reading of two disciplines — not a metaphor, an actual workflow</p>
     </div>
   </header>
 
@@ -265,77 +264,75 @@
   <section id="perfil">
     <div class="wrap campaign">
       <div class="campaign-marker">01</div>
-      <p class="campaign-tag">Reading N.º 01 · Baseline</p>
+      <p class="campaign-tag">Campaign No. 01 · Baseline reading</p>
       <div class="perfil-grid">
         <div>
-          <h2>Field work first. Data second.</h2>
-          <p>13 years monitoring dams and large infrastructure came before any AI model. Jorge Accardi brought artificial intelligence into his practice when the volume of data called for it — not before. MC3G Consulting is that same track record, now with both tools working together.</p>
+          <h2>Field first. Data after.</h2>
+          <p>13 years auscultating dams and large structures came before any AI model. Jorge Accardi brought artificial intelligence into his practice once the volume of data called for it — not before. MC3G Consulting is that same trajectory, now with both tools working together.</p>
         </div>
         <div class="stats">
-          <div class="stat"><b>+13</b><span>years on major projects</span><div class="ruler"></div></div>
-          <div class="stat"><b>06</b><span>areas of expertise</span><div class="ruler"></div></div>
+          <div class="stat"><b>+13</b><span>years on large-scale projects</span><div class="ruler"></div></div>
+          <div class="stat"><b>06</b><span>specialty lines</span><div class="ruler"></div></div>
           <div class="stat"><b>03</b><span>in-house training programs</span><div class="ruler"></div></div>
         </div>
       </div>
     </div>
   </section>
 
-  <!-- EXPERTISE -->
-  <section id="especialidades" style="background:var(--card);border-top:1px dashed var(--line);border-bottom:1px dashed var(--line);">
+  <!-- SPECIALTIES -->
+  <section id="especialidades" style="background:var(--bg2);border-top:1px solid var(--line);border-bottom:1px solid var(--line);">
     <div class="wrap campaign">
       <div class="campaign-marker">02</div>
-      <p class="campaign-tag">Reading N.º 02 · Two Channels</p>
-      <h2>Monitoring, done the way it's always worked. Data analysis few firms offer.</h2>
-      <p class="lede">Dam and large infrastructure monitoring, with the same field judgment as always — one service. Data science applied to that same instrumentation, something few consulting firms in this sector offer with this level of rigor — a separate, independent service. Engage one or both, depending on what you need.</p>
+      <p class="campaign-tag">Campaign No. 02 · Two channels</p>
+      <h2>Instrumentation as always. Analysis that few still offer.</h2>
+      <p class="lede">Auscultation of dams and large structures, with the same field judgment as always — one service. Analysis and data science applied to that same instrumentation, something few consultancies in the sector still offer at this level of rigor — another service, independent. They can be hired separately or together, depending on what you need.</p>
 
       <div class="canal-grid">
-        <div class="canal-card">
-          <svg class="strip" viewBox="0 0 200 30" width="120" height="20"><path d="M0,15 Q25,2 50,15 T100,15 T150,15 T200,15" stroke="#16233B" stroke-width="1.5" fill="none"/></svg>
-          <span class="tag">Channel A · Core Expertise</span>
-          <h3>Dam and Large Infrastructure Monitoring &amp; Instrumentation</h3>
-          <p>Design, audit, and interpretation of monitoring systems in earth, rockfill, and concrete dams, and in large infrastructure works: piezometers, inclinometers, settlement cells, extensometers, survey benchmarks, and fiber optics. Normative reference: ICOLD bulletins, SPANCOLD P-7, Dunnicliff, RD 264/2021.</p>
+        <div class="canal-card a">
+          <span class="tag">Channel A · Core specialty</span>
+          <h3>Auscultation and Instrumentation of Dams and Large Structures</h3>
+          <p>Design, audit, and interpretation of auscultation systems in earthfill, rockfill, and concrete dams, and in large infrastructure works: piezometers, inclinometers, settlement cells, extensometers, topographic fixed points, and fiber optics. Normative reference: ICOLD bulletins, SPANCOLD P-7, Dunnicliff, RD 264/2021.</p>
           <div class="chips">
-            <span class="chip">Forensic audit of monitoring systems</span>
+            <span class="chip">Forensic audit of auscultation systems</span>
             <span class="chip">Design and implementation of instrumentation plans</span>
-            <span class="chip">Technical opinion for expert panels</span>
-            <span class="chip">Review of regulatory thresholds</span>
+            <span class="chip">Technical opinion for an expert panel</span>
+            <span class="chip">Review of normative thresholds</span>
             <span class="chip">In-company training</span>
           </div>
-          <a href="./MC3G_Inclinometro_GKN_EN.html" target="_blank" rel="noopener" class="canal-cta">→ Try the live GKN inclinometer analyzer</a>
+          <a href="./MC3G_Inclinometro_GKN_EN.html" class="canal-cta">→ Try the live GKN inclinometer analyzer</a>
         </div>
 
-        <div class="canal-card">
-          <svg class="strip" viewBox="0 0 200 30" width="120" height="20"><path d="M0,20 L20,20 L20,8 L50,8 L50,22 L80,22 L80,5 L110,5 L110,18 L140,18 L140,10 L170,10 L170,20 L200,20" stroke="#16233B" stroke-width="1.5" fill="none"/></svg>
-          <span class="tag">Channel B · Core Expertise</span>
-          <h3>Artificial Intelligence Applied to Engineering and Monitoring</h3>
-          <p>ML/DL models and algorithms on real instrumentation time series — anomaly detection, predictive models, training curves — always with the specialist making the call, never the machine deciding alone. Includes integrating AI assistants into the engineering workflow.</p>
+        <div class="canal-card b">
+          <span class="tag">Channel B · Core specialty</span>
+          <h3>Artificial Intelligence applied to Engineering and Monitoring</h3>
+          <p>ML/DL models and algorithms on real instrumentation series — anomaly detection, predictive models, training curves — always with the specialist classifying, never the machine deciding alone. Includes integrating AI assistants into the engineering workflow.</p>
           <div class="chips">
             <span class="chip">Anomaly detection (statistical band + Isolation Forest)</span>
             <span class="chip">Predictive models (regression, HST)</span>
-            <span class="chip">AI assistant integration into the engineering workflow</span>
-            <span class="chip">Training in AI applied to monitoring</span>
+            <span class="chip">Integrating AI assistants into the engineering workflow</span>
+            <span class="chip">Training on AI applied to monitoring</span>
           </div>
-          <a href="./MC3G_Analizador_CSV_EN.html" target="_blank" rel="noopener" class="canal-cta">→ Try the live CSV analyzer</a>
-          <a href="./MC3G_Dashboard_CSV_EN.html" target="_blank" rel="noopener" class="canal-cta" style="border-top:none;padding-top:0;margin-top:8px;">→ Build a KPI dashboard from a CSV</a>
+          <a href="./MC3G_Analizador_CSV_EN.html" class="canal-cta">→ Try the live CSV analyzer</a>
+          <a href="./MC3G_Dashboard_CSV_EN.html" class="canal-cta" style="border-top:none;padding-top:0;margin-top:8px;">→ Build a KPI dashboard from a CSV</a>
         </div>
       </div>
 
-      <p class="sector-label">Applied across these sectors</p>
+      <p class="sector-label">Applied in these sectors</p>
       <div class="spec-grid">
         <div class="spec-card">
-          <h4>Applied Geotechnics</h4>
+          <h4>Applied geotechnics</h4>
           <p>Slopes, foundations, retaining walls, tunnels, and excavations. Field investigation, detailed instrumentation, and early-warning systems.</p>
         </div>
         <div class="spec-card">
-          <h4>Industrial Instrumentation</h4>
+          <h4>Industrial instrumentation</h4>
           <p>Condition monitoring and predictive maintenance: vibration, thermography, oil analysis, process instrumentation, and reliability (RCM/FMEA).</p>
         </div>
         <div class="spec-card">
-          <h4>Mining Geomechanics</h4>
+          <h4>Mining geomechanics</h4>
           <p>Mine slopes, waste dumps, and tailings storage facilities. Monitoring instrumentation, TARP protocols, and mining hydrogeology.</p>
         </div>
         <div class="spec-card">
-          <h4>Oil &amp; Gas</h4>
+          <h4>Oil &amp; gas</h4>
           <p>Integrity of hydrocarbon production facilities: pipelines, cathodic protection, process instrumentation, and SCADA.</p>
         </div>
       </div>
@@ -343,99 +340,99 @@
   </section>
 
   <!-- FLAGSHIP TOOL -->
-  <section id="insignia" style="background:var(--paper-card);border-top:1px dashed var(--line);border-bottom:1px dashed var(--line);">
+  <section id="insignia">
     <div class="wrap campaign">
-      <div class="campaign-marker">03</div>
-      <p class="campaign-tag">Reading N.º 03 · Flagship Tool</p>
-      <h2>The GKN Inclinometer Analyzer — complete, in your browser</h2>
-      <p class="lede">This isn't a demo — it's the same methodology I work with: real axis convention, probe checksum, shear zone with two explicit candidates, and the same 3 rates as always. Upload your .gkn files — nothing is sent to any server.</p>
+      <div class="campaign-marker channel-b">03</div>
+      <p class="campaign-tag">Campaign No. 03 · Flagship tool</p>
+      <h2>The GKN inclinometer analyzer — complete, in your browser</h2>
+      <p class="lede">This isn't a demo — it's the same methodology I work with: real axis convention, probe checksum, shear zone with two explicit candidates, and the same 3 rates as always. Upload your .gkn files, nothing gets uploaded to any server.</p>
       <div class="flagship-card">
         <div class="flagship-features">
-          <span class="flagship-feature">Multiple GKN file ingestion, campaign by campaign</span>
+          <span class="flagship-feature">Multi-file GKN ingestion, campaign by campaign</span>
           <span class="flagship-feature">Cum.A/Cum.B profiles + Chk.A/Chk.B checksum</span>
           <span class="flagship-feature">Shear zone: two candidates per axis, never a hidden number</span>
           <span class="flagship-feature">The 3 rates — instantaneous, monthly, overall</span>
           <span class="flagship-feature">Movement vector with real azimuth (North/East)</span>
           <span class="flagship-feature">Downloadable PDF report</span>
         </div>
-        <a class="btn btn-primary flagship-cta" href="./MC3G_Inclinometro_GKN_EN.html" target="_blank" rel="noopener">Open the inclinometer analyzer →</a>
+        <a class="btn btn-primary flagship-cta" href="./MC3G_Inclinometro_GKN_EN.html">Open the inclinometer analyzer →</a>
       </div>
     </div>
   </section>
 
   <!-- TRAINING -->
-  <section id="formacion">
+  <section id="formacion" style="background:var(--bg2);border-top:1px solid var(--line);border-bottom:1px solid var(--line);">
     <div class="wrap campaign">
       <div class="campaign-marker">04</div>
-      <p class="campaign-tag">Reading N.º 04 · Training</p>
-      <h2>Three programs, one throughline</h2>
-      <p class="lede">Every course teaches you to read real instrumentation before automating anything. Real, anonymized data — no dam, project, or company ever named.</p>
+      <p class="campaign-tag">Campaign No. 04 · Training</p>
+      <h2>Three programs, one common thread</h2>
+      <p class="lede">Every course teaches how to read real instrumentation before automating anything. Real anonymized data, with no dam, project, or company named.</p>
 
       <div class="cursos-grid">
         <div class="curso-card">
-          <span class="curso-badge">Graduate program · 7 modules</span>
-          <h4>Dam Monitoring Course</h4>
-          <p class="oficial">Official title: "El Arte de la Auscultación de Presas" ("The Art of Dam Monitoring")</p>
-          <p>Graduate-level course on dam instrumentation and monitoring: physical interpretation of readings, early anomaly detection, and regulatory thresholds. No AI/ML content — it's the foundation the other two programs build on.</p>
-          <a class="link" href="#contacto">Inquire about the program →</a>
+          <span class="curso-badge">Postgraduate · 7 modules</span>
+          <h4>Dam Auscultation Course</h4>
+          <p class="oficial">Official name: "El Arte de la Auscultación de Presas"</p>
+          <p>Postgraduate course on dam instrumentation and monitoring: physical interpretation of readings, early anomaly detection, and normative thresholds. No AI/ML content — it's the foundation the other two programs build on.</p>
+          <a class="link" href="#contacto">Ask about the program →</a>
         </div>
         <div class="curso-card">
-          <span class="curso-badge">Follow-on · General level</span>
-          <h4>AI and Machine Learning Applied to Dam Monitoring Course</h4>
-          <p class="oficial">Official title: "Análisis de Datos, IA y ML aplicados a la Auscultación de Presas" ("Data Analysis, AI and ML Applied to Dam Monitoring")</p>
-          <p>Follow-on to the previous course. Statistics, models, and machine learning on real, anonymized data from a CFRD dam, with a basic Python entry level. Core doctrine: AI assists, the specialist classifies.</p>
-          <a class="link" href="#contacto">Inquire about the program →</a>
+          <span class="curso-badge">Continuation · General level</span>
+          <h4>AI and Machine Learning applied to Dam Auscultation Course</h4>
+          <p class="oficial">Official name: "Análisis de Datos, IA y ML aplicados a la Auscultación de Presas"</p>
+          <p>Continuation of the previous course. Statistics, models, and machine learning on real anonymized data from a CFRD dam, with a basic Python entry level. Core doctrine: AI assists, the specialist classifies.</p>
+          <a class="link" href="#contacto">Ask about the program →</a>
         </div>
         <div class="curso-card">
-          <span class="curso-badge nuevo">New · Launching</span>
-          <h4>Claude Applied to Dam Monitoring Course</h4>
-          <p class="oficial">Official title: "El Arte de Claude aplicado a la Auscultación de Presas" ("The Art of Claude Applied to Dam Monitoring")</p>
-          <p>How to bring AI assistants into the professional dam-monitoring workflow: technical prompting, data ingestion, code-execution analysis, and deliverables — with a dedicated module on limits and responsible use.</p>
-          <a class="link" href="#contacto">Inquire about the program →</a>
+          <span class="curso-badge nuevo">New · Launching soon</span>
+          <h4>Claude applied to Dam Auscultation Course</h4>
+          <p class="oficial">Official name: "El Arte de Claude aplicado a la Auscultación de Presas"</p>
+          <p>How to bring AI assistants into the professional auscultation workflow: technical prompting, data ingestion, code-execution analysis, and deliverables — with a module dedicated to limits and proper use.</p>
+          <a class="link" href="#contacto">Ask about the program →</a>
         </div>
       </div>
     </div>
   </section>
 
-  <!-- FIELD FINDINGS -->
-  <section id="diagnosticos" style="background:var(--card);border-top:1px dashed var(--line);border-bottom:1px dashed var(--line);">
+  <!-- FIELD DIAGNOSTICS -->
+  <section id="diagnosticos">
     <div class="wrap campaign">
-      <div class="campaign-marker">05</div>
-      <p class="campaign-tag">Reading N.º 05 · Field Findings</p>
-      <h2>Field logs, not sales pitches</h2>
-      <p class="lede">Four real, anonymized work examples: no dam, company, or client ever named.</p>
+      <div class="campaign-marker channel-a">05</div>
+      <p class="campaign-tag">Campaign No. 05 · Field diagnostics</p>
+      <h2>Campaign records, not sales cases</h2>
+      <p class="lede">Four real, anonymized examples of work: no dam, company, or client named.</p>
 
       <div class="registros">
         <div class="registro">
-          <div class="tag">LOG 01<small>Inclinometer</small></div>
-          <svg class="spark" viewBox="0 0 100 30" width="90" height="26"><path d="M0,10 Q20,25 40,12 T80,10" stroke="#16233B" stroke-width="1.5" fill="none"/><path d="M0,20 Q20,5 40,18 T80,20" stroke="#8CA0B3" stroke-width="1.3" fill="none" stroke-dasharray="3,2"/></svg>
+          <div class="tag">RECORD 01<small>Inclinometer</small></div>
+          <svg class="spark" viewBox="0 0 100 30" width="90" height="26"><path d="M0,10 Q20,25 40,12 T80,10" stroke="var(--ink)" stroke-width="1.5" fill="none"/><path d="M0,20 Q20,5 40,18 T80,20" stroke="var(--ink-soft)" stroke-width="1.3" fill="none" stroke-dasharray="3,2"/></svg>
           <div>
-            <h4>Reconciling probe vs. vendor series</h4>
-            <p>Forensic audit on a CFRD dam comparing the raw probe-motor series against the vendor's processed output. Identified an axis sign inversion and a possible half-step shift in depth attribution — without forcing an artificial rescale to make the series "match."</p>
+            <h4>Reconciling probe series vs. vendor series</h4>
+            <p>A forensic audit on a CFRD dam that compared the raw probe-motor series against the vendor's processed output. It identified an axis sign inversion and a possible half-step shift in depth attribution — without forcing an artificial rescale just to make the series "match."</p>
           </div>
         </div>
         <div class="registro">
-          <div class="tag">LOG 02<small>Piezometers</small></div>
-          <svg class="spark" viewBox="0 0 100 30" width="90" height="26"><path d="M0,20 L45,20 L45,8 L80,8" stroke="#C0392B" stroke-width="1.5" fill="none"/><circle cx="45" cy="14" r="2.4" fill="#C0392B"/></svg>
+          <div class="tag">RECORD 02<small>Piezometers</small></div>
+          <svg class="spark" viewBox="0 0 100 30" width="90" height="26"><path d="M0,20 L45,20 L45,8 L80,8" stroke="var(--amber)" stroke-width="1.5" fill="none"/><circle cx="45" cy="14" r="2.4" fill="var(--amber)"/></svg>
           <div>
             <h4>Calibration bias disguised as acceleration</h4>
-            <p>A ~5 mm jump coinciding with a probe change initially read as pore-pressure acceleration. Residual analysis identified it as a calibration bias between probes, and an overlap campaign was recommended to confirm it before escalating it as a dam-safety alert.</p>
+            <p>A ~5 mm jump coinciding with a probe change read, at first glance, as pore-pressure acceleration. Residual analysis identified it as calibration bias between probes, and an overlap campaign was recommended to confirm it before escalating it as a dam-safety alert.</p>
           </div>
         </div>
         <div class="registro">
-          <div class="tag">LOG 03<small>Settlement Cells</small></div>
-          <svg class="spark" viewBox="0 0 100 30" width="90" height="26"><path d="M0,4 L30,4 L55,24 L100,24" stroke="#16233B" stroke-width="1.5" fill="none"/></svg>
+          <div class="tag">RECORD 03<small>Settlement cells</small></div>
+          <svg class="spark" viewBox="0 0 100 30" width="90" height="26"><path d="M0,4 L30,4 L55,24 L100,24" stroke="var(--ink)" stroke-width="1.5" fill="none"/></svg>
           <div>
             <h4>An "outlier" that was actually a startup period</h4>
-            <p>57 readings with settlements beyond −25 cm had been flagged as outliers to discard. Reconstructing the timeline showed a genuine, months-long startup instability period — discarding it would have contaminated the settlement-fill correlation for the entire downstream analysis.</p>
+            <p>57 readings with settlements beyond −25 cm had been flagged as outliers to discard. Reconstructing the timeline revealed a real, months-long startup instability period — discarding it would have contaminated the settlement-vs-fill correlation for the whole downstream analysis.</p>
           </div>
         </div>
         <div class="registro">
-          <div class="tag">LOG 04<small>Anomaly Detection</small></div>
-          <svg class="spark" viewBox="0 0 100 30" width="90" height="26"><path d="M0,18 L100,18" stroke="#DCE4E9" stroke-width="1"/><circle cx="20" cy="18" r="2.2" fill="#16233B"/><circle cx="50" cy="18" r="2.2" fill="#16233B"/><circle cx="80" cy="18" r="2.2" fill="#16233B"/><path d="M30,18 L30,8 L40,8 L40,18" stroke="#C0392B" stroke-width="1.3" fill="none"/><path d="M60,18 L60,8 L70,8 L70,18" stroke="#C0392B" stroke-width="1.3" fill="none"/></svg>
+          <div class="tag">RECORD 04<small>Anomaly detection</small></div>
+          <svg class="spark" viewBox="0 0 100 30" width="90" height="26"><path d="M0,18 L100,18" stroke="var(--line)" stroke-width="1"/><circle cx="20" cy="18" r="2.2" fill="var(--ink)"/><circle cx="50" cy="18" r="2.2" fill="var(--ink)"/><circle cx="80" cy="18" r="2.2" fill="var(--ink)"/><path d="M30,18 L30,8 L40,8 L40,18" stroke="var(--cyan)" stroke-width="1.3" fill="none"/><path d="M60,18 L60,8 L70,8 L70,18" stroke="var(--cyan)" stroke-width="1.3" fill="none"/></svg>
           <div>
             <h4>Two methods, two results — the specialist decides, not the algorithm</h4>
-            <p>On the same piezometer series, a simple statistical band flagged 5 readings as anomalous and an Isolation Forest flagged 7, with only 3 overlapping. No algorithm was used as an automatic verdict: the output was handed over as input for the specialist to classify case by case.</p>
+            <p>On the same piezometer series, a simple statistical band flagged 5 readings as anomalous and an Isolation Forest flagged 7, with only 3 readings in common between the two. No algorithm was used as an automatic verdict: the result was delivered as input for the specialist to classify case by case.</p>
           </div>
         </div>
       </div>
@@ -446,9 +443,9 @@
   <section id="contacto" class="contacto">
     <div class="wrap campaign">
       <div class="campaign-marker">06</div>
-      <p class="campaign-tag">Reading N.º 06 · Next Reading</p>
-      <h2>Get in touch to schedule a consultation</h2>
-      <p class="lede">Consulting, forensic instrumentation audits, expert panel opinions, or in-company training.</p>
+      <p class="campaign-tag">Campaign No. 06 · Next reading</p>
+      <h2>Write to schedule a diagnosis</h2>
+      <p class="lede">Consulting, forensic instrumentation audits, expert-panel opinions, or in-company training.</p>
       <div class="contact-row">
         <a class="btn btn-primary" href="mailto:jorgeaccardi@hotmail.com">Email me</a>
         <a class="btn btn-ghost" href="https://wa.me/5493815071595" target="_blank" rel="noopener">Message on WhatsApp</a>
@@ -462,7 +459,7 @@
 
 <footer>
   <div class="wrap" style="flex-direction:column;align-items:flex-start;gap:16px;">
-    <div class="logo-big small on-dark" aria-hidden="true">
+    <div class="logo-big small" aria-hidden="true">
       <span class="seg">M</span><span class="sep">|</span><span class="seg">C</span><span class="sep">|</span><span class="seg">3</span><span class="sep">|</span><span class="seg">G</span>
       <span class="brand-sub">Consulting</span>
     </div>
